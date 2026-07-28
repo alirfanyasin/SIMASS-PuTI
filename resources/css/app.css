@@ -1,0 +1,328 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --font-sans: "Plus Jakarta Sans", "sans-serif";
+    --color-telkom-50: #fff1f1;
+    --color-telkom-100: #ffe0e0;
+    --color-telkom-200: #ffc5c5;
+    --color-telkom-300: #ff9d9d;
+    --color-telkom-400: #ff6464;
+    --color-telkom-500: #f23b3b;
+    --color-telkom-600: #e60012;
+    --color-telkom-700: #c2000f;
+    --color-telkom-800: #a3000d;
+    --color-telkom-900: #87000a;
+    --color-telkom-950: #4d0006;
+}
+
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    color-scheme: light;
+}
+
+html.dark {
+    color-scheme: dark;
+}
+
+body {
+    font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+.gradient-telkom {
+    background: linear-gradient(135deg, #e60012 0%, #87000a 100%) !important;
+    color: #ffffff !important;
+}
+
+.dot-grid {
+    background-image: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.15) 1px,
+        transparent 1px
+    );
+    background-size: 20px 20px;
+}
+
+/* Animasi */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes float {
+    0%,
+    100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-20px) rotate(5deg);
+    }
+}
+
+.float-anim {
+    animation: float 6s ease-in-out infinite;
+}
+
+/* Tombol Google */
+.google-btn {
+    box-shadow:
+        0 1px 3px rgba(0, 0, 0, 0.08),
+        0 1px 2px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.google-btn:hover {
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(-1px);
+}
+
+.google-btn:active {
+    transform: translateY(0);
+}
+
+/* Dashboard style */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: #374151;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+svg {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+/* Theme Toggle Icons - Guaranteed Single Icon Display */
+html:not(.dark) .theme-toggle-moon {
+    display: none !important;
+}
+html:not(.dark) .theme-toggle-sun {
+    display: inline-block !important;
+}
+
+html.dark .theme-toggle-sun {
+    display: none !important;
+}
+html.dark .theme-toggle-moon {
+    display: inline-block !important;
+}
+
+.nav-item.active {
+    background: linear-gradient(135deg, #e60012 0%, #87000a 100%);
+    color: white;
+    box-shadow: 0 8px 20px -6px rgba(230, 0, 18, 0.5);
+}
+
+.nav-item.active svg {
+    color: white;
+}
+
+.mobile-nav-item.active {
+    color: #e60012;
+}
+
+.mobile-nav-item.active .nav-icon-wrap {
+    background: #ffe0e0;
+}
+
+.dark .mobile-nav-item.active .nav-icon-wrap {
+    background: rgba(230, 0, 18, 0.15);
+}
+
+.mobile-nav-item.active .nav-label {
+    font-weight: 700;
+}
+
+.view {
+    display: block;
+    animation: fadeIn 0.35s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.95);
+        opacity: 0.8;
+    }
+
+    70% {
+        transform: scale(1.25);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+}
+
+.pulse-ring::before,
+.pulse-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background: rgba(230, 0, 18, 0.4);
+    animation: pulseRing 2.5s ease-out infinite;
+    z-index: 0;
+}
+
+.pulse-ring::after {
+    animation-delay: 1.25s;
+}
+
+.gradient-telkom {
+    background: linear-gradient(135deg, #e60012 0%, #87000a 100%);
+}
+
+.gradient-soft {
+    background: linear-gradient(135deg, #fff1f1 0%, #ffe0e0 100%);
+}
+
+.dark .gradient-soft {
+    background: linear-gradient(
+        135deg,
+        rgba(230, 0, 18, 0.12) 0%,
+        rgba(230, 0, 18, 0.04) 100%
+    );
+}
+
+.card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.12);
+}
+
+.dark .card-hover:hover {
+    box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.5);
+}
+
+.toast {
+    animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.skeleton-shimmer {
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring circle {
+    transition: stroke-dashoffset 1s ease-in-out;
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.3s ease-out forwards;
+}
+
+.dot-grid {
+    background-image: radial-gradient(
+        circle,
+        rgba(230, 0, 18, 0.08) 1px,
+        transparent 1px
+    );
+    background-size: 16px 16px;
+}
+
+.dark .dot-grid {
+    background-image: radial-gradient(
+        circle,
+        rgba(255, 255, 255, 0.04) 1px,
+        transparent 1px
+    );
+}
