@@ -7,6 +7,7 @@ use App\Http\Controllers\PresenceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentStaffController;
+use App\Http\Controllers\CalendarController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login', 301);
@@ -25,6 +26,7 @@ Route::prefix('app')->group(function () {
     Route::get('/presence/list', [PresenceController::class, 'presenceList'])->name('app.presence-list');
     Route::get('/presence/history', [PresenceController::class, 'presenceHistory'])->name('app.presence-history');
     Route::get('/overtime', [OvertimeController::class, 'index'])->name('app.overtime');
+    Route::get('/calendar', [CalendarController::class, 'index'])->name('app.calendar');
 
     Route::get('/student-staff', [StudentStaffController::class, 'index'])->name('app.student-staff');
 
