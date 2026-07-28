@@ -10,4 +10,9 @@ class OvertimeTransfer extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function presence()
+    {
+        return $this->belongsTo(Presence::class);
+    }
 }

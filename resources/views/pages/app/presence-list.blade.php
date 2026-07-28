@@ -5,99 +5,50 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
 @endsection
 @section('subtitle', 'Riwayat presensi seluruh student staff secara real-time')
 
-@php
-  $presences = \App\Models\Presence::with('user')->orderBy('tanggal', 'desc')->get();
-  $presensiData = $presences->map(function($p) {
-      $jamMasuk = $p->jam_masuk ?? '—';
-      if ($jamMasuk !== '—' && strlen($jamMasuk) >= 5) {
-          $jamMasuk = substr($jamMasuk, 0, 5);
-      }
-      $jamPulang = $p->jam_pulang ?? '—';
-      if ($jamPulang !== '—' && strlen($jamPulang) >= 5) {
-          $jamPulang = substr($jamPulang, 0, 5);
-      }
 
-      $status = 'tepat';
-      if ($jamMasuk !== '—' && str_contains($jamMasuk, ':')) {
-          $waktuMasuk = strtotime($jamMasuk);
-          $batasTelat = strtotime('08:00');
-          if ($waktuMasuk > $batasTelat) {
-              $status = 'telat';
-          }
-      } elseif ($jamMasuk === '—') {
-          $status = 'izin';
-      }
-
-      return [
-          'tgl' => date('d M Y', strtotime($p->tanggal)),
-          'nama' => $p->user ? $p->user->name : 'Unknown',
-          'cin' => $jamMasuk,
-          'cout' => $jamPulang,
-          'durasi' => $p->total_jam ?? '—',
-          'status' => $status,
-      ];
-  })->toArray();
-
-  $statusMap = [
-      'tepat' => [
-          'label' => 'Tepat Waktu',
-          'cls' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-      ],
-      'telat' => [
-          'label' => 'Terlambat',
-          'cls' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      ],
-      'lembur' => [
-          'label' => 'Lembur',
-          'cls' => 'bg-telkom-100 text-telkom-700 dark:bg-telkom-900/30 dark:text-telkom-400',
-      ],
-      'izin' => [
-          'label' => 'Izin',
-          'cls' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-      ],
-  ];
-@endphp
 
 @section('content')
   <!-- ============ VIEW: DAFTAR PRESENSI ============ -->
   <section id="view-daftar" class="view">
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
       <!-- Filter bar -->
-      <div class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
+      <form method="GET" action="{{ route('app.presence-list') }}" class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
-            <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
-              <option>Semua Student Staff</option>
-              <option>Irfan Yasin</option>
-              <option>Reza Eka Firmansyah</option>
+            <select name="user_id" onchange="this.form.submit()" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <option value="all">Semua Student Staff</option>
+              @foreach($users as $u)
+                <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+              @endforeach
             </select>
           </div>
           
           <div class="w-full lg:w-[25%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
-            <input type="date" value="2026-07-16" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+            <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
           </div>
 
           <div class="w-full lg:w-[45%] flex flex-col sm:flex-row items-start sm:items-end gap-4">
             <div class="w-full sm:flex-1">
               <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
-              <input type="date" value="2026-08-14" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+              <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
             </div>
             
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
+              <button type="submit" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
                 Filter
               </button>
-              <button class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none">
+              <a href="{{ route('app.presence-list') }}" class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
                 Reset
-              </button>
-              <button class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export">
+              </a>
+              <button type="button" class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
               </button>
             </div>
           </div>
         </div>
+      </form>
 
         <!-- Info banner -->
         <div class="flex items-center gap-3 px-4 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-900/30">

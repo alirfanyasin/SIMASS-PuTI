@@ -5,51 +5,7 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
 @endsection
 @section('subtitle', 'Kelola kelebihan jam kerja harian dan alokasikan untuk melengkapi hari kerja lainnya.')
 
-@php
-  $saldoLembur = [
-      [
-          'nama' => 'Fitriani Latifah',
-          'tgl' => '24 Juli 2026',
-          'durasi' => '3 Jam 9 Menit',
-          'saldo' => '3 Jam 9 Menit',
-          'status' => 'penuh',
-      ],
-      [
-          'nama' => 'Irfan Yasin',
-          'tgl' => '23 Juli 2026',
-          'durasi' => '2 Jam 0 Menit',
-          'saldo' => '1 Jam 8 Menit',
-          'status' => 'sebagian',
-      ],
-      [
-          'nama' => 'Fitriani Latifah',
-          'tgl' => '23 Juli 2026',
-          'durasi' => '4 Jam 24 Menit',
-          'saldo' => '4 Jam 24 Menit',
-          'status' => 'penuh',
-      ],
-  ];
 
-  $riwayatAlokasi = [
-      [
-          'nama' => 'Irfan Yasin',
-          'tgl' => '29 Jul 2026',
-          'target' => '28 Jul 2026',
-          'jumlah' => '0 Jam 52 Menit',
-      ]
-  ];
-
-  $statusMap = [
-      'penuh' => [
-          'label' => 'Tersedia Penuh',
-          'cls' => 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-      ],
-      'sebagian' => [
-          'label' => 'Terpakai Sebagian',
-          'cls' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-      ],
-  ];
-@endphp
 
 @section('content')
   <!-- ============ VIEW: OVERTIME ============ -->
@@ -62,8 +18,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">TOTAL AKUMULASI LEMBUR</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">174.0 Jam</p>
-          <p class="text-xs text-gray-500 mt-1">Total 10441 menit terdeteksi</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ number_format($totalAkumulasiMenit / 60, 1) }} Jam</p>
+          <p class="text-xs text-gray-500 mt-1">Total {{ $totalAkumulasiMenit }} menit terdeteksi</p>
         </div>
       </div>
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
@@ -72,8 +28,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">SALDO LEMBUR AKTIF</p>
-          <p class="text-xl sm:text-2xl font-bold text-green-600">128.3 Jam</p>
-          <p class="text-xs text-gray-500 mt-1">Tersedia 7698 menit untuk ditransfer</p>
+          <p class="text-xl sm:text-2xl font-bold text-green-600">{{ number_format($totalSaldoMenit / 60, 1) }} Jam</p>
+          <p class="text-xs text-gray-500 mt-1">Tersedia {{ $totalSaldoMenit }} menit untuk ditransfer</p>
         </div>
       </div>
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
@@ -82,53 +38,50 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">LEMBUR DIALOKASIKAN</p>
-          <p class="text-xl sm:text-2xl font-bold text-indigo-600">45.7 Jam</p>
-          <p class="text-xs text-gray-500 mt-1">Sebanyak 2743 menit dialihkan</p>
+          <p class="text-xl sm:text-2xl font-bold text-indigo-600">{{ number_format($totalAlokasiMenit / 60, 1) }} Jam</p>
+          <p class="text-xs text-gray-500 mt-1">Sebanyak {{ $totalAlokasiMenit }} menit dialihkan</p>
         </div>
       </div>
     </div>
 
     <!-- Filter -->
-    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+    <form method="GET" action="{{ route('app.overtime') }}" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
       <div class="p-4 lg:p-5 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
-            <select class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
-              <option>Semua Student Staff</option>
-              <option>Irfan Yasin</option>
-              <option>Fitriani Latifah</option>
+            <select name="user_id" onchange="this.form.submit()" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <option value="all">Semua Student Staff</option>
+              @foreach($users as $u)
+                <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+              @endforeach
             </select>
           </div>
           
           <div class="w-full lg:w-[25%]">
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
-            <input type="date" value="2026-07-16" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Bulan</label>
+            <select name="bulan" onchange="this.form.submit()" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <option value="">Semua Bulan</option>
+              <option value="Juli 2026" {{ request('bulan') == 'Juli 2026' ? 'selected' : '' }}>Juli 2026</option>
+              <option value="Agustus 2026" {{ request('bulan') == 'Agustus 2026' ? 'selected' : '' }}>Agustus 2026</option>
+            </select>
           </div>
 
-          <div class="w-full lg:w-[45%] flex flex-col sm:flex-row items-start sm:items-end gap-4">
-            <div class="w-full sm:flex-1">
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
-              <input type="date" value="2026-08-14" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
-            </div>
-            
-            <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
-                Filter
-              </button>
-              <button class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none">
-                Reset
-              </button>
-            </div>
+          <div class="w-full lg:w-[45%] flex items-center justify-end gap-3 mt-4 lg:mt-0">
+            <a href="{{ route('app.overtime') }}" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+              Reset Filter
+            </a>
           </div>
-        </div>
-
-        <div class="flex items-center gap-3 px-4 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          <p>Menampilkan data <strong>semua student staff</strong> , periode <strong>16 Jul 2026</strong> sampai <strong>14 Agt 2026</strong></p>
         </div>
       </div>
-    </div>
+      <!-- Info banner -->
+      <div class="px-4 lg:px-5 pb-4 lg:pb-5">
+        <div class="flex items-center gap-3 px-4 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+          <p>Menampilkan data <strong>{{ request('user_id') && request('user_id') != 'all' ? ($users->where('id', request('user_id'))->first()->name ?? 'Student Staff') : 'semua student staff' }}</strong> {{ request('bulan') ? ', periode <strong>'.request('bulan').'</strong>' : '' }}</p>
+        </div>
+      </div>
+    </form>
 
     <!-- Table 1 -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">

@@ -3,64 +3,11 @@
 @section('title', 'Riwayat Bulanan')
 @section('subtitle', 'Rekapitulasi presensi student staff')
 
-@php
-  $allPresences = \App\Models\Presence::with('user')->orderBy('tanggal', 'desc')->get();
-  
-  $grouped = [];
-  foreach ($allPresences as $p) {
-      $date = new \DateTime($p->tanggal);
-      $day = (int)$date->format('d');
-      $month = (int)$date->format('m');
-      $year = (int)$date->format('Y');
-      
-      if ($day > 15) {
-          $payMonth = $month == 12 ? 1 : $month + 1;
-          $payYear = $month == 12 ? $year + 1 : $year;
-      } else {
-          $payMonth = $month;
-          $payYear = $year;
-      }
-      
-      $periodKey = sprintf("%04d-%02d", $payYear, $payMonth);
-      if (!isset($grouped[$periodKey])) {
-          $prevMonth = $payMonth == 1 ? 12 : $payMonth - 1;
-          $prevYear = $payMonth == 1 ? $payYear - 1 : $payYear;
-          $monthNames = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
-          
-          $grouped[$periodKey] = [
-              'title' => $monthNames[$payMonth] . ' ' . $payYear,
-              'period' => "16 " . $monthNames[$prevMonth] . " $prevYear - 15 " . $monthNames[$payMonth] . " $payYear",
-              'total' => 0,
-              'staffs' => [],
-              'detailData' => []
-          ];
-      }
-      $grouped[$periodKey]['total']++;
-      $grouped[$periodKey]['staffs'][$p->user_id] = true;
-      $grouped[$periodKey]['detailData'][] = [
-          'nama' => $p->user ? $p->user->name : 'Unknown',
-          'hari' => $p->hari ?? '-',
-          'tgl' => date('d M Y', strtotime($p->tanggal)),
-          'waktu' => ($p->jam_masuk ?? '-') . ' - ' . ($p->jam_pulang ?? '-'),
-          'jam' => $p->total_jam ?? '-',
-      ];
-  }
-  
-  // Sort descending by periodKey
-  krsort($grouped);
-  
-  $months = [];
-  foreach ($grouped as $g) {
-      $g['staff'] = count($g['staffs']) . ' Orang';
-      $months[] = $g;
-  }
-  
-  $detailData = count($months) > 0 ? $months[0]['detailData'] : [];
-@endphp
+
 
 @section('content')
   <!-- View: Riwayat Bulanan -->
-  <div id="view-list" class="block space-y-6">
+  <div id="view-list" class="{{ $viewMode === 'list' ? 'block' : 'hidden' }} space-y-6">
     <div class="mb-6">
       <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Riwayat Bulanan</h2>
       <p class="text-sm text-gray-500 mt-1">Rekapitulasi presensi student staff berdasarkan bulan</p>
@@ -90,32 +37,33 @@
             </div>
           </div>
 
-          <button onclick="showDetail('{{ $m['title'] }}', '{{ $m['period'] }}')" class="w-full mt-auto py-3 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2">
+          <a href="{{ route('app.presence-history', ['period' => $m['id']]) }}" class="w-full mt-auto py-3 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2">
             Lihat Detail 
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
+          </a>
         </div>
       @endforeach
     </div>
   </div>
 
-  <!-- View: Detail Presensi Bulan -->
-  <div id="view-detail" class="hidden space-y-6">
-    <div class="mb-6">
-      <button onclick="showList()" class="flex items-center gap-2 text-sm font-semibold text-telkom-600 hover:text-telkom-700 transition mb-6">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
-        Kembali ke Riwayat Bulanan
-      </button>
-
-      <h2 id="detail-title" class="text-3xl font-bold text-gray-900 dark:text-white mb-1">Presensi Juli 2026</h2>
-      <p id="detail-period" class="text-sm font-semibold text-telkom-600 mb-2">17 Juni - 15 Juli 2026</p>
-      <p class="text-sm text-gray-500">Detail dan rekap absensi kehadiran student staff pada periode ini</p>
+  <!-- View: Detail Bulanan -->
+  <div id="view-detail" class="{{ $viewMode === 'detail' ? 'block' : 'hidden' }} space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-4">
+        <a href="{{ route('app.presence-history') }}" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
+        </a>
+        <div>
+          <h2 id="detail-title" class="text-2xl font-bold text-gray-900 dark:text-white">Presensi {{ $detailTitle }}</h2>
+          <p id="detail-period" class="text-sm text-gray-500 mt-1">{{ $detailPeriod }}</p>
+        </div>
+      </div>
     </div>
 
     <!-- Tabs: Tabel & Kalender -->
     <div class="flex items-center gap-4 border-b border-gray-200 dark:border-gray-800">
       <button id="tab-tabel" onclick="switchTab('tabel')" class="px-4 py-2.5 border-b-2 border-telkom-600 text-telkom-600 font-semibold text-sm transition">Tabel Presensi</button>
-      <button id="tab-kalender" onclick="switchTab('kalender')" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold text-sm transition">Kalender (16-15)</button>
+      <button id="tab-kalender" onclick="switchTab('kalender')" class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold text-sm transition">Kalender</button>
     </div>
 
     <!-- TAB CONTENT: TABEL -->
@@ -234,22 +182,6 @@
   </div>
 
   <script>
-    function showDetail(title, period) {
-      document.getElementById('view-list').classList.replace('block', 'hidden');
-      document.getElementById('view-detail').classList.replace('hidden', 'block');
-      
-      document.getElementById('detail-title').innerText = 'Presensi ' + title;
-      document.getElementById('detail-period').innerText = period;
-      
-      // Default to tabel
-      switchTab('tabel');
-    }
-
-    function showList() {
-      document.getElementById('view-detail').classList.replace('block', 'hidden');
-      document.getElementById('view-list').classList.replace('hidden', 'block');
-    }
-
     function switchTab(tab) {
       const tabTabel = document.getElementById('tab-tabel');
       const tabKalender = document.getElementById('tab-kalender');
