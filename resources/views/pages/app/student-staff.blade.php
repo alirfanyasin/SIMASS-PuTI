@@ -4,64 +4,16 @@
 @section('subtitle', 'Kelola data keanggotaan dan presensi wajah student staff PuTI')
 
 @php
-  $staffList = [
-      [
-          'name' => 'Budi Santoso',
-          'nim' => '1301210045',
-          'email' => 'budisantoso@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=33',
-          'role' => 'Web Developer',
-          'face_registered' => true,
-      ],
-      [
-          'name' => 'Clara Anindita',
-          'nim' => '1301213088',
-          'email' => 'claraanindita@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=47',
-          'role' => 'Designer',
-          'face_registered' => true,
-      ],
-      [
-          'name' => 'Rian Hidayat',
-          'nim' => '1301220112',
-          'email' => 'rianhidayat@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=11',
-          'role' => 'Web Developer',
-          'face_registered' => false,
-      ],
-      [
-          'name' => 'Maya Putri',
-          'nim' => '1301210204',
-          'email' => 'mayaputri@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=25',
-          'role' => 'Designer',
-          'face_registered' => true,
-      ],
-      [
-          'name' => 'Rizky Ramadhan',
-          'nim' => '1301221056',
-          'email' => 'rizkyramadhan@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=60',
-          'role' => 'Web Developer',
-          'face_registered' => true,
-      ],
-      [
-          'name' => 'Dewi Anggraini',
-          'nim' => '1301214019',
-          'email' => 'dewianggraini@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=9',
-          'role' => 'Designer',
-          'face_registered' => false,
-      ],
-      [
-          'name' => 'Fajar Pratama',
-          'nim' => '1301220490',
-          'email' => 'fajarpratama@student.telkomuniversity.ac.id',
-          'avatar' => 'https://i.pravatar.cc/150?img=52',
-          'role' => 'Web Developer',
-          'face_registered' => true,
-      ],
-  ];
+  $staffList = \App\Models\User::whereNotNull('position')->get()->map(function($staff) {
+      return [
+          'name' => $staff->name,
+          'nim' => '-', 
+          'email' => $staff->email ?? (strtolower(str_replace(' ', '', $staff->name)) . '@student.telkomuniversity.ac.id'),
+          'avatar' => null,
+          'role' => $staff->position ?? '-',
+          'face_registered' => !is_null($staff->face_descriptor),
+      ];
+  });
 @endphp
 
 @section('content')

@@ -4,50 +4,58 @@
 @section('subtitle', 'Rekapitulasi presensi student staff')
 
 @php
-  $months = [
-      [
-          'title' => 'Agustus 2026',
-          'period' => '16 Juli - 14 Agustus 2026',
-          'total' => '33',
-          'staff' => '4 Orang',
-      ],
-      [
-          'title' => 'Juli 2026',
-          'period' => '17 Juni - 15 Juli 2026',
-          'total' => '77',
-          'staff' => '4 Orang',
-      ],
-      [
-          'title' => 'Juni 2026',
-          'period' => '18 Mei - 15 Juni 2026',
-          'total' => '55',
-          'staff' => '4 Orang',
-      ],
-  ];
-
-  $detailData = [
-      [
-          'nama' => 'Irfan Yasin',
-          'hari' => 'Rabu',
-          'tgl' => '15 Jul 2026',
-          'waktu' => '11:05:45 - 17:54:11',
-          'jam' => '6 Jam 49 Menit',
-      ],
-      [
-          'nama' => 'Fitriani Latifah',
-          'hari' => 'Rabu',
-          'tgl' => '15 Jul 2026',
-          'waktu' => '10:47:17 - 20:20:31',
-          'jam' => '8 Jam',
-      ],
-      [
-          'nama' => 'Amoure Chelsytrivia Daniella Purba',
-          'hari' => 'Rabu',
-          'tgl' => '15 Jul 2026',
-          'waktu' => '10:12:46 - 17:09:45',
-          'jam' => '6 Jam 57 Menit',
-      ],
-  ];
+  $allPresences = \App\Models\Presence::with('user')->orderBy('tanggal', 'desc')->get();
+  
+  $grouped = [];
+  foreach ($allPresences as $p) {
+      $date = new \DateTime($p->tanggal);
+      $day = (int)$date->format('d');
+      $month = (int)$date->format('m');
+      $year = (int)$date->format('Y');
+      
+      if ($day > 15) {
+          $payMonth = $month == 12 ? 1 : $month + 1;
+          $payYear = $month == 12 ? $year + 1 : $year;
+      } else {
+          $payMonth = $month;
+          $payYear = $year;
+      }
+      
+      $periodKey = sprintf("%04d-%02d", $payYear, $payMonth);
+      if (!isset($grouped[$periodKey])) {
+          $prevMonth = $payMonth == 1 ? 12 : $payMonth - 1;
+          $prevYear = $payMonth == 1 ? $payYear - 1 : $payYear;
+          $monthNames = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+          
+          $grouped[$periodKey] = [
+              'title' => $monthNames[$payMonth] . ' ' . $payYear,
+              'period' => "16 " . $monthNames[$prevMonth] . " $prevYear - 15 " . $monthNames[$payMonth] . " $payYear",
+              'total' => 0,
+              'staffs' => [],
+              'detailData' => []
+          ];
+      }
+      $grouped[$periodKey]['total']++;
+      $grouped[$periodKey]['staffs'][$p->user_id] = true;
+      $grouped[$periodKey]['detailData'][] = [
+          'nama' => $p->user ? $p->user->name : 'Unknown',
+          'hari' => $p->hari ?? '-',
+          'tgl' => date('d M Y', strtotime($p->tanggal)),
+          'waktu' => ($p->jam_masuk ?? '-') . ' - ' . ($p->jam_pulang ?? '-'),
+          'jam' => $p->total_jam ?? '-',
+      ];
+  }
+  
+  // Sort descending by periodKey
+  krsort($grouped);
+  
+  $months = [];
+  foreach ($grouped as $g) {
+      $g['staff'] = count($g['staffs']) . ' Orang';
+      $months[] = $g;
+  }
+  
+  $detailData = count($months) > 0 ? $months[0]['detailData'] : [];
 @endphp
 
 @section('content')

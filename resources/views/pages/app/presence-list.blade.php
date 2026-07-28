@@ -6,64 +6,37 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
 @section('subtitle', 'Riwayat presensi seluruh student staff secara real-time')
 
 @php
-  $presensiData = [
-      [
-          'tgl' => '18 Nov 2024',
-          'nama' => 'Budi Santoso',
-          'cin' => '07:45',
-          'cout' => '16:30',
-          'durasi' => '8j 45m',
-          'status' => 'tepat',
-      ],
-      [
-          'tgl' => '15 Nov 2024',
-          'nama' => 'Clara Anindita',
-          'cin' => '08:15',
-          'cout' => '16:30',
-          'durasi' => '8j 15m',
-          'status' => 'telat',
-      ],
-      [
-          'tgl' => '14 Nov 2024',
-          'nama' => 'Rian Hidayat',
-          'cin' => '07:50',
-          'cout' => '20:00',
-          'durasi' => '12j 10m',
-          'status' => 'lembur',
-      ],
-      [
-          'tgl' => '13 Nov 2024',
-          'nama' => 'Maya Putri',
-          'cin' => '07:40',
-          'cout' => '16:30',
-          'durasi' => '8j 50m',
-          'status' => 'tepat',
-      ],
-      [
-          'tgl' => '12 Nov 2024',
-          'nama' => 'Rizky Ramadhan',
-          'cin' => '—',
-          'cout' => '—',
-          'durasi' => '—',
-          'status' => 'izin',
-      ],
-      [
-          'tgl' => '11 Nov 2024',
-          'nama' => 'Dewi Anggraini',
-          'cin' => '07:55',
-          'cout' => '16:35',
-          'durasi' => '8j 40m',
-          'status' => 'tepat',
-      ],
-      [
-          'tgl' => '08 Nov 2024',
-          'nama' => 'Fajar Pratama',
-          'cin' => '08:20',
-          'cout' => '16:30',
-          'durasi' => '8j 10m',
-          'status' => 'telat',
-      ],
-  ];
+  $presences = \App\Models\Presence::with('user')->orderBy('tanggal', 'desc')->get();
+  $presensiData = $presences->map(function($p) {
+      $jamMasuk = $p->jam_masuk ?? '—';
+      if ($jamMasuk !== '—' && strlen($jamMasuk) >= 5) {
+          $jamMasuk = substr($jamMasuk, 0, 5);
+      }
+      $jamPulang = $p->jam_pulang ?? '—';
+      if ($jamPulang !== '—' && strlen($jamPulang) >= 5) {
+          $jamPulang = substr($jamPulang, 0, 5);
+      }
+
+      $status = 'tepat';
+      if ($jamMasuk !== '—' && str_contains($jamMasuk, ':')) {
+          $waktuMasuk = strtotime($jamMasuk);
+          $batasTelat = strtotime('08:00');
+          if ($waktuMasuk > $batasTelat) {
+              $status = 'telat';
+          }
+      } elseif ($jamMasuk === '—') {
+          $status = 'izin';
+      }
+
+      return [
+          'tgl' => date('d M Y', strtotime($p->tanggal)),
+          'nama' => $p->user ? $p->user->name : 'Unknown',
+          'cin' => $jamMasuk,
+          'cout' => $jamPulang,
+          'durasi' => $p->total_jam ?? '—',
+          'status' => $status,
+      ];
+  })->toArray();
 
   $statusMap = [
       'tepat' => [
