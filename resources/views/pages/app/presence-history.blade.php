@@ -119,7 +119,10 @@
                   <td class="px-5 py-4 tabular-nums font-semibold text-green-600">{{ $d['jam'] }}</td>
                   <td class="px-5 py-4">
                     <div class="flex items-center justify-center">
-                      <button type="button" class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Lihat Detail">
+                      <button type="button" 
+                        onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['waktu'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
+                        class="p-1.5 text-gray-400 hover:text-telkom-600 transition" 
+                        title="Lihat Detail">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
                       </button>
                     </div>
@@ -148,17 +151,16 @@
           <div class="aspect-square bg-transparent"></div>
           <div class="aspect-square bg-transparent"></div>
           
-          <!-- Generating days from 16 prev month to 15 current month (approx 30 days) -->
-          @php 
-            $calendarDays = array_merge(range(16, 31), range(1, 15)); 
-          @endphp
-
-          @foreach ($calendarDays as $day)
-            <div class="aspect-square bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800 rounded-xl flex flex-col items-center justify-center cursor-pointer transition border border-gray-200 dark:border-gray-700 relative">
-              <span class="text-sm sm:text-base font-semibold {{ $day == 16 || $day == 15 ? 'text-telkom-600' : 'text-gray-700 dark:text-gray-300' }}">{{ $day }}</span>
+          @foreach ($calendarDays as $dayInfo)
+            @php 
+                $isOff = $dayInfo['is_weekend'] || $dayInfo['is_holiday']; 
+                $dayStr = $dayInfo['day'];
+            @endphp
+            <div class="aspect-square {{ $isOff ? 'bg-red-50 dark:bg-red-900/10' : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800' }} rounded-xl flex flex-col items-center justify-center cursor-pointer transition border border-gray-200 dark:border-gray-700 relative" title="{{ $isOff ? 'Libur/Akhir Pekan' : 'Hari Kerja' }}">
+              <span class="text-sm sm:text-base font-semibold {{ $isOff ? 'text-red-400' : 'text-gray-700 dark:text-gray-300' }}">{{ $dayStr }}</span>
               <!-- status dot -->
-              @if ($day % 7 !== 6 && $day % 7 !== 5)
-                <span class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1"></span>
+              @if (!$isOff)
+                <span class="w-1.5 h-1.5 rounded-full bg-gray-300 mt-1"></span>
               @endif
             </div>
           @endforeach
@@ -201,4 +203,79 @@
       }
     }
   </script>
+
+  <!-- Modal Bukti Kehadiran -->
+  <div id="proofModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeProofModal()"></div>
+    
+    <!-- Modal Content -->
+    <div id="proofModalContent" class="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-3xl shadow-2xl scale-95 transition-transform duration-300 overflow-hidden border border-gray-100 dark:border-gray-800 m-4">
+      <div class="flex items-center justify-between p-4 md:p-5 border-b border-gray-100 dark:border-gray-800">
+        <h3 class="font-bold text-lg">Bukti Kehadiran</h3>
+        <button onclick="closeProofModal()"
+          class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-xl transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" viewBox="0 0 24 24">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+      <div class="p-4 space-y-4">
+        <!-- Image placeholder -->
+        <div class="aspect-[16/9] bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden relative shadow-inner">
+          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
+            alt="Bukti Kehadiran" class="w-full h-full object-cover" id="proofImage">
+          <div
+            class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-medium border border-white/10 shadow-lg">
+            <span id="proofDate">Tanggal</span>
+          </div>
+        </div>
+        <div class="text-sm bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <div>
+            <span class="text-gray-500 block mb-1">Deskripsi Pekerjaan</span>
+            <p class="font-medium text-gray-900 dark:text-gray-100 text-xs leading-relaxed" id="proofDesc">Deskripsi</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 @endsection
+
+@push('scripts')
+  <script>
+    function openProofModal(nama, tgl, jam, desc, foto) {
+      const modal = document.getElementById('proofModal');
+      const content = document.getElementById('proofModalContent');
+
+      document.getElementById('proofDate').innerText = `${tgl || '—'} - ${jam || '—'}`;
+      document.getElementById('proofDesc').innerText = desc || 'Tidak ada deskripsi pekerjaan.';
+      
+      const imgEl = document.getElementById('proofImage');
+      if (foto) {
+          imgEl.src = foto;
+      } else {
+          imgEl.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop";
+      }
+
+      modal.classList.remove('hidden');
+      // trigger reflow
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-95');
+    }
+
+    function closeProofModal() {
+      const modal = document.getElementById('proofModal');
+      const content = document.getElementById('proofModalContent');
+
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+  </script>
+@endpush

@@ -26,13 +26,13 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
           
           <div class="w-full lg:w-[25%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
-            <input type="date" name="start_date" value="{{ request('start_date') }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+            <input type="date" name="start_date" value="{{ request('start_date', $startDate) }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
           </div>
 
           <div class="w-full lg:w-[45%] flex flex-col sm:flex-row items-start sm:items-end gap-4">
             <div class="w-full sm:flex-1">
               <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
-              <input type="date" name="end_date" value="{{ request('end_date') }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+              <input type="date" name="end_date" value="{{ request('end_date', $endDate) }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
             </div>
             
             <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -90,7 +90,7 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
                 <td class="px-5 py-3.5">
                   <div class="flex items-center justify-center gap-2">
                     <button type="button"
-                      onclick="openProofModal('{{ $d['nama'] ?? '' }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}')"
+                      onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
                       class="p-1 text-gray-500 hover:text-telkom-600 transition"
                       title="Lihat Bukti">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -141,7 +141,7 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
                   <p class="font-semibold tabular-nums">{{ $d['durasi'] }}</p>
                 </div>
                 <button type="button"
-                  onclick="openProofModal('{{ $d['nama'] ?? '' }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}')"
+                  onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
                   class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
                   title="Lihat Bukti">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -200,13 +200,19 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
 
 @push('scripts')
   <script>
-    function openProofModal(nama, tgl, jam, desc) {
+    function openProofModal(nama, tgl, jam, desc, foto) {
       const modal = document.getElementById('proofModal');
       const content = document.getElementById('proofModalContent');
 
       document.getElementById('proofDate').innerText = `${tgl || '—'} - ${jam || '—'}`;
-      document.getElementById('proofDesc').innerText = desc ||
-        'Melakukan pengecekan sistem presensi, perbaikan bug UI pada halaman dashboard, serta memastikan fitur dark mode berjalan dengan baik.';
+      document.getElementById('proofDesc').innerText = desc || 'Tidak ada deskripsi pekerjaan.';
+      
+      const imgEl = document.getElementById('proofImage');
+      if (foto) {
+          imgEl.src = foto;
+      } else {
+          imgEl.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop";
+      }
 
       modal.classList.remove('hidden');
       // trigger reflow
