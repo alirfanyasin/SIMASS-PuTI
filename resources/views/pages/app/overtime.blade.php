@@ -45,8 +45,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
     </div>
 
     <!-- Filter -->
-    <form method="GET" action="{{ route('app.overtime') }}" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
-      <div class="p-4 lg:p-5 flex flex-col gap-5">
+    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <form method="GET" action="{{ route('app.overtime') }}" class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
@@ -57,31 +57,41 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
               @endforeach
             </select>
           </div>
-          
+
           <div class="w-full lg:w-[25%]">
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Bulan</label>
-            <select name="bulan" onchange="this.form.submit()" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
-              <option value="">Semua Bulan</option>
-              <option value="Juli 2026" {{ request('bulan') == 'Juli 2026' ? 'selected' : '' }}>Juli 2026</option>
-              <option value="Agustus 2026" {{ request('bulan') == 'Agustus 2026' ? 'selected' : '' }}>Agustus 2026</option>
-            </select>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
+            <input type="date" name="start_date" value="{{ request('start_date', $startDate->format('Y-m-d')) }}"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
           </div>
 
-          <div class="w-full lg:w-[45%] flex items-center justify-end gap-3 mt-4 lg:mt-0">
-            <a href="{{ route('app.overtime') }}" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-              Reset Filter
-            </a>
+          <div class="w-full lg:w-[45%] flex flex-col sm:flex-row items-start sm:items-end gap-4">
+            <div class="w-full sm:flex-1">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
+              <input type="date" name="end_date" value="{{ request('end_date', $endDate->format('Y-m-d')) }}"
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button type="submit" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
+                Filter
+              </button>
+              <a href="{{ route('app.overtime') }}" class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
+                Reset
+              </a>
+              <button type="button" class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </form>
+
       <!-- Info banner -->
-      <div class="px-4 lg:px-5 pb-4 lg:pb-5">
-        <div class="flex items-center gap-3 px-4 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
-          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-          <p>Menampilkan data <strong>{{ request('user_id') && request('user_id') != 'all' ? ($users->where('id', request('user_id'))->first()->name ?? 'Student Staff') : 'semua student staff' }}</strong> {{ request('bulan') ? ', periode <strong>'.request('bulan').'</strong>' : '' }}</p>
-        </div>
+      <div class="flex items-center gap-3 px-4 lg:px-5 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm border-b border-red-100 dark:border-red-900/30">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <p>Menampilkan data overtime dari tanggal <strong>{{ $startDate->format('d M Y') }}</strong> sampai <strong>{{ $endDate->format('d M Y') }}</strong>.</p>
       </div>
-    </form>
+    </div>
 
     <!-- Table 1 -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">

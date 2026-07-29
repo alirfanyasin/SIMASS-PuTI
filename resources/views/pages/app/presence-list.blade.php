@@ -9,10 +9,11 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
 
 @section('content')
   <!-- ============ VIEW: DAFTAR PRESENSI ============ -->
-  <section id="view-daftar" class="view">
+  <section id="view-daftar" class="view space-y-4">
+
+    {{-- ── CARD FILTER ── --}}
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
-      <!-- Filter bar -->
-      <form method="GET" action="{{ route('app.presence-list') }}" class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
+      <form method="GET" action="{{ route('app.presence-list') }}" class="p-4 lg:p-5 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
@@ -23,7 +24,7 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
               @endforeach
             </select>
           </div>
-          
+
           <div class="w-full lg:w-[25%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
             <input type="date" name="start_date" value="{{ request('start_date', $startDate) }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
@@ -34,7 +35,7 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
               <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Selesai</label>
               <input type="date" name="end_date" value="{{ request('end_date', $endDate) }}" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition text-gray-600 dark:text-gray-300">
             </div>
-            
+
             <div class="flex items-center gap-2 w-full sm:w-auto">
               <button type="submit" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
                 Filter
@@ -48,13 +49,22 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
             </div>
           </div>
         </div>
-      </form>
 
-        <!-- Info banner -->
+        {{-- Info banner --}}
         <div class="flex items-center gap-3 px-4 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-900/30">
           <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
           <p>Menampilkan data presensi dari tanggal <strong>16 Juli 2026</strong> sampai <strong>14 Agustus 2026</strong>.</p>
         </div>
+      </form>
+    </div>
+
+    {{-- ── CARD TABLE ── --}}
+    <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+
+      {{-- Table header / title --}}
+      <div class="px-5 py-4 border-b border-gray-100 dark:border-gray-800">
+        <h2 class="font-bold text-base text-gray-900 dark:text-gray-100">Daftar Presensi Student Staff</h2>
+        <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Riwayat presensi berdasarkan rentang tanggal yang dipilih</p>
       </div>
 
       <!-- Table (desktop) -->
@@ -123,8 +133,7 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
                 <p class="font-bold text-sm text-gray-900 dark:text-gray-100">{{ $d['nama'] ?? '—' }}</p>
                 <p class="font-medium text-xs text-gray-500 mt-0.5">{{ $d['tgl'] }}</p>
               </div>
-              <span
-                class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $s['cls'] }}">{{ $s['label'] }}</span>
+              <span class="px-2 py-0.5 text-xs font-semibold rounded-full {{ $s['cls'] }}">{{ $s['label'] }}</span>
             </div>
             <div class="grid grid-cols-3 gap-2 text-xs mt-3">
               <div>
@@ -155,7 +164,6 @@ Daftar Kehadiran <span class="bg-green-100 text-green-700 text-[10px] sm:text-xs
           </div>
         @endforeach
       </div>
-
 
     </div>
   </section>
