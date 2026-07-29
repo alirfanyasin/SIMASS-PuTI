@@ -66,7 +66,7 @@
 
     <!-- Filter -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
-      <form method="GET" action="{{ route('app.overtime') }}"
+      <form method="GET" action="{{ route('presence.overtime') }}"
         class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
@@ -99,7 +99,7 @@
                 class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
                 Filter
               </button>
-              <a href="{{ route('app.overtime') }}"
+              <a href="{{ route('presence.overtime') }}"
                 class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
                 Reset
               </a>
@@ -128,7 +128,8 @@
           <line x1="12" y1="8" x2="12.01" y2="8" />
         </svg>
         <p>Menampilkan data overtime dari tanggal <strong>{{ $startDate->format('d M Y') }}</strong> sampai
-          <strong>{{ $endDate->format('d M Y') }}</strong>.</p>
+          <strong>{{ $endDate->format('d M Y') }}</strong>.
+        </p>
       </div>
     </div>
 

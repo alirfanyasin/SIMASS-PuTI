@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <a href="{{ route('app.presence') }}"
+        <a href="{{ route('presence.index') }}"
           class="mt-4 w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
           <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
             stroke-linejoin="round" viewBox="0 0 24 24">
@@ -78,9 +78,9 @@
         <h3 class="font-semibold">Quick Menu</h3>
         <span class="text-xs text-gray-400">Geser →</span>
       </div>
-      <div class="grid grid-cols-4 gap-3">
-        <a href="{{ route('app.presence') }}"
-          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover">
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+        <a href="{{ route('presence.index') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
           <div class="w-11 h-11 rounded-xl gradient-telkom flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -88,10 +88,10 @@
               <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
             </svg>
           </div>
-          <span class="text-xs font-medium">Presensi</span>
+          <span class="text-[10px] font-medium truncate w-full text-center">Presensi</span>
         </a>
-        <a href="{{ route('app.presence-list') }}"
-          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover">
+        <a href="{{ route('presence.list') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
           <div class="w-11 h-11 rounded-xl bg-blue-500 flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -99,10 +99,10 @@
               <polyline points="14 2 14 8 20 8" />
             </svg>
           </div>
-          <span class="text-xs font-medium">Daftar</span>
+          <span class="text-[10px] font-medium truncate w-full text-center">Daftar</span>
         </a>
-        <a href="{{ route('app.overtime') }}"
-          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover">
+        <a href="{{ route('presence.overtime') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
           <div class="w-11 h-11 rounded-xl bg-amber-500 flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -110,10 +110,10 @@
               <polyline points="12 6 12 12 16 14" />
             </svg>
           </div>
-          <span class="text-xs font-medium">Lembur</span>
+          <span class="text-[10px] font-medium truncate w-full text-center">Lembur</span>
         </a>
-        <a href="{{ route('app.presence-history') }}"
-          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover">
+        <a href="{{ route('presence.history') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
           <div class="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
               stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -122,7 +122,52 @@
               <path d="M12 7v5l4 2" />
             </svg>
           </div>
-          <span class="text-xs font-medium">History</span>
+          <span class="text-[10px] font-medium truncate w-full text-center">History</span>
+        </a>
+        <a href="{{ route('ticket.index') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
+          <div class="w-11 h-11 rounded-xl bg-purple-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path
+                d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+              <path d="M13 5v14" stroke-dasharray="2 2" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-medium truncate w-full text-center">Daftar Tiket</span>
+        </a>
+        <a href="{{ route('ticket.create') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
+          <div class="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-medium truncate w-full text-center">Buat Tiket</span>
+        </a>
+        <a href="{{ route('ticket.my-tickets') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
+          <div class="w-11 h-11 rounded-xl bg-pink-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-medium truncate w-full text-center">Tiket Saya</span>
+        </a>
+        <a href="{{ route('ticket.luna') }}"
+          class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
+          <div class="w-11 h-11 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
+              <path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+              <path d="m17 7-5 5" />
+            </svg>
+          </div>
+          <span class="text-[10px] font-medium truncate w-full text-center">Luna AI</span>
         </a>
       </div>
     </div>
@@ -221,8 +266,8 @@
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5">
         <div class="flex items-center justify-between mb-4">
           <h3 class="font-bold">Aktivitas Terbaru</h3>
-          <a href="{{ route('app.presence-history') }}"
-            class="text-xs text-telkom-600 font-semibold hover:underline">Lihat semua</a>
+          <a href="{{ route('presence.history') }}" class="text-xs text-telkom-600 font-semibold hover:underline">Lihat
+            semua</a>
         </div>
         <div class="space-y-3">
           <div class="flex gap-3">

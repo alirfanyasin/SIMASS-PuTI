@@ -77,7 +77,7 @@ class PresenceController extends Controller
                 'durasi' => $p->total_jam ?? '—',
                 'status' => $status,
                 'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                'foto' => $p->foto ? url('storage/' . $p->foto) : null,
+                'foto' => $p->foto ? url('storage/'.$p->foto) : null,
             ];
         })->toArray();
 
@@ -101,10 +101,8 @@ class PresenceController extends Controller
         ];
 
         $users = User::whereNotNull('position')->get();
-        $today = Carbon::today();
-        var_dump($today);
 
-        return view('pages.app.presence-list', compact('presensiData', 'statusMap', 'users', 'startDate', 'endDate'));
+        return view('pages.presence.presence-list', compact('presensiData', 'statusMap', 'users', 'startDate', 'endDate'));
     }
 
     public function presenceHistory()
@@ -134,8 +132,8 @@ class PresenceController extends Controller
 
                 $grouped[$periodKey] = [
                     'id' => $periodKey,
-                    'title' => $monthNames[$payMonth] . ' ' . $payYear,
-                    'period' => $effStart->format('d') . ' ' . $monthNames[(int) $effStart->format('m')] . ' ' . $effStart->format('Y') . ' - ' . $effEnd->format('d') . ' ' . $monthNames[(int) $effEnd->format('m')] . ' ' . $effEnd->format('Y'),
+                    'title' => $monthNames[$payMonth].' '.$payYear,
+                    'period' => $effStart->format('d').' '.$monthNames[(int) $effStart->format('m')].' '.$effStart->format('Y').' - '.$effEnd->format('d').' '.$monthNames[(int) $effEnd->format('m')].' '.$effEnd->format('Y'),
                     'effStart' => $effStart->format('Y-m-d'),
                     'effEnd' => $effEnd->format('Y-m-d'),
                     'total' => 0,
@@ -155,10 +153,10 @@ class PresenceController extends Controller
                     'nama' => $p->user ? $p->user->name : 'Unknown',
                     'hari' => $p->hari ?? '-',
                     'tgl' => date('d M Y', strtotime($p->tanggal)),
-                    'waktu' => ($p->jam_masuk ?? '-') . ' - ' . ($p->jam_pulang ?? '-'),
+                    'waktu' => ($p->jam_masuk ?? '-').' - '.($p->jam_pulang ?? '-'),
                     'jam' => $p->total_jam ?? '-',
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                    'foto' => $p->foto ? url('storage/' . $p->foto) : null,
+                    'foto' => $p->foto ? url('storage/'.$p->foto) : null,
                 ];
             }
         }
@@ -167,7 +165,7 @@ class PresenceController extends Controller
 
         $months = [];
         foreach ($grouped as $g) {
-            $g['staff'] = count($g['staffs']) . ' Orang';
+            $g['staff'] = count($g['staffs']).' Orang';
             $months[] = $g;
         }
 
@@ -197,6 +195,6 @@ class PresenceController extends Controller
             $calendarDays = [];
         }
 
-        return view('pages.app.presence-history', compact('months', 'detailData', 'detailTitle', 'detailPeriod', 'viewMode', 'calendarDays'));
+        return view('pages.presence.presence-history', compact('months', 'detailData', 'detailTitle', 'detailPeriod', 'viewMode', 'calendarDays'));
     }
 }
