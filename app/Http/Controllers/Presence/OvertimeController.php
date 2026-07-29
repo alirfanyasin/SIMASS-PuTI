@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Presence;
 
+use App\Http\Controllers\Controller;
 use App\Models\Holiday;
 use App\Models\Overtime;
 use App\Models\OvertimeTransfer;
@@ -112,9 +113,18 @@ class OvertimeController extends Controller
 
         // Build list of period options (last 12 months)
         $monthNames = [
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
         ];
 
         $periods = [];
@@ -123,19 +133,31 @@ class OvertimeController extends Controller
             $periods[] = [
                 'month' => $d->month,
                 'year' => $d->year,
-                'label' => $monthNames[$d->month].' '.$d->year,
+                'label' => $monthNames[$d->month] . ' ' . $d->year,
             ];
         }
 
-        $currentPeriodLabel = $monthNames[$month].' '.$year;
+        $currentPeriodLabel = $monthNames[$month] . ' ' . $year;
         $prevDate = Carbon::createFromDate($year, $month, 1)->subMonth();
         $nextDate = Carbon::createFromDate($year, $month, 1)->addMonth();
 
-        return view('pages.app.overtime', compact(
-            'totalAkumulasiMenit', 'totalSaldoMenit', 'totalAlokasiMenit',
-            'saldoLembur', 'riwayatAlokasi', 'statusMap', 'users',
-            'startDate', 'endDate', 'month', 'year',
-            'periods', 'currentPeriodLabel', 'prevDate', 'nextDate', 'monthNames'
+        return view('pages.presence.overtime', compact(
+            'totalAkumulasiMenit',
+            'totalSaldoMenit',
+            'totalAlokasiMenit',
+            'saldoLembur',
+            'riwayatAlokasi',
+            'statusMap',
+            'users',
+            'startDate',
+            'endDate',
+            'month',
+            'year',
+            'periods',
+            'currentPeriodLabel',
+            'prevDate',
+            'nextDate',
+            'monthNames'
         ));
     }
 }

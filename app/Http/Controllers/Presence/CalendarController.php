@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Presence;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use Carbon\Carbon;
@@ -19,13 +20,13 @@ class CalendarController extends Controller
 
         $date = Carbon::createFromDate($year, $month, 1);
         $daysInMonth = $date->daysInMonth;
-        
+
         $startDayOfWeek = $date->dayOfWeekIso; // 1 (Mon) to 7 (Sun)
-        
+
         $holidays = Holiday::whereYear('date', $year)
-                           ->whereMonth('date', $month)
-                           ->get()
-                           ->keyBy('date');
+            ->whereMonth('date', $month)
+            ->get()
+            ->keyBy('date');
 
         $calendarData = [];
 
@@ -39,7 +40,7 @@ class CalendarController extends Controller
             $currentDate = Carbon::createFromDate($year, $month, $day);
             $dateString = $currentDate->format('Y-m-d');
             $isWeekend = $currentDate->isWeekend();
-            
+
             $holidayDesc = null;
             if ($holidays->has($dateString)) {
                 $holidayDesc = $holidays->get($dateString)->name;
@@ -58,15 +59,15 @@ class CalendarController extends Controller
         $prevMonthDate = $date->copy()->subMonth();
         $nextMonthDate = $date->copy()->addMonth();
 
-        $monthNames = [1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',9=>'September',10=>'Oktober',11=>'November',12=>'Desember'];
+        $monthNames = [1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'];
         $currentMonthName = $monthNames[$month];
 
-        return view('pages.app.calendar', compact(
-            'calendarData', 
-            'currentMonthName', 
-            'year', 
-            'month', 
-            'prevMonthDate', 
+        return view('pages.presence.calendar', compact(
+            'calendarData',
+            'currentMonthName',
+            'year',
+            'month',
+            'prevMonthDate',
             'nextMonthDate'
         ));
     }

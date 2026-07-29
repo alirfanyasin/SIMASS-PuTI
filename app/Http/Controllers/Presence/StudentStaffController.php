@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Presence;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class StudentStaffController extends Controller
 {
     public function index()
     {
-        $staffList = \App\Models\User::whereNotNull('position')->get()->map(function($staff) {
+        $staffList = \App\Models\User::whereNotNull('position')->get()->map(function ($staff) {
             return [
                 'name' => $staff->name,
-                'nim' => '-', 
+                'nim' => '-',
                 'email' => $staff->email ?? (strtolower(str_replace(' ', '', $staff->name)) . '@student.telkomuniversity.ac.id'),
                 'avatar' => null,
                 'role' => $staff->position ?? '-',
@@ -19,6 +19,6 @@ class StudentStaffController extends Controller
             ];
         });
 
-        return view('pages.app.student-staff', compact('staffList'));
+        return view('pages.presence.student-staff', compact('staffList'));
     }
 }

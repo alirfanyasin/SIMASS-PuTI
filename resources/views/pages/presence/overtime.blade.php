@@ -1,7 +1,9 @@
 @extends('layouts.app-layout')
 
 @section('title')
-Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 align-middle ml-2 font-medium tracking-wide"><span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>Pengelolaan Jam Kerja</span>
+  Overtime & Lembur <span
+    class="bg-red-100 text-red-700 text-[10px] sm:text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 align-middle ml-2 font-medium tracking-wide"><span
+      class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>Pengelolaan Jam Kerja</span>
 @endsection
 @section('subtitle', 'Kelola kelebihan jam kerja harian dan alokasikan untuk melengkapi hari kerja lainnya.')
 
@@ -12,19 +14,30 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
   <section id="view-overtime" class="view space-y-6">
     <!-- Rekap Overtime -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
+      <div
+        class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">TOTAL AKUMULASI LEMBUR</p>
-          <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ number_format($totalAkumulasiMenit / 60, 1) }} Jam</p>
+          <p class="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {{ number_format($totalAkumulasiMenit / 60, 1) }} Jam</p>
           <p class="text-xs text-gray-500 mt-1">Total {{ $totalAkumulasiMenit }} menit terdeteksi</p>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
+      <div
+        class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">SALDO LEMBUR AKTIF</p>
@@ -32,9 +45,16 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
           <p class="text-xs text-gray-500 mt-1">Tersedia {{ $totalSaldoMenit }} menit untuk ditransfer</p>
         </div>
       </div>
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
+      <div
+        class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" viewBox="0 0 24 24">
+            <path d="M8 3 4 7l4 4" />
+            <path d="M4 7h16" />
+            <path d="m16 21 4-4-4-4" />
+            <path d="M20 17H4" />
+          </svg>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">LEMBUR DIALOKASIKAN</p>
@@ -46,14 +66,17 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
 
     <!-- Filter -->
     <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
-      <form method="GET" action="{{ route('app.overtime') }}" class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
+      <form method="GET" action="{{ route('app.overtime') }}"
+        class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
-            <select name="user_id" onchange="this.form.submit()" class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
+            <select name="user_id" onchange="this.form.submit()"
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
               <option value="all">Semua Student Staff</option>
-              @foreach($users as $u)
-                <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+              @foreach ($users as $u)
+                <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>
+                  {{ $u->name }}</option>
               @endforeach
             </select>
           </div>
@@ -72,14 +95,23 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button type="submit" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
+              <button type="submit"
+                class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
                 Filter
               </button>
-              <a href="{{ route('app.overtime') }}" class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
+              <a href="{{ route('app.overtime') }}"
+                class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
                 Reset
               </a>
-              <button type="button" class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+              <button type="button"
+                class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2"
+                title="Export">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" x2="12" y1="15" y2="3" />
+                </svg>
               </button>
             </div>
           </div>
@@ -87,9 +119,16 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
       </form>
 
       <!-- Info banner -->
-      <div class="flex items-center gap-3 px-4 lg:px-5 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm border-b border-red-100 dark:border-red-900/30">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <p>Menampilkan data overtime dari tanggal <strong>{{ $startDate->format('d M Y') }}</strong> sampai <strong>{{ $endDate->format('d M Y') }}</strong>.</p>
+      <div
+        class="flex items-center gap-3 px-4 lg:px-5 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm border-b border-red-100 dark:border-red-900/30">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          stroke-linejoin="round" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <p>Menampilkan data overtime dari tanggal <strong>{{ $startDate->format('d M Y') }}</strong> sampai
+          <strong>{{ $endDate->format('d M Y') }}</strong>.</p>
       </div>
     </div>
 
@@ -101,7 +140,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
-          <thead class="bg-red-50/50 dark:bg-red-900/10 text-telkom-700 dark:text-telkom-400 text-xs font-bold uppercase tracking-wider border-b border-red-100 dark:border-red-900/30">
+          <thead
+            class="bg-red-50/50 dark:bg-red-900/10 text-telkom-700 dark:text-telkom-400 text-xs font-bold uppercase tracking-wider border-b border-red-100 dark:border-red-900/30">
             <tr>
               <th class="px-5 py-4 w-16 text-center">No</th>
               <th class="px-5 py-4">Nama Student Staff</th>
@@ -119,7 +159,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
                 <td class="px-5 py-4 text-center text-gray-500">{{ $index + 1 }}</td>
                 <td class="px-5 py-4 font-semibold text-gray-900 dark:text-gray-100">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-telkom-600 dark:text-telkom-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                    <div
+                      class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-telkom-600 dark:text-telkom-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
                       {{ substr($d['nama'] ?? 'U', 0, 1) }}
                     </div>
                     {{ $d['nama'] ?? '—' }}
@@ -129,19 +170,37 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
                 <td class="px-5 py-4 tabular-nums">{{ $d['durasi'] }}</td>
                 <td class="px-5 py-4 tabular-nums font-bold text-gray-900 dark:text-gray-100">{{ $d['saldo'] }}</td>
                 <td class="px-5 py-4 text-center">
-                  <span class="px-2.5 py-1 text-xs font-semibold rounded-full {{ $s['cls'] }}">{{ $s['label'] }}</span>
+                  <span
+                    class="px-2.5 py-1 text-xs font-semibold rounded-full {{ $s['cls'] }}">{{ $s['label'] }}</span>
                 </td>
                 <td class="px-5 py-4">
                   <div class="flex items-center justify-center gap-3">
-                    <button type="button" onclick="openAlokasiModal()" class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+                    <button type="button" onclick="openAlokasiModal()"
+                      class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M8 3 4 7l4 4" />
+                        <path d="M4 7h16" />
+                        <path d="m16 21 4-4-4-4" />
+                        <path d="M20 17H4" />
+                      </svg>
                       Alihkan Saldo
                     </button>
                     <button type="button" class="p-1 text-gray-400 hover:text-blue-600 transition" title="Edit">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <path d="M12 20h9" />
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                      </svg>
                     </button>
                     <button type="button" class="p-1 text-gray-400 hover:text-telkom-600 transition" title="Hapus">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
                     </button>
                   </div>
                 </td>
@@ -160,7 +219,8 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
-          <thead class="bg-red-50/50 dark:bg-red-900/10 text-telkom-700 dark:text-telkom-400 text-xs font-bold uppercase tracking-wider border-b border-red-100 dark:border-red-900/30">
+          <thead
+            class="bg-red-50/50 dark:bg-red-900/10 text-telkom-700 dark:text-telkom-400 text-xs font-bold uppercase tracking-wider border-b border-red-100 dark:border-red-900/30">
             <tr>
               <th class="px-5 py-4 w-16 text-center">No</th>
               <th class="px-5 py-4">Nama Student Staff</th>
@@ -195,7 +255,13 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
       <div class="p-5 sm:p-6 flex flex-col h-full max-h-[90vh] overflow-y-auto">
         <div class="flex items-center justify-between mb-6">
           <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <svg class="w-5 h-5 text-telkom-600" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+            <svg class="w-5 h-5 text-telkom-600" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+              <path d="M8 3 4 7l4 4" />
+              <path d="M4 7h16" />
+              <path d="m16 21 4-4-4-4" />
+              <path d="M20 17H4" />
+            </svg>
             Alokasikan Saldo Lembur
           </h3>
           <button onclick="closeAlokasiModal()"
@@ -216,23 +282,30 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sumber Kelebihan Lembur</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sumber Kelebihan
+              Lembur</label>
             <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900">
-              <p class="text-sm text-gray-600 dark:text-gray-400">Tanggal: <strong class="text-gray-900 dark:text-gray-100">Kamis, 23 Juli 2026</strong></p>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Saldo Tersedia: <strong class="text-telkom-600">1 Jam 8 Menit</strong></p>
+              <p class="text-sm text-gray-600 dark:text-gray-400">Tanggal: <strong
+                  class="text-gray-900 dark:text-gray-100">Kamis, 23 Juli 2026</strong></p>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Saldo Tersedia: <strong class="text-telkom-600">1
+                  Jam 8 Menit</strong></p>
             </div>
           </div>
 
           <label class="flex items-center gap-2 cursor-pointer mt-2 w-max">
-            <input type="checkbox" id="wfhCheck" class="w-4 h-4 text-telkom-600 rounded border-gray-300 focus:ring-telkom-500" onchange="toggleWfhFields()">
+            <input type="checkbox" id="wfhCheck"
+              class="w-4 h-4 text-telkom-600 rounded border-gray-300 focus:ring-telkom-500"
+              onchange="toggleWfhFields()">
             <span class="font-semibold text-gray-700 dark:text-gray-300">Alokasikan ke WFH / Tidak Masuk</span>
           </label>
 
           <!-- Default Fields (If NOT WFH) -->
           <div id="defaultFields" class="space-y-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Presensi Hari Target (Kurang dari 8 Jam)</label>
-              <select class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-telkom-600 text-gray-900 dark:text-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Presensi Hari Target
+                (Kurang dari 8 Jam)</label>
+              <select
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-telkom-600 text-gray-900 dark:text-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
                 <option>Senin, 27 Jul 2026 (5 Jam 47 Menit)</option>
                 <option>-- Pilih Hari Target --</option>
               </select>
@@ -247,28 +320,41 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
           <!-- WFH Fields -->
           <div id="wfhFields" class="space-y-4 hidden">
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Hari WFH / Tidak Masuk Kerja</label>
-              <select class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Hari WFH / Tidak
+                Masuk Kerja</label>
+              <select
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
                 <option>-- Pilih Tanggal WFH / Tidak Masuk --</option>
               </select>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deskripsi Pekerjaan <span class="text-telkom-600">(wajib)</span></label>
-              <textarea rows="3" placeholder="Tuliskan deskripsi pekerjaan alokasi..." class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition"></textarea>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deskripsi Pekerjaan <span
+                  class="text-telkom-600">(wajib)</span></label>
+              <textarea rows="3" placeholder="Tuliskan deskripsi pekerjaan alokasi..."
+                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition"></textarea>
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Bukti Foto <span class="text-telkom-600">(wajib)</span></label>
-              <div class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer">
-                <svg class="w-6 h-6 text-gray-400 mb-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Bukti Foto <span
+                  class="text-telkom-600">(wajib)</span></label>
+              <div
+                class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer">
+                <svg class="w-6 h-6 text-gray-400 mb-2" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
                 <p class="text-xs text-gray-500">Klik untuk unggah foto bukti alokasi</p>
               </div>
             </div>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Jumlah Menit yang Dialihkan</label>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Jumlah Menit yang
+              Dialihkan</label>
             <div class="relative">
-              <input type="number" value="68" class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition pr-16 text-gray-900 dark:text-gray-100">
+              <input type="number" value="68"
+                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition pr-16 text-gray-900 dark:text-gray-100">
               <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Menit</span>
             </div>
             <div class="flex justify-between items-center mt-2 text-xs">
@@ -312,12 +398,12 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
         modal.classList.add('hidden');
       }, 300);
     }
-    
+
     function toggleWfhFields() {
       const check = document.getElementById('wfhCheck').checked;
       const defFields = document.getElementById('defaultFields');
       const wfhFields = document.getElementById('wfhFields');
-      
+
       if (check) {
         defFields.classList.add('hidden');
         wfhFields.classList.remove('hidden');
@@ -325,26 +411,6 @@ Overtime & Lembur <span class="bg-red-100 text-red-700 text-[10px] sm:text-xs px
         defFields.classList.remove('hidden');
         wfhFields.classList.add('hidden');
       }
-    }
-
-    function showToast(msg, type = 'success') {
-      const c = document.getElementById('toastContainer') || createToastContainer();
-      const t = document.createElement('div');
-      t.className =
-        `toast bg-green-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 text-sm font-medium max-w-xs`;
-      t.innerHTML = `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>${msg}</span>`;
-      c.appendChild(t);
-      setTimeout(() => {
-        t.remove();
-      }, 3000);
-    }
-
-    function createToastContainer() {
-      const c = document.createElement('div');
-      c.id = 'toastContainer';
-      c.className = 'fixed bottom-20 right-4 lg:bottom-6 lg:right-6 z-50 flex flex-col gap-2';
-      document.body.appendChild(c);
-      return c;
     }
   </script>
 @endsection

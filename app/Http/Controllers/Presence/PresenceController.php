@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Presence;
 
+use App\Http\Controllers\Controller;
 use App\Models\Holiday;
 use App\Models\Presence;
 use App\Models\User;
@@ -12,7 +13,7 @@ class PresenceController extends Controller
 {
     public function presence()
     {
-        return view('pages.app.presence');
+        return view('pages.presence.presence');
     }
 
     public function presenceList(Request $request)
@@ -23,16 +24,11 @@ class PresenceController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
-        // Default dates using Holiday effective cycle if not provided
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
         if (! $startDate || ! $endDate) {
             $now = Carbon::now();
-
-            // Cycle name = the month containing the 15th (end date).
-            // If today >= 16 → active cycle ends next month's 15th.
-            // If today <= 15 → active cycle ends this month's 15th.
             if ($now->day >= 16) {
                 $cycleDate = $now->copy()->addMonth();
             } else {
@@ -81,7 +77,7 @@ class PresenceController extends Controller
                 'durasi' => $p->total_jam ?? '—',
                 'status' => $status,
                 'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                'foto' => $p->foto ? url('storage/'.$p->foto) : null,
+                'foto' => $p->foto ? url('storage/' . $p->foto) : null,
             ];
         })->toArray();
 
@@ -105,6 +101,8 @@ class PresenceController extends Controller
         ];
 
         $users = User::whereNotNull('position')->get();
+        $today = Carbon::today();
+        var_dump($today);
 
         return view('pages.app.presence-list', compact('presensiData', 'statusMap', 'users', 'startDate', 'endDate'));
     }
@@ -136,8 +134,8 @@ class PresenceController extends Controller
 
                 $grouped[$periodKey] = [
                     'id' => $periodKey,
-                    'title' => $monthNames[$payMonth].' '.$payYear,
-                    'period' => $effStart->format('d').' '.$monthNames[(int) $effStart->format('m')].' '.$effStart->format('Y').' - '.$effEnd->format('d').' '.$monthNames[(int) $effEnd->format('m')].' '.$effEnd->format('Y'),
+                    'title' => $monthNames[$payMonth] . ' ' . $payYear,
+                    'period' => $effStart->format('d') . ' ' . $monthNames[(int) $effStart->format('m')] . ' ' . $effStart->format('Y') . ' - ' . $effEnd->format('d') . ' ' . $monthNames[(int) $effEnd->format('m')] . ' ' . $effEnd->format('Y'),
                     'effStart' => $effStart->format('Y-m-d'),
                     'effEnd' => $effEnd->format('Y-m-d'),
                     'total' => 0,
@@ -157,10 +155,10 @@ class PresenceController extends Controller
                     'nama' => $p->user ? $p->user->name : 'Unknown',
                     'hari' => $p->hari ?? '-',
                     'tgl' => date('d M Y', strtotime($p->tanggal)),
-                    'waktu' => ($p->jam_masuk ?? '-').' - '.($p->jam_pulang ?? '-'),
+                    'waktu' => ($p->jam_masuk ?? '-') . ' - ' . ($p->jam_pulang ?? '-'),
                     'jam' => $p->total_jam ?? '-',
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                    'foto' => $p->foto ? url('storage/'.$p->foto) : null,
+                    'foto' => $p->foto ? url('storage/' . $p->foto) : null,
                 ];
             }
         }
@@ -169,7 +167,7 @@ class PresenceController extends Controller
 
         $months = [];
         foreach ($grouped as $g) {
-            $g['staff'] = count($g['staffs']).' Orang';
+            $g['staff'] = count($g['staffs']) . ' Orang';
             $months[] = $g;
         }
 

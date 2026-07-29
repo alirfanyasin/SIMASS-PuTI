@@ -28,6 +28,8 @@
 
   @include('helpers.darkmode')
 
+  <x-toats />
+
   @stack('scripts')
 </body>
 
