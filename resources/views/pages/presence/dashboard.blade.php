@@ -15,7 +15,7 @@
         <div class="absolute top-10 -right-10 w-64 h-64 rounded-full bg-white/10 pulse-slow"></div>
 
 
-        <div class="relative z-10 flex flex-col justify-between h-full min-h-[160px]">
+        <div class="relative z-10 flex flex-col justify-between h-full min-h-40">
           <div>
             <span class="inline-block px-3 py-1 bg-white/15 backdrop-blur-md rounded-full text-xs font-medium mb-3"
               id="greetingText">
