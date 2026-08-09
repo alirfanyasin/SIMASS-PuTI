@@ -62,13 +62,6 @@
   <div id="view-detail" class="{{ $viewMode === 'detail' ? 'block' : 'hidden' }} space-y-6">
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
       <div class="flex items-center gap-4">
-        <a href="{{ route('presence.history') }}"
-          class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
-        </a>
         <div>
           <h2 id="detail-title" class="text-2xl font-bold text-gray-900 dark:text-white">Presensi {{ $detailTitle }}</h2>
           <p id="detail-period" class="text-sm text-gray-500 mt-1">{{ $detailPeriod }}</p>
@@ -76,14 +69,7 @@
       </div>
     </div>
 
-    <!-- Tabs: Tabel & Kalender -->
-    <div class="flex items-center gap-4 border-b border-gray-200 dark:border-gray-800">
-      <button id="tab-tabel" onclick="switchTab('tabel')"
-        class="px-4 py-2.5 border-b-2 border-telkom-600 text-telkom-600 font-semibold text-sm transition">Tabel
-        Presensi</button>
-      <button id="tab-kalender" onclick="switchTab('kalender')"
-        class="px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold text-sm transition">Kalender</button>
-    </div>
+
 
     <!-- TAB CONTENT: TABEL -->
     <div id="content-tabel" class="block space-y-6">
@@ -162,87 +148,7 @@
       </div>
     </div>
 
-    <!-- TAB CONTENT: KALENDER -->
-    <div id="content-kalender" class="hidden space-y-6">
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5">
-        <h3 class="font-bold text-lg mb-4 text-gray-900 dark:text-white text-center">Kalender Presensi (Siklus Tgl 16 -
-          15)</h3>
-
-        <!-- Days Header -->
-        <div class="grid grid-cols-7 gap-2 text-center font-semibold text-xs text-gray-500 mb-2">
-          <div>Sen</div>
-          <div>Sel</div>
-          <div>Rab</div>
-          <div>Kam</div>
-          <div>Jum</div>
-          <div>Sab</div>
-          <div>Min</div>
-        </div>
-
-        <!-- Calendar Grid -->
-        <div class="grid grid-cols-7 gap-2 sm:gap-3">
-          <!-- Offset for visual (example starts at Wednesday = 3rd col) -->
-          <div class="aspect-square bg-transparent"></div>
-          <div class="aspect-square bg-transparent"></div>
-
-          @foreach ($calendarDays as $dayInfo)
-            @php
-              $isOff = $dayInfo['is_weekend'] || $dayInfo['is_holiday'];
-              $dayStr = $dayInfo['day'];
-            @endphp
-            <div
-              class="aspect-square {{ $isOff ? 'bg-red-50 dark:bg-red-900/10' : 'bg-gray-50 hover:bg-gray-100 dark:bg-gray-800/50 dark:hover:bg-gray-800' }} rounded-xl flex flex-col items-center justify-center cursor-pointer transition border border-gray-200 dark:border-gray-700 relative"
-              title="{{ $isOff ? 'Libur/Akhir Pekan' : 'Hari Kerja' }}">
-              <span
-                class="text-sm sm:text-base font-semibold {{ $isOff ? 'text-red-400' : 'text-gray-700 dark:text-gray-300' }}">{{ $dayStr }}</span>
-              <!-- status dot -->
-              @if (!$isOff)
-                <span class="w-1.5 h-1.5 rounded-full bg-gray-300 mt-1"></span>
-              @endif
-            </div>
-          @endforeach
-        </div>
-        <div class="mt-6 flex items-center justify-center gap-6 text-xs text-gray-500">
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-green-500"></span> Hadir
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span> Terlambat
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-blue-500"></span> Izin/Cuti
-          </div>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-gray-300"></span> Libur
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
-
-  <script>
-    function switchTab(tab) {
-      const tabTabel = document.getElementById('tab-tabel');
-      const tabKalender = document.getElementById('tab-kalender');
-      const contentTabel = document.getElementById('content-tabel');
-      const contentKalender = document.getElementById('content-kalender');
-
-      if (tab === 'tabel') {
-        tabTabel.className = 'px-4 py-2.5 border-b-2 border-telkom-600 text-telkom-600 font-semibold text-sm transition';
-        tabKalender.className =
-          'px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold text-sm transition';
-        contentTabel.classList.replace('hidden', 'block');
-        contentKalender.classList.replace('block', 'hidden');
-      } else {
-        tabKalender.className =
-          'px-4 py-2.5 border-b-2 border-telkom-600 text-telkom-600 font-semibold text-sm transition';
-        tabTabel.className =
-          'px-4 py-2.5 border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 font-semibold text-sm transition';
-        contentKalender.classList.replace('hidden', 'block');
-        contentTabel.classList.replace('block', 'hidden');
-      }
-    }
-  </script>
 
   <!-- Modal Bukti Kehadiran -->
   <div id="proofModal"

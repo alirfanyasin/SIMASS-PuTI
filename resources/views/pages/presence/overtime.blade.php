@@ -69,6 +69,7 @@
       <form method="GET" action="{{ route('presence.overtime') }}"
         class="p-4 lg:p-5 border-b border-gray-100 dark:border-gray-800 flex flex-col gap-5">
         <div class="flex flex-col lg:flex-row items-end gap-4 w-full">
+          @can('manage-presence')
           <div class="w-full lg:w-[30%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
             <select name="user_id" onchange="this.form.submit()"
@@ -80,6 +81,7 @@
               @endforeach
             </select>
           </div>
+          @endcan
 
           <div class="w-full lg:w-[25%]">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Tanggal Mulai</label>
@@ -176,8 +178,9 @@
                 </td>
                 <td class="px-5 py-4">
                   <div class="flex items-center justify-center gap-3">
-                    <button type="button" onclick="openAlokasiModal()"
-                      class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition">
+                    <button type="button" onclick="openAlokasiModal({{ $d['id'] }}, {{ $d['user_id'] }}, '{{ addslashes($d['nama']) }}', '{{ $d['tgl'] }}', {{ $d['raw_saldo'] }}, '{{ $d['saldo'] }}')"
+                      class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition"
+                      @if($d['raw_saldo'] <= 0) disabled class="opacity-50 cursor-not-allowed grayscale" @endif>
                       <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M8 3 4 7l4 4" />
@@ -186,22 +189,6 @@
                         <path d="M20 17H4" />
                       </svg>
                       Alihkan Saldo
-                    </button>
-                    <button type="button" class="p-1 text-gray-400 hover:text-blue-600 transition" title="Edit">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                      </svg>
-                    </button>
-                    <button type="button" class="p-1 text-gray-400 hover:text-telkom-600 transition" title="Hapus">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <polyline points="3 6 5 6 21 6" />
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                        <line x1="10" y1="11" x2="10" y2="17" />
-                        <line x1="14" y1="11" x2="14" y2="17" />
-                      </svg>
                     </button>
                   </div>
                 </td>
@@ -247,171 +234,219 @@
   </section>
 
   <!-- Modal Alokasi Lembur -->
-  <div id="alokasiModal"
-    class="fixed inset-0 z-[100] flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeAlokasiModal()"></div>
-    <div
-      class="relative bg-white dark:bg-gray-900 rounded-2xl w-full max-w-lg mx-4 overflow-hidden transform scale-95 transition-transform duration-300"
-      id="alokasiModalContent">
-      <div class="p-5 sm:p-6 flex flex-col h-full max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between mb-6">
-          <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-            <svg class="w-5 h-5 text-telkom-600" fill="none" stroke="currentColor" stroke-width="2"
-              stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-              <path d="M8 3 4 7l4 4" />
-              <path d="M4 7h16" />
-              <path d="m16 21 4-4-4-4" />
-              <path d="M20 17H4" />
-            </svg>
-            Alokasikan Saldo Lembur
-          </h3>
-          <button onclick="closeAlokasiModal()"
-            class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" viewBox="0 0 24 24">
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
+  <x-modal id="alokasiModal" title="Alokasikan Saldo Lembur" bodyClass="space-y-4 text-sm">
+    <x-slot:header>
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+        <svg class="w-5 h-5 text-telkom-600" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+          <path d="M8 3 4 7l4 4" />
+          <path d="M4 7h16" />
+          <path d="m16 21 4-4-4-4" />
+          <path d="M20 17H4" />
+        </svg>
+        Alokasikan Saldo Lembur
+      </h3>
+    </x-slot:header>
+
+    <form method="POST" action="{{ route('presence.overtime.transfer') }}" id="formAlokasiLembur">
+      @csrf
+      <input type="hidden" name="overtime_id" id="modal_overtime_id">
+      
+      <div class="space-y-4 text-sm px-1">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Student Staff</label>
+          <input type="text" id="modal_user_name" disabled
+            class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl outline-none">
         </div>
 
-        <div class="space-y-4 text-sm">
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Student Staff</label>
-            <input type="text" value="Irfan Yasin" disabled
-              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 text-gray-500 border border-gray-200 dark:border-gray-700 rounded-xl outline-none">
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sumber Kelebihan
-              Lembur</label>
-            <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900">
-              <p class="text-sm text-gray-600 dark:text-gray-400">Tanggal: <strong
-                  class="text-gray-900 dark:text-gray-100">Kamis, 23 Juli 2026</strong></p>
-              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Saldo Tersedia: <strong class="text-telkom-600">1
-                  Jam 8 Menit</strong></p>
-            </div>
-          </div>
-
-          <label class="flex items-center gap-2 cursor-pointer mt-2 w-max">
-            <input type="checkbox" id="wfhCheck"
-              class="w-4 h-4 text-telkom-600 rounded border-gray-300 focus:ring-telkom-500"
-              onchange="toggleWfhFields()">
-            <span class="font-semibold text-gray-700 dark:text-gray-300">Alokasikan ke WFH / Tidak Masuk</span>
-          </label>
-
-          <!-- Default Fields (If NOT WFH) -->
-          <div id="defaultFields" class="space-y-4">
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Presensi Hari Target
-                (Kurang dari 8 Jam)</label>
-              <select
-                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-telkom-600 text-gray-900 dark:text-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
-                <option>Senin, 27 Jul 2026 (5 Jam 47 Menit)</option>
-                <option>-- Pilih Hari Target --</option>
-              </select>
-            </div>
-            <div class="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl text-blue-800 dark:text-blue-300 space-y-1">
-              <p>Durasi Asli Target: <strong>5 Jam 47 Menit</strong></p>
-              <p>Saldo Tambahan Saat Ini: <strong>0 Menit</strong></p>
-              <p>Kekurangan Jam: <strong>2 Jam 13 Menit</strong></p>
-            </div>
-          </div>
-
-          <!-- WFH Fields -->
-          <div id="wfhFields" class="space-y-4 hidden">
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Hari WFH / Tidak
-                Masuk Kerja</label>
-              <select
-                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
-                <option>-- Pilih Tanggal WFH / Tidak Masuk --</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deskripsi Pekerjaan <span
-                  class="text-telkom-600">(wajib)</span></label>
-              <textarea rows="3" placeholder="Tuliskan deskripsi pekerjaan alokasi..."
-                class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition"></textarea>
-            </div>
-            <div>
-              <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Bukti Foto <span
-                  class="text-telkom-600">(wajib)</span></label>
-              <div
-                class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer">
-                <svg class="w-6 h-6 text-gray-400 mb-2" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <p class="text-xs text-gray-500">Klik untuk unggah foto bukti alokasi</p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Jumlah Menit yang
-              Dialihkan</label>
-            <div class="relative">
-              <input type="number" value="68"
-                class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition pr-16 text-gray-900 dark:text-gray-100">
-              <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Menit</span>
-            </div>
-            <div class="flex justify-between items-center mt-2 text-xs">
-              <span class="text-gray-500">Setara dengan: 1 Jam 8 Menit</span>
-              <button type="button" class="font-bold text-telkom-600 hover:underline">Set Maksimal</button>
-            </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Sumber Kelebihan Lembur</label>
+          <div class="p-4 border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-900">
+            <p class="text-sm text-gray-600 dark:text-gray-400">Tanggal: <strong class="text-gray-900 dark:text-gray-100" id="modal_sumber_tgl"></strong></p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Saldo Tersedia: <strong class="text-telkom-600" id="modal_sumber_saldo"></strong></p>
           </div>
         </div>
 
-        <div class="mt-8 flex items-center gap-3">
-          <button type="button" onclick="closeAlokasiModal()"
-            class="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition">
-            Batal
-          </button>
-          <button type="button" onclick="closeAlokasiModal(); showToast('Alokasi berhasil diproses!', 'success')"
-            class="flex-1 px-4 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">
-            Proses Alokasi
-          </button>
+        <label class="flex items-center gap-2 cursor-pointer mt-2 w-max">
+          <input type="checkbox" name="is_wfh" id="wfhCheck" value="1"
+            class="w-4 h-4 text-telkom-600 rounded border-gray-300 focus:ring-telkom-500" onchange="toggleWfhFields()">
+          <span class="font-semibold text-gray-700 dark:text-gray-300">Alokasikan ke WFH / Tidak Masuk</span>
+        </label>
+
+        <!-- Default Fields (If NOT WFH) -->
+        <div id="defaultFields" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Presensi Hari Target (Kurang dari 8 Jam)</label>
+            <select name="presence_id" id="modal_presence_id" onchange="updateTargetInfo()"
+              class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-telkom-600 text-gray-900 dark:text-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <option value="">-- Pilih Hari Target --</option>
+            </select>
+          </div>
+          <div id="targetInfoBox" class="hidden p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl text-blue-800 dark:text-blue-300 space-y-1">
+            <p>Durasi Asli Target: <strong id="info_durasi"></strong></p>
+            <p>Kekurangan Jam: <strong id="info_kurang"></strong></p>
+          </div>
+        </div>
+
+        <!-- WFH Fields -->
+        <div id="wfhFields" class="space-y-4 hidden">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Tanggal WFH / Tidak Masuk Kerja</label>
+            <input type="date" name="tanggal_wfh" class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deskripsi Pekerjaan <span class="text-telkom-600">(wajib)</span></label>
+            <textarea name="keterangan_wfh" rows="3" placeholder="Tuliskan deskripsi pekerjaan alokasi..."
+              class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition"></textarea>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Jumlah Menit yang Dialihkan</label>
+          <div class="relative">
+            <input type="number" name="durasi_menit" id="modal_durasi_menit" required
+              class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition pr-16 text-gray-900 dark:text-gray-100">
+            <span class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm">Menit</span>
+          </div>
+          <div class="flex justify-between items-center mt-2 text-xs">
+            <span class="text-gray-500" id="modal_durasi_format">Setara dengan: 0 Menit</span>
+            <button type="button" onclick="setMaksimal()" class="font-bold text-telkom-600 hover:underline">Set Maksimal</button>
+          </div>
         </div>
       </div>
-    </div>
-  </div>
+      
+      <div class="mt-8 flex items-center gap-3 w-full">
+        <button type="button" onclick="closeAlokasiModal()"
+          class="flex-1 px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+          Batal
+        </button>
+        <button type="submit"
+          class="flex-1 px-4 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">
+          Proses Alokasi
+        </button>
+      </div>
+    </form>
+  </x-modal>
 
   <script>
-    function openAlokasiModal() {
-      const modal = document.getElementById('alokasiModal');
-      const content = document.getElementById('alokasiModalContent');
-      modal.classList.remove('hidden');
-      setTimeout(() => {
-        modal.classList.remove('opacity-0');
-        content.classList.remove('scale-95');
-      }, 10);
+    const eligiblePresences = @json($eligiblePresences);
+    let currentSaldo = 0;
+    
+    function formatMenit(menit) {
+        let jam = Math.floor(menit / 60);
+        let sisa = menit % 60;
+        return `${jam} Jam ${sisa} Menit`;
+    }
+
+    function openAlokasiModal(id, userId, userName, tgl, rawSaldo, strSaldo) {
+      document.getElementById('modal_overtime_id').value = id;
+      document.getElementById('modal_user_name').value = userName;
+      document.getElementById('modal_sumber_tgl').textContent = tgl;
+      document.getElementById('modal_sumber_saldo').textContent = strSaldo;
+      currentSaldo = rawSaldo;
+      
+      const presenceSelect = document.getElementById('modal_presence_id');
+      presenceSelect.innerHTML = '<option value="">-- Pilih Hari Target --</option>';
+      
+      if (eligiblePresences[userId]) {
+        eligiblePresences[userId].forEach(p => {
+          let option = document.createElement('option');
+          option.value = p.id;
+          option.text = `${p.tanggal} (Kurang ${p.kurang_format})`;
+          option.dataset.durasi = p.durasi;
+          option.dataset.kurang = p.kurang_menit;
+          option.dataset.kurangFormat = p.kurang_format;
+          presenceSelect.appendChild(option);
+        });
+      }
+      
+      document.getElementById('modal_durasi_menit').value = '';
+      document.getElementById('modal_durasi_format').textContent = 'Setara dengan: 0 Menit';
+      updateTargetInfo();
+      openModal('alokasiModal');
+    }
+
+    document.getElementById('modal_durasi_menit').addEventListener('input', function() {
+        let val = parseInt(this.value) || 0;
+        if(val > currentSaldo) {
+            this.value = currentSaldo;
+            val = currentSaldo;
+        }
+        
+        if(!document.getElementById('wfhCheck').checked) {
+            let select = document.getElementById('modal_presence_id');
+            if (select.selectedIndex > 0) {
+                let option = select.options[select.selectedIndex];
+                let kurang = parseInt(option.dataset.kurang) || 0;
+                if(val > kurang) {
+                    this.value = kurang;
+                    val = kurang;
+                }
+            }
+        }
+        
+        document.getElementById('modal_durasi_format').textContent = 'Setara dengan: ' + formatMenit(val);
+    });
+
+    function setMaksimal() {
+        let val = currentSaldo;
+        
+        if(!document.getElementById('wfhCheck').checked) {
+            let select = document.getElementById('modal_presence_id');
+            if (select.selectedIndex > 0) {
+                let option = select.options[select.selectedIndex];
+                let kurang = parseInt(option.dataset.kurang) || 0;
+                if(val > kurang) {
+                    val = kurang;
+                }
+            } else {
+                alert('Pilih Hari Target terlebih dahulu!');
+                return;
+            }
+        }
+        
+        let input = document.getElementById('modal_durasi_menit');
+        input.value = val;
+        // Trigger event listener manually
+        input.dispatchEvent(new Event('input'));
+    }
+
+    function updateTargetInfo() {
+        let select = document.getElementById('modal_presence_id');
+        let infoBox = document.getElementById('targetInfoBox');
+        
+        if (select.selectedIndex > 0) {
+            let option = select.options[select.selectedIndex];
+            document.getElementById('info_durasi').textContent = option.dataset.durasi;
+            document.getElementById('info_kurang').textContent = option.dataset.kurangFormat;
+            infoBox.classList.remove('hidden');
+        } else {
+            infoBox.classList.add('hidden');
+        }
     }
 
     function closeAlokasiModal() {
-      const modal = document.getElementById('alokasiModal');
-      const content = document.getElementById('alokasiModalContent');
-      modal.classList.add('opacity-0');
-      content.classList.add('scale-95');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 300);
+      closeModal('alokasiModal');
     }
 
     function toggleWfhFields() {
       const check = document.getElementById('wfhCheck').checked;
       const defFields = document.getElementById('defaultFields');
       const wfhFields = document.getElementById('wfhFields');
+      const presenceSelect = document.getElementById('modal_presence_id');
 
       if (check) {
         defFields.classList.add('hidden');
         wfhFields.classList.remove('hidden');
+        presenceSelect.removeAttribute('required');
       } else {
         defFields.classList.remove('hidden');
         wfhFields.classList.add('hidden');
+        presenceSelect.setAttribute('required', 'required');
       }
+      
+      // Trigger update
+      document.getElementById('modal_durasi_menit').dispatchEvent(new Event('input'));
     }
   </script>
 @endsection

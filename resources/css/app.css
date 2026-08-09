@@ -36,6 +36,10 @@ body {
     font-family: "Plus Jakarta Sans", sans-serif;
 }
 
+button, a, [role="button"], input[type="button"], input[type="submit"], input[type="reset"], select, label {
+    cursor: pointer;
+}
+
 .gradient-telkom {
     background: linear-gradient(135deg, #e60012 0%, #87000a 100%) !important;
     color: #ffffff !important;

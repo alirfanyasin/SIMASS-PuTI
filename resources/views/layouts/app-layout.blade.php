@@ -28,7 +28,8 @@
 
   @include('helpers.darkmode')
 
-  <x-toats />
+  <x-confirm-delete />
+  <x-toast />
 
   @stack('scripts')
 </body>

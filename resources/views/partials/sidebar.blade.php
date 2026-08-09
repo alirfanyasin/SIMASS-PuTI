@@ -10,6 +10,7 @@
               </svg>',
               'item' => 'Dashboard',
               'route' => 'presence.dashboard',
+              'permission' => 'view-presence',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -18,6 +19,7 @@
               </svg>',
               'item' => 'Presensi',
               'route' => 'presence.index',
+              'permission' => 'create-presence',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -28,6 +30,7 @@
               </svg>',
               'item' => 'Daftar Presensi',
               'route' => 'presence.list',
+              'permission' => 'view-presence',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -36,6 +39,7 @@
               </svg>',
               'item' => 'Overtime',
               'route' => 'presence.overtime',
+              'permission' => 'manage-overtime',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -45,6 +49,7 @@
               </svg>',
               'item' => 'History Presensi',
               'route' => 'presence.history',
+              'permission' => 'view-presence-history',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -55,6 +60,7 @@
               </svg>',
               'item' => 'Student Staff',
               'route' => 'presence.student-staff',
+              'permission' => 'manage-presence',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -65,6 +71,7 @@
               </svg>',
               'item' => 'Kalender',
               'route' => 'presence.calendar',
+              'permission' => 'view-presence',
           ],
       ],
       'Ticketing' => [
@@ -121,10 +128,19 @@
       'Lainnya' => [
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>',
+              'item' => 'Hari Libur',
+              'route' => 'holiday.index',
+              'permission' => 'manage-holiday',
+          ],
+          [
+              'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
               </svg>',
               'item' => 'Role & Permission',
               'route' => 'role-permission',
+              'permission' => 'manage-roles',
           ],
           [
               'icon' => '<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -141,6 +157,7 @@
               </svg>',
               'item' => 'Pengaturan',
               'route' => 'settings',
+              'permission' => 'manage-roles',
           ],
       ],
   ];
@@ -175,24 +192,34 @@
         {{ $groupLabel }}
       </p>
       @foreach ($items as $item)
-        <a href="{{ route($item['route']) }}"
-          class="nav-item {{ request()->routeIs($item['route']) ? 'active' : '' }} w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
-          {!! $item['icon'] !!}
-          <span>{{ $item['item'] }}</span>
-        </a>
+        @if (!isset($item['permission']) || auth()->user()?->can($item['permission']))
+          <a href="{{ route($item['route']) }}"
+            class="nav-item {{ request()->routeIs($item['route']) ? 'active' : '' }} w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+            {!! $item['icon'] !!}
+            <span>{{ $item['item'] }}</span>
+          </a>
+        @endif
       @endforeach
     @endforeach
   </nav>
 
   <!-- User -->
-  <div class="p-3 border-t border-gray-100 dark:border-gray-800">
+  <div class="p-3 border-t border-gray-100 dark:border-gray-800 space-y-1">
     <a href="{{ route('profile') }}"
       class="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition cursor-pointer">
-      <img src="https://i.pravatar.cc/80?img=12"
-        class="w-9 h-9 rounded-full ring-2 ring-telkom-100 dark:ring-telkom-900 shrink-0" alt="">
+      @php
+        $userName = auth()->user()->name;
+        $words = explode(' ', $userName);
+        $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+      @endphp
+      <div
+        class="w-9 h-9 rounded-full ring-2 ring-telkom-100 dark:ring-telkom-900 shrink-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-telkom-600 font-bold text-sm">
+        {{ $initials }}
+      </div>
       <div class="flex-1 min-w-0">
-        <p class="text-sm font-semibold truncate leading-tight">Andi Pratama</p>
-        <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">Dosen - FIT</p>
+        <p class="text-sm font-semibold truncate leading-tight">{{ auth()->user()->name }}</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5">
+          {{ auth()->user()->position ?? (auth()->user()->getRoleNames()->first() ?? '-') }}</p>
       </div>
       <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">

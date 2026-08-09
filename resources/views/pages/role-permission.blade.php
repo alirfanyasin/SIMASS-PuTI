@@ -14,6 +14,12 @@
         </div>
       </div>
 
+      @if (session('success'))
+        <div class="p-4 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400 text-sm font-semibold border-b border-emerald-100 dark:border-emerald-900/40">
+          {{ session('success') }}
+        </div>
+      @endif
+
       <div class="overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead class="bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 text-xs font-bold uppercase tracking-wider border-b border-gray-200 dark:border-gray-800">
@@ -38,7 +44,11 @@
                 </td>
                 <td class="px-6 py-4 text-center">
                   <button type="button" 
-                    onclick="openEditRoleModal({{ json_encode($user) }})"
+                    @php
+                        $userRoles = $user->roles->pluck('name')->toArray();
+                        $userPermissions = $user->getAllPermissions()->pluck('name')->toArray();
+                    @endphp
+                    onclick="openEditRoleModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}', {{ json_encode($userRoles) }}, {{ json_encode($userPermissions) }})"
                     class="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-semibold hover:bg-telkom-600 hover:text-white dark:hover:bg-telkom-600 dark:hover:text-white transition">
                     Edit Akses
                   </button>
@@ -52,25 +62,9 @@
   </section>
 
   <!-- Modal Edit Hak Akses -->
-  <div id="roleModal" class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
-    <!-- Backdrop -->
-    <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm" onclick="closeEditRoleModal()"></div>
-    
-    <!-- Modal Content -->
-    <div id="roleModalContent" class="relative w-full max-w-2xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl scale-95 transition-transform duration-300 overflow-hidden border border-gray-100 dark:border-gray-800 m-4 flex flex-col max-h-[85vh]">
-      <!-- Header -->
-      <div class="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-800 shrink-0">
-        <div>
-          <h3 class="font-bold text-lg text-gray-900 dark:text-white">Pengaturan Peran & Permission</h3>
-          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Konfigurasi hak akses pengguna secara dinamis</p>
-        </div>
-        <button onclick="closeEditRoleModal()" class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+  <x-modal id="roleModal" title="Pengaturan Peran & Permission" subtitle="Konfigurasi hak akses pengguna secara dinamis">
+    <form id="roleForm" method="POST" action="" class="flex flex-col h-full overflow-hidden">
+      @csrf
 
       <!-- Body (Scrollable) -->
       <div class="p-6 space-y-6 overflow-y-auto flex-1">
@@ -124,82 +118,43 @@
 
       <!-- Footer -->
       <div class="p-5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-end gap-3 shrink-0 bg-gray-50/50 dark:bg-gray-900">
-        <button type="button" onclick="closeEditRoleModal()" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-250 dark:hover:bg-gray-700 transition">Batal</button>
-        <button type="button" onclick="savePermissions()" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">Simpan Perubahan</button>
+        <button type="button" onclick="closeModal('roleModal')" class="px-5 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-250 dark:hover:bg-gray-700 transition">Batal</button>
+        <button type="submit" class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition">Simpan Perubahan</button>
       </div>
-    </div>
-  </div>
-
-  <!-- Toast Notification -->
-  <div id="toastNotification" class="fixed bottom-5 right-5 z-50 flex items-center gap-3 px-5 py-4 bg-emerald-500 text-white rounded-2xl shadow-xl translate-y-20 opacity-0 transition-all duration-300 max-w-sm">
-    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-    </svg>
-    <div class="text-sm font-semibold">Perubahan hak akses berhasil disimpan!</div>
-  </div>
+    </form>
+  </x-modal>
 @endsection
 
 @push('scripts')
 <script>
-  function openEditRoleModal(user) {
+  function openEditRoleModal(userId, userName, userEmail, userRoles, userPermissions) {
     const modal = document.getElementById('roleModal');
     const content = document.getElementById('roleModalContent');
+    const form = document.getElementById('roleForm');
     
+    // Set form action
+    form.action = `/role-permission/${userId}`;
+
     // Set user info
-    document.getElementById('modalUserName').innerText = user.name;
-    document.getElementById('modalUserEmail').innerText = user.email;
+    document.getElementById('modalUserName').innerText = userName;
+    document.getElementById('modalUserEmail').innerText = userEmail;
 
     // Match role (radio selection)
     const roleRadios = document.getElementsByName('user_role');
-    const userRoleStr = (user.position || user.type || '').toLowerCase();
+    const roleStr = userRoles.length > 0 ? userRoles[0] : '';
     
     roleRadios.forEach(radio => {
-      const radioVal = radio.value.toLowerCase();
-      if (userRoleStr.includes(radioVal) || 
-          (radioVal === 'student staff' && userRoleStr.includes('student')) ||
-          (radioVal === 'user' && !userRoleStr.includes('admin') && !userRoleStr.includes('staff'))) {
-        radio.checked = true;
-      } else {
-        radio.checked = false;
-      }
+      radio.checked = (radio.value === roleStr);
     });
 
-    // Randomize checking of some permissions for demo purposes
+    // Match permissions
     const checkboxes = document.getElementsByName('user_permissions[]');
     checkboxes.forEach(chk => {
-      chk.checked = Math.random() > 0.4;
+      chk.checked = userPermissions.includes(chk.value);
     });
 
     // Open modal animation
-    modal.classList.remove('hidden');
-    void modal.offsetWidth;
-    modal.classList.remove('opacity-0');
-    content.classList.remove('scale-95');
-  }
-
-  function closeEditRoleModal() {
-    const modal = document.getElementById('roleModal');
-    const content = document.getElementById('roleModalContent');
-    
-    modal.classList.add('opacity-0');
-    content.classList.add('scale-95');
-    
-    setTimeout(() => {
-      modal.classList.add('hidden');
-    }, 300);
-  }
-
-  function savePermissions() {
-    closeEditRoleModal();
-    
-    // Show toast
-    const toast = document.getElementById('toastNotification');
-    toast.classList.remove('translate-y-20', 'opacity-0');
-    
-    setTimeout(() => {
-      toast.classList.add('translate-y-20', 'opacity-0');
-    }, 3000);
+    openModal('roleModal');
   }
 </script>
 @endpush

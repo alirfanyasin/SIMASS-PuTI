@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use Carbon\Carbon;
 use App\Models\Holiday;
+use App\Models\Presence;
 
 class CalendarController extends Controller
 {
@@ -26,7 +27,15 @@ class CalendarController extends Controller
         $holidays = Holiday::whereYear('date', $year)
             ->whereMonth('date', $month)
             ->get()
-            ->keyBy('date');
+            ->keyBy(function($item) {
+                return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
+            });
+
+        $presencesCount = Presence::whereYear('tanggal', $year)
+            ->whereMonth('tanggal', $month)
+            ->selectRaw('tanggal, COUNT(DISTINCT user_id) as total')
+            ->groupBy('tanggal')
+            ->pluck('total', 'tanggal');
 
         $calendarData = [];
 
@@ -53,6 +62,7 @@ class CalendarController extends Controller
                 'holiday' => $holidayDesc,
                 'is_off' => $isWeekend || $holidayDesc,
                 'is_today' => $dateString === Carbon::now()->format('Y-m-d'),
+                'presence_count' => $presencesCount->get($dateString, 0),
             ];
         }
 

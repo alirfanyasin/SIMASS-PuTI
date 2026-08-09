@@ -133,14 +133,16 @@
                         <circle cx="12" cy="12" r="3" />
                       </svg>
                     </button>
-                    <button type="button" class="p-1 text-gray-500 hover:text-blue-600 transition" title="Edit">
+                    <button type="button" class="p-1 text-gray-500 hover:text-blue-600 transition" title="Edit"
+                      onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <path d="M12 20h9" />
                         <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                       </svg>
                     </button>
-                    <button type="button" class="p-1 text-gray-500 hover:text-telkom-600 transition" title="Hapus">
+                    <button type="button" class="p-1 text-gray-500 hover:text-telkom-600 transition" title="Hapus"
+                      onclick="confirmDelete({{ $d['id'] }})">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                         stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                         <polyline points="3 6 5 6 21 6" />
@@ -184,16 +186,40 @@
                   <p class="text-gray-400">Durasi</p>
                   <p class="font-semibold tabular-nums">{{ $d['durasi'] }}</p>
                 </div>
-                <button type="button"
-                  onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
-                  class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
-                  title="Lihat Bukti">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </button>
+                <div class="flex items-center gap-1">
+                  <button type="button"
+                    onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
+                    class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
+                    title="Lihat Bukti">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" viewBox="0 0 24 24">
+                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </button>
+                  <button type="button"
+                    onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')"
+                    class="p-1.5 text-gray-500 hover:text-blue-600 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 rounded-lg transition shrink-0"
+                    title="Edit">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                      <path d="M12 20h9" />
+                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                    </svg>
+                  </button>
+                  <button type="button"
+                    onclick="confirmDelete({{ $d['id'] }})"
+                    class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
+                    title="Hapus">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                      <polyline points="3 6 5 6 21 6" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <line x1="10" y1="11" x2="10" y2="17" />
+                      <line x1="14" y1="11" x2="14" y2="17" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -204,76 +230,93 @@
   </section>
 
   <!-- Modal Bukti Kehadiran -->
-  <div id="proofModal"
-    class="fixed inset-0 z-50 hidden bg-gray-900/50 dark:bg-gray-950/80 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
-    <div
-      class="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 w-full max-w-sm overflow-hidden shadow-2xl transform scale-95 transition-transform duration-300"
-      id="proofModalContent">
-      <div class="p-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-        <h3 class="font-bold text-lg">Bukti Kehadiran</h3>
-        <button onclick="closeProofModal()"
-          class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
-        </button>
-      </div>
-      <div class="p-4 space-y-4">
-        <!-- Image placeholder -->
-        <div class="aspect-video bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden relative shadow-inner">
-          <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
-            alt="Bukti Kehadiran" class="w-full h-full object-cover" id="proofImage">
-          <div
-            class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-medium border border-white/10 shadow-lg">
-            <span id="proofDate">Tanggal</span>
-          </div>
+  <x-modal id="proofModal" size="sm" title="Bukti Kehadiran" bodyClass="!p-0" headerClass="p-4 border-b border-gray-100 dark:border-gray-800">
+    <div class="p-4 space-y-4">
+      <!-- Image placeholder -->
+      <div class="aspect-video bg-gray-100 dark:bg-gray-800 rounded-2xl overflow-hidden relative shadow-inner">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop"
+          alt="Bukti Kehadiran" class="w-full h-full object-cover" id="proofImage">
+        <div
+          class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-medium border border-white/10 shadow-lg">
+          <span id="proofDate">Tanggal</span>
         </div>
-        <div class="text-sm bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
-          <div>
-            <span class="text-gray-500 block mb-1">Deskripsi Pekerjaan</span>
-            <p class="font-medium text-gray-900 dark:text-gray-100 text-xs leading-relaxed" id="proofDesc">Deskripsi</p>
-          </div>
+      </div>
+      <div class="text-sm bg-gray-50 dark:bg-gray-800/50 p-4 rounded-2xl border border-gray-100 dark:border-gray-800">
+        <div>
+          <span class="text-gray-500 block mb-1">Deskripsi Pekerjaan</span>
+          <p class="font-medium text-gray-900 dark:text-gray-100 text-xs leading-relaxed" id="proofDesc">Deskripsi</p>
         </div>
       </div>
     </div>
-  </div>
+  </x-modal>
+
+  <!-- Edit Modal -->
+  <x-modal id="editModal" size="sm" title="Edit Presensi" bodyClass="!p-0" headerClass="p-4 border-b border-gray-100 dark:border-gray-800">
+    <form id="editForm" method="POST">
+      @csrf
+      @method('PUT')
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Masuk</label>
+          <input type="time" name="jam_masuk" id="editJamMasuk" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Pulang</label>
+          <input type="time" name="jam_pulang" id="editJamPulang" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Pekerjaan</label>
+          <textarea name="pekerjaan" id="editPekerjaan" rows="3" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500"></textarea>
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
+        <button type="button" onclick="closeModal('editModal')" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition">Batal</button>
+        <button type="submit" class="px-4 py-2 text-sm font-semibold text-white gradient-telkom rounded-xl shadow-lg hover:opacity-90 transition">Simpan Perubahan</button>
+      </div>
+    </form>
+  </x-modal>
+
+  <!-- Delete Form -->
+  <form id="deleteForm" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+  </form>
 @endsection
 
 @push('scripts')
   <script>
     function openProofModal(nama, tgl, jam, desc, foto) {
-      const modal = document.getElementById('proofModal');
-      const content = document.getElementById('proofModalContent');
-
       document.getElementById('proofDate').innerText = `${tgl || '—'} - ${jam || '—'}`;
       document.getElementById('proofDesc').innerText = desc || 'Tidak ada deskripsi pekerjaan.';
 
       const imgEl = document.getElementById('proofImage');
       if (foto) {
-        imgEl.src = foto;
+        // Handle path rendering correctly
+        imgEl.src = foto.startsWith('http') || foto.startsWith('/') ? foto : '/storage/' + foto;
       } else {
         imgEl.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop";
       }
 
-      modal.classList.remove('hidden');
-      // trigger reflow
-      void modal.offsetWidth;
-      modal.classList.remove('opacity-0');
-      content.classList.remove('scale-95');
+      openModal('proofModal');
     }
 
-    function closeProofModal() {
-      const modal = document.getElementById('proofModal');
-      const content = document.getElementById('proofModalContent');
+    function openEditModal(id, cin, cout, pekerjaan) {
+      const form = document.getElementById('editForm');
+      
+      form.action = `/presence/${id}`;
+      document.getElementById('editJamMasuk').value = cin ? cin.substring(0, 5) : '';
+      document.getElementById('editJamPulang').value = cout ? cout.substring(0, 5) : '';
+      document.getElementById('editPekerjaan').value = pekerjaan;
 
-      modal.classList.add('opacity-0');
-      content.classList.add('scale-95');
+      openModal('editModal');
+    }
 
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 300);
+    function confirmDelete(id) {
+      if(confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/presence/${id}`;
+        form.submit();
+      }
     }
   </script>
 @endpush
