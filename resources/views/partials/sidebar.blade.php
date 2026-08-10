@@ -168,14 +168,8 @@
   <!-- Logo -->
   <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800">
     <div class="flex items-center gap-3">
-      <div
-        class="w-10 h-10 rounded-xl gradient-telkom flex items-center justify-center shrink-0 shadow-lg shadow-telkom-600/30">
-        <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-          stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-          <path d="M2 17l10 5 10-5" />
-          <path d="M2 12l10 5 10-5" />
-        </svg>
+      <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-sm">
+        <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
       </div>
       <div>
         <p class="font-bold text-sm leading-tight">Portal PuTI</p>

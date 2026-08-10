@@ -114,68 +114,95 @@ class RoleUserSeeder extends Seeder
             // student-staff (map to existing legacy IDs)
             [
                 'id' => 1,
+                'name' => 'Irfan Yasin',
                 'username' => 'irfanyasin',
                 'email' => 'irfanyasin@student.telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Student Staff',
+                'position' => 'Wordpress Developer',
                 'role' => 'student-staff',
             ],
             [
                 'id' => 2,
+                'name' => 'Amoure Chelsytrivia Daniella Purba',
                 'username' => 'amourepurba',
                 'email' => 'amourepurba@student.telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Student Staff',
+                'position' => 'IT Support',
                 'role' => 'student-staff',
             ],
             [
                 'id' => 3,
+                'name' => 'Reza Eka Firmansyah',
                 'username' => 'rezafirmansyah',
                 'email' => 'rezafirmansyah@student.telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Student Staff',
+                'position' => 'Network Engineer',
                 'role' => 'student-staff',
             ],
             [
                 'id' => 10,
+                'name' => 'Fitriani Latifah',
                 'username' => 'fitrianilatifa',
                 'email' => 'fitrianilatifa@student.telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Student Staff',
+                'position' => 'Designer',
                 'role' => 'student-staff',
             ],
 
             // staff (map to existing legacy IDs)
             [
                 'id' => 4,
+                'name' => 'Reynanda Shaquille Purwanto',
                 'username' => 'reynandashaquille',
                 'email' => 'reynandashaquille@telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'Network Engineer',
                 'role' => 'staff',
             ],
             [
                 'id' => 5,
+                'name' => 'Rizal Jihadi',
                 'username' => 'rizaljihadi',
                 'email' => 'rizaljihadi@telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'Software Developer',
                 'role' => 'staff',
             ],
             [
                 'id' => 6,
+                'name' => 'Selfina Anggraini',
                 'username' => 'selfinaanggraini',
                 'email' => 'selfinaanggraini@telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'IT Manager',
                 'role' => 'staff',
             ],
             [
                 'id' => 7,
+                'name' => 'Rahadian A. Setyawan',
                 'username' => 'rahadiansetyawan',
                 'email' => 'rahadiansetyawan@telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'Network Engineer',
                 'role' => 'staff',
             ],
             [
                 'id' => 9,
-                'username' => 'cahyopriyo',
-                'email' => 'cahyopriyo@telkomuniversity.ac.id',
+                'name' => 'PuTI',
+                'username' => 'putisby',
+                'email' => 'putisby@telkomuniversity.ac.id',
                 'password' => Hash::make('password'),
-                'role' => 'staff',
+                'type' => 'Staf',
+                'position' => 'Network Engineer',
+                'role' => 'super-admin',
             ],
         ];
 
@@ -186,37 +213,47 @@ class RoleUserSeeder extends Seeder
             'user' => $user,
         ];
 
+        User::unguard();
+
         foreach ($usersData as $data) {
             $role = $roleMap[$data['role']];
 
+            $u = null;
             if (isset($data['id'])) {
-                // Update existing legacy user
                 $u = User::find($data['id']);
-
-                if ($u) {
-                    $u->update([
-                        'username' => $data['username'],
-                        'email' => $data['email'],
-                        'password' => $data['password'],
-                    ]);
-                    $u->syncRoles([$role]);
-                }
-            } else {
-                // Create new user
-                $u = User::updateOrCreate(
-                    ['email' => $data['email']],
-                    [
-                        'name' => $data['name'],
-                        'username' => $data['username'],
-                        'email' => $data['email'],
-                        'password' => $data['password'],
-                        'type' => $data['type'] ?? null,
-                        'position' => $data['position'] ?? null,
-                    ]
-                );
-                $u->syncRoles([$role]);
             }
+            if (! $u) {
+                $u = User::where('email', $data['email'])->first();
+            }
+
+            if ($u) {
+                $u->update([
+                    'name' => $data['name'],
+                    'username' => $data['username'],
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                    'type' => $data['type'] ?? null,
+                    'position' => $data['position'] ?? null,
+                ]);
+            } else {
+                $insertData = [
+                    'name' => $data['name'],
+                    'username' => $data['username'],
+                    'email' => $data['email'],
+                    'password' => $data['password'],
+                    'type' => $data['type'] ?? null,
+                    'position' => $data['position'] ?? null,
+                ];
+                if (isset($data['id'])) {
+                    $insertData['id'] = $data['id'];
+                }
+                $u = User::create($insertData);
+            }
+
+            $u->syncRoles([$role]);
         }
+
+        User::reguard();
 
         $this->command->info('✅ Roles, permissions, and users seeded successfully.');
         $this->command->table(

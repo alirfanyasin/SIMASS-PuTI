@@ -88,7 +88,7 @@
       <!-- Data Pribadi -->
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
         <h3 class="font-bold text-base border-b border-gray-100 dark:border-gray-800 pb-3">Informasi Pribadi</h3>
-        <div class="grid grid-cols-2 gap-4 text-sm">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
             <div>
               <p class="text-xs text-gray-400">NIM / NIP</p>
               <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">{{ $user->nim ?? '-' }}</p>

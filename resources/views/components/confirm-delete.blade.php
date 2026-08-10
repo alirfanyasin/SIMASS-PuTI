@@ -20,7 +20,7 @@
       <form id="globalConfirmDeleteForm" method="POST" class="flex-1">
         @csrf
         @method('DELETE')
-        <button type="submit" class="w-full px-4 py-2 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition">Ya, Hapus</button>
+        <button type="submit" class="w-full px-4 py-2 gradient-telkom text-white rounded-xl font-semibold hover:opacity-90 transition shadow-md shadow-telkom-600/20">Ya, Hapus</button>
       </form>
     </div>
   </x-slot>

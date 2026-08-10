@@ -170,6 +170,6 @@ class DashboardController extends Controller
             ],
         ];
 
-        return view('pages.presence.dashboard', compact('todayPresence', 'stats', 'recentActivity', 'overtimeSaldo', 'chartData'));
+        return view('pages.presence.dashboard', compact('todayPresence', 'stats', 'recentActivity', 'overtimeSaldo', 'chartData', 'jamMasukLimit'));
     }
 }

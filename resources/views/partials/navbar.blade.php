@@ -5,13 +5,8 @@
     <div class="flex items-center gap-3">
       <!-- Mobile logo -->
       <div class="lg:hidden flex items-center gap-2">
-        <div class="w-9 h-9 rounded-lg gradient-telkom flex items-center justify-center">
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+        <div class="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
+          <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
         </div>
         <div>
           <div class="text-sm">Portal PuTI</div>
@@ -97,8 +92,15 @@
 
       <!-- Avatar (mobile) -->
       <a href="{{ route('profile') }}" class="lg:hidden">
-        <img src="https://i.pravatar.cc/80?img=12"
-          class="w-9 h-9 rounded-full ring-2 ring-telkom-100 dark:ring-telkom-900" alt="">
+        @php
+          $userName = auth()->user()->name ?? 'User';
+          $words = explode(' ', $userName);
+          $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+        @endphp
+        <div
+          class="w-9 h-9 rounded-full ring-2 ring-telkom-100 dark:ring-telkom-900 flex items-center justify-center bg-gray-100 dark:bg-gray-800 text-telkom-600 dark:text-telkom-400 font-bold text-sm">
+          {{ $initials }}
+        </div>
       </a>
     </div>
   </div>

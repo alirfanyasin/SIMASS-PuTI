@@ -54,7 +54,16 @@
           <div class="grid grid-cols-2 gap-4 py-2 border-y border-gray-100 dark:border-gray-800">
             <div>
               <p class="text-xs text-gray-400">Check In</p>
-              <p class="text-base font-bold text-gray-900 dark:text-gray-100 mt-0.5">{{ $todayPresence->jam_masuk ?? '—' }}</p>
+              <div class="flex items-center gap-2 mt-0.5">
+                <p class="text-base font-bold text-gray-900 dark:text-gray-100">{{ $todayPresence->jam_masuk ?? '—' }}</p>
+                @if($todayPresence && $todayPresence->jam_masuk && auth()->user()->hasRole('student-staff'))
+                  @if($todayPresence->jam_masuk <= $jamMasukLimit)
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat Waktu</span>
+                  @else
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
+                  @endif
+                @endif
+              </div>
             </div>
             <div>
               <p class="text-xs text-gray-400">Check Out</p>
@@ -281,7 +290,16 @@
               <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
+              <div class="flex items-center gap-2">
+                <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
+                @if(auth()->user()->hasRole('student-staff'))
+                  @if($activity->time <= $jamMasukLimit)
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat Waktu</span>
+                  @else
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
+                  @endif
+                @endif
+              </div>
               <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if(auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name ?? 'Unknown' }}</span> @endif</p>
             </div>
           </div>

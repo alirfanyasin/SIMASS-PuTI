@@ -116,7 +116,7 @@
           <div id="actionContainer" class="max-w-sm mx-auto hidden">
             <!-- Registration state -->
             <div id="registerState" class="space-y-3 hidden">
-              <p class="text-sm text-center text-gray-600 dark:text-gray-400 font-medium">Wajah Anda belum terdaftar di sistem.</p>
+              <p id="registerStatusText" class="text-sm text-center text-gray-600 dark:text-gray-400 font-medium">Wajah Anda belum terdaftar di sistem.</p>
               <button type="button" id="btnRegisterFace" disabled
                 class="w-full flex items-center justify-center gap-3 py-3.5 bg-gray-800 disabled:opacity-50 text-white rounded-xl font-bold shadow-xl transition">
                 Daftarkan Wajah Sekarang
@@ -476,6 +476,13 @@
                     if(!hasRegisteredFace) {
                         btnRegisterFace.removeAttribute('disabled');
                         btnRegisterFace.classList.remove('opacity-50');
+                        
+                        const regStatus = document.getElementById('registerStatusText');
+                        if (regStatus) {
+                            regStatus.textContent = "Wajah terdeteksi. Silakan klik tombol di bawah untuk mendaftar.";
+                            regStatus.classList.remove('text-red-500', 'text-gray-600', 'dark:text-gray-400');
+                            regStatus.classList.add('text-green-600');
+                        }
                     } else {
                         // Match with database descriptor
                         const bestMatch = faceMatcher.findBestMatch(detection.descriptor);
@@ -519,10 +526,17 @@
                     currentDetection = null;
                     if(!hasRegisteredFace) {
                         if(btnRegisterFace) btnRegisterFace.setAttribute('disabled', 'true');
+                        
+                        const regStatus = document.getElementById('registerStatusText');
+                        if (regStatus) {
+                            regStatus.textContent = "Wajah tidak terdeteksi. Silakan posisikan wajah Anda dengan benar di dalam bingkai.";
+                            regStatus.classList.remove('text-green-600', 'text-gray-600', 'dark:text-gray-400');
+                            regStatus.classList.add('text-red-500');
+                        }
                     } else {
-                        matchStatusText.textContent = "Posisikan wajah Anda di kamera...";
-                        matchStatusText.classList.remove('text-red-500', 'text-green-600');
-                        matchStatusText.classList.add('text-gray-500');
+                        matchStatusText.textContent = "Wajah tidak terdeteksi. Silakan posisikan wajah Anda dengan benar di dalam bingkai.";
+                        matchStatusText.classList.remove('text-gray-500', 'text-green-600');
+                        matchStatusText.classList.add('text-red-500');
                         if(btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
                     }
                 }

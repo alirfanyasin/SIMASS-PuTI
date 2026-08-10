@@ -4,7 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login — Portal Presensi Telkom University</title>
+  <title>Login — Portal PuTI</title>
+  <link rel="icon" type="image/webp" href="{{ asset('logo-puti.webp') }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
@@ -24,27 +25,22 @@
 
       <!-- Logo -->
       <div class="relative z-10 flex items-center gap-3">
-        <div class="w-11 h-11 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center">
-          <svg class="w-7 h-7 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+        <div class="w-11 h-11 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-sm">
+          <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
         </div>
         <div>
           <p class="font-bold text-base">PuTI</p>
-          <p class="text-xs opacity-80">Portal Presensi Digital</p>
+          <p class="text-xs opacity-80">Portal Presensi &amp; Ticketing</p>
         </div>
       </div>
 
       <!-- Middle content -->
       <div class="relative z-10 max-w-md">
         <h1 class="text-4xl font-extrabold leading-tight">
-          Kelola Kehadiran <br> dengan Lebih Mudah
+          Kelola Presensi &amp; <br> Ticketing dengan Mudah
         </h1>
         <p class="mt-4 text-white/80 text-lg">
-          Sistem presensi terintegrasi untuk student staf PuTI Telkom University. Cepat, aman, dan real-time.
+          Sistem presensi dan ticketing terintegrasi untuk student staf PuTI Telkom University. Cepat, aman, dan real-time.
         </p>
 
         <!-- Features -->
@@ -89,6 +85,19 @@
               <p class="text-sm opacity-70">Lacak semua data kehadiranmu</p>
             </div>
           </div>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
+                <path d="M13 5v14" stroke-dasharray="2 2" />
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold">Ticketing Support</p>
+              <p class="text-sm opacity-70">Ajukan dan pantau tiket bantuan IT</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -126,16 +135,13 @@
 
       <!-- Mobile Logo -->
       <div class="lg:hidden absolute top-6 left-6 flex items-center gap-2 z-10">
-        <div
-          class="w-10 h-10 rounded-xl gradient-telkom flex items-center justify-center shadow-lg shadow-telkom-600/30">
-          <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
+        <div class="w-10 h-10 rounded-xl bg-white p-1.5 flex items-center justify-center shrink-0 shadow-sm">
+          <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
         </div>
-        <span class="font-bold text-sm">Telkom University</span>
+        <div>
+          <div class="text-sm font-bold leading-tight">Portal PuTI</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Kampus Surabaya</div>
+        </div>
       </div>
 
       {{-- Content --}}
@@ -144,6 +150,7 @@
   </main>
 
   @include('helpers.darkmode')
+  @stack('scripts')
 </body>
 
 </html>
