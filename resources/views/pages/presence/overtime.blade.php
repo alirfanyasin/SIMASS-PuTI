@@ -164,7 +164,12 @@
                   <div class="flex items-center gap-3">
                     <div
                       class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-telkom-600 dark:text-telkom-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                      {{ substr($d['nama'] ?? 'U', 0, 1) }}
+                      @php
+                        $name = $d['nama'] ?? 'U';
+                        $words = explode(' ', trim($name));
+                        $initials = count($words) > 1 ? substr($words[0], 0, 1) . substr($words[1], 0, 1) : substr($name, 0, 2);
+                      @endphp
+                      {{ strtoupper($initials) }}
                     </div>
                     {{ $d['nama'] ?? '—' }}
                   </div>
@@ -291,8 +296,11 @@
         <!-- WFH Fields -->
         <div id="wfhFields" class="space-y-4 hidden">
           <div>
-            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Tanggal WFH / Tidak Masuk Kerja</label>
-            <input type="date" name="tanggal_wfh" class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Pilih Hari WFH / Tidak Masuk Kerja</label>
+            <select name="tanggal_wfh" id="modal_tanggal_wfh"
+              class="w-full px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-gray-100 rounded-xl outline-none focus:ring-2 focus:ring-telkom-500 transition">
+              <option value="">-- Pilih Hari Tidak Masuk --</option>
+            </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Deskripsi Pekerjaan <span class="text-telkom-600">(wajib)</span></label>
@@ -330,6 +338,7 @@
 
   <script>
     const eligiblePresences = @json($eligiblePresences);
+    const absentDays = @json($absentDays);
     let currentSaldo = 0;
     
     function formatMenit(menit) {
@@ -359,6 +368,18 @@
           presenceSelect.appendChild(option);
         });
       }
+
+      // Populate WFH select
+      const absentSelect = document.getElementById('modal_tanggal_wfh');
+      absentSelect.innerHTML = '<option value="">-- Pilih Hari Tidak Masuk --</option>';
+      if (absentDays[userId]) {
+        absentDays[userId].forEach(d => {
+          let option = document.createElement('option');
+          option.value = d.val;
+          option.text = d.label;
+          absentSelect.appendChild(option);
+        });
+      }
       
       document.getElementById('modal_durasi_menit').value = '';
       document.getElementById('modal_durasi_format').textContent = 'Setara dengan: 0 Menit';
@@ -373,7 +394,13 @@
             val = currentSaldo;
         }
         
-        if(!document.getElementById('wfhCheck').checked) {
+        if(document.getElementById('wfhCheck').checked) {
+            let maxWfh = Math.min(240, currentSaldo);
+            if(val > maxWfh) {
+                this.value = maxWfh;
+                val = maxWfh;
+            }
+        } else {
             let select = document.getElementById('modal_presence_id');
             if (select.selectedIndex > 0) {
                 let option = select.options[select.selectedIndex];
@@ -391,7 +418,9 @@
     function setMaksimal() {
         let val = currentSaldo;
         
-        if(!document.getElementById('wfhCheck').checked) {
+        if(document.getElementById('wfhCheck').checked) {
+            val = Math.min(240, currentSaldo);
+        } else {
             let select = document.getElementById('modal_presence_id');
             if (select.selectedIndex > 0) {
                 let option = select.options[select.selectedIndex];
@@ -434,19 +463,24 @@
       const defFields = document.getElementById('defaultFields');
       const wfhFields = document.getElementById('wfhFields');
       const presenceSelect = document.getElementById('modal_presence_id');
+      const absentSelect = document.getElementById('modal_tanggal_wfh');
 
       if (check) {
         defFields.classList.add('hidden');
         wfhFields.classList.remove('hidden');
         presenceSelect.removeAttribute('required');
+        absentSelect.setAttribute('required', 'required');
       } else {
         defFields.classList.remove('hidden');
         wfhFields.classList.add('hidden');
         presenceSelect.setAttribute('required', 'required');
+        absentSelect.removeAttribute('required');
       }
       
-      // Trigger update
-      document.getElementById('modal_durasi_menit').dispatchEvent(new Event('input'));
+      // Reset input duration
+      const input = document.getElementById('modal_durasi_menit');
+      input.value = '';
+      document.getElementById('modal_durasi_format').textContent = 'Setara dengan: 0 Menit';
     }
   </script>
 @endsection

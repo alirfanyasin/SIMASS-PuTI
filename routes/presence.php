@@ -17,7 +17,7 @@ Route::prefix('presence')->name('presence.')->group(function () {
         Route::post('/check-in', [PresenceController::class, 'checkIn'])->name('check-in');
         Route::post('/check-out', [PresenceController::class, 'checkOut'])->name('check-out');
         Route::post('/register-face', [PresenceController::class, 'registerFace'])->name('register-face');
-        Route::post('/remove-face', [PresenceController::class, 'removeFace'])->name('remove-face');
+        Route::delete('/remove-face', [PresenceController::class, 'removeFace'])->name('remove-face');
     });
 
     // Presence list & history
@@ -36,6 +36,9 @@ Route::prefix('presence')->name('presence.')->group(function () {
 
     // Student staff list
     Route::get('/student-staff', [StudentStaffController::class, 'index'])->name('student-staff');
+    Route::post('/student-staff', [StudentStaffController::class, 'store'])->name('student-staff.store');
+    Route::put('/student-staff/{user}', [StudentStaffController::class, 'update'])->name('student-staff.update');
+    Route::delete('/student-staff/{user}', [StudentStaffController::class, 'destroy'])->name('student-staff.destroy');
 
     // Calendar
     Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar');

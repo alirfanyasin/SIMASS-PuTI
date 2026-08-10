@@ -275,31 +275,24 @@
         </div>
         <div class="space-y-3">
           @forelse($recentActivity as $activity)
+          @if($activity->type == 'in')
           <div class="flex gap-3">
-            <div
-              class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+            <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium">Check In ({{ $activity->tanggal }})</p>
-              <p class="text-xs text-gray-500">{{ $activity->jam_masuk }} • PUK @if(auth()->user()->hasRole('student-staff')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name }}</span> @endif</p>
+              <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
+              <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if(auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name ?? 'Unknown' }}</span> @endif</p>
             </div>
           </div>
-          @if($activity->jam_pulang)
-          <div class="flex gap-3 mt-2">
-            <div
-              class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12" />
-              </svg>
+          @else
+          <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium">Check Out ({{ $activity->tanggal }})</p>
-              <p class="text-xs text-gray-500">{{ $activity->jam_pulang }} • PUK @if(auth()->user()->hasRole('student-staff')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name }}</span> @endif</p>
+              <p class="text-sm font-medium">Check Out ({{ $activity->date }})</p>
+              <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if(auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name ?? 'Unknown' }}</span> @endif</p>
             </div>
           </div>
           @endif
@@ -435,8 +428,10 @@
         label.textContent = 'Minggu ini';
         
         chart.updateSeries([{
+          name: 'Hadir',
           data: chartData.weekly.hadir
         }, {
+          name: 'Lembur',
           data: chartData.weekly.lembur
         }]);
         chart.updateOptions({
@@ -454,8 +449,10 @@
         label.textContent = 'Bulan ini';
 
         chart.updateSeries([{
+          name: 'Hadir',
           data: chartData.monthly.hadir
         }, {
+          name: 'Lembur',
           data: chartData.monthly.lembur
         }]);
         chart.updateOptions({

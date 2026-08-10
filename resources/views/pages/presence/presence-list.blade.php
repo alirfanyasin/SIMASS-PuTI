@@ -49,9 +49,9 @@
                 class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
                 Reset
               </a>
-              <button type="button"
+              <button type="button" onclick="exportPdf()"
                 class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2"
-                title="Export">
+                title="Export PDF">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round" viewBox="0 0 24 24">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
@@ -111,7 +111,12 @@
                   <div class="flex items-center gap-3">
                     <div
                       class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-telkom-600 dark:text-telkom-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                      {{ substr($d['nama'] ?? 'U', 0, 1) }}
+                      @php
+                        $name = $d['nama'] ?? 'U';
+                        $words = explode(' ', trim($name));
+                        $initials = count($words) > 1 ? substr($words[0], 0, 1) . substr($words[1], 0, 1) : substr($name, 0, 2);
+                      @endphp
+                      {{ strtoupper($initials) }}
                     </div>
                     {{ $d['nama'] ?? '—' }}
                   </div>
@@ -133,6 +138,7 @@
                         <circle cx="12" cy="12" r="3" />
                       </svg>
                     </button>
+                    @if(Auth::id() === $d['user_id'] || Auth::user()->can('manage-presence'))
                     <button type="button" class="p-1 text-gray-500 hover:text-blue-600 transition" title="Edit"
                       onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
@@ -151,6 +157,7 @@
                         <line x1="14" y1="11" x2="14" y2="17" />
                       </svg>
                     </button>
+                    @endif
                   </div>
                 </td>
               </tr>
@@ -197,6 +204,7 @@
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                   </button>
+                  @if(Auth::id() === $d['user_id'] || Auth::user()->can('manage-presence'))
                   <button type="button"
                     onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')"
                     class="p-1.5 text-gray-500 hover:text-blue-600 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 rounded-lg transition shrink-0"
@@ -219,6 +227,7 @@
                       <line x1="14" y1="11" x2="14" y2="17" />
                     </svg>
                   </button>
+                  @endif
                 </div>
               </div>
             </div>
@@ -317,6 +326,13 @@
         form.action = `/presence/${id}`;
         form.submit();
       }
+    }
+
+    function exportPdf() {
+      const userId = document.querySelector('select[name="user_id"]').value;
+      const startDate = document.querySelector('input[name="start_date"]').value;
+      const endDate = document.querySelector('input[name="end_date"]').value;
+      window.open(`/export-pdf?filterNama=${userId}&startDate=${startDate}&endDate=${endDate}`, '_blank');
     }
   </script>
 @endpush

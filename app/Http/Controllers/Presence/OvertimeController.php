@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Holiday;
 use App\Models\Overtime;
 use App\Models\OvertimeTransfer;
+use App\Models\Presence;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
@@ -70,27 +71,63 @@ class OvertimeController extends Controller
 
         // Fetch eligible presences (less than 8 hours) grouped by user_id
         $eligiblePresences = [];
-        $presencesQuery = \App\Models\Presence::whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+        $presencesQuery = Presence::whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->whereNotNull('jam_pulang');
-            
+
         if (! Auth::user()->can('manage-presence')) {
             $presencesQuery->where('user_id', Auth::id());
         }
-            
+
         $presences = $presencesQuery->get();
         foreach ($presences as $p) {
             $jamMasuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
             $jamPulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
-            $totalMenit = $jamMasuk->diffInMinutes($jamPulang);
+            $actualMenit = $jamMasuk->diffInMinutes($jamPulang);
+
+            $transferredMenit = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+            $totalMenit = (int) ($actualMenit + $transferredMenit);
+
             if ($totalMenit < 480) { // less than 8 hours
                 $kurangMenit = 480 - $totalMenit;
-                $eligiblePresences[$p->user_id][] = [
-                    'id' => $p->id,
-                    'tanggal' => Carbon::parse($p->tanggal)->translatedFormat('l, d M Y'),
-                    'durasi' => $this->formatMinutes($totalMenit),
-                    'kurang_menit' => $kurangMenit,
-                    'kurang_format' => $this->formatMinutes($kurangMenit),
-                ];
+                if ($kurangMenit > 0) {
+                    $eligiblePresences[$p->user_id][] = [
+                        'id' => $p->id,
+                        'tanggal' => Carbon::parse($p->tanggal)->locale('id')->translatedFormat('l, d M Y'),
+                        'durasi' => $this->formatMinutes($totalMenit),
+                        'kurang_menit' => $kurangMenit,
+                        'kurang_format' => $this->formatMinutes($kurangMenit),
+                    ];
+                }
+            }
+        }
+
+        // Fetch absent days (working days without presence) grouped by user_id
+        $absentDays = [];
+        $allUsers = User::role('student-staff')->get();
+
+        foreach ($allUsers as $u) {
+            $absentDays[$u->id] = [];
+
+            // Get all presences of this user in the active cycle
+            $userPresencesDates = Presence::where('user_id', $u->id)
+                ->whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+                ->pluck('tanggal')
+                ->toArray();
+
+            $tempDate = $startDate->copy()->startOfDay();
+            $tempEnd = $endDate->copy()->startOfDay();
+
+            while ($tempDate <= $tempEnd) {
+                $dateStr = $tempDate->format('Y-m-d');
+
+                // If it's a weekday AND not a holiday AND user has no presence on this date
+                if (! $tempDate->isWeekend() && ! Holiday::isOff($dateStr) && ! in_array($dateStr, $userPresencesDates)) {
+                    $absentDays[$u->id][] = [
+                        'val' => $dateStr,
+                        'label' => $tempDate->locale('id')->translatedFormat('l, d M Y'),
+                    ];
+                }
+                $tempDate->addDay();
             }
         }
 
@@ -111,7 +148,8 @@ class OvertimeController extends Controller
             'prevDate',
             'nextDate',
             'monthNames',
-            'eligiblePresences'
+            'eligiblePresences',
+            'absentDays'
         ));
     }
 
@@ -132,21 +170,27 @@ class OvertimeController extends Controller
             return back()->withErrors(['durasi_menit' => 'Durasi transfer melebihi saldo lembur tersedia.']);
         }
 
+        if (! empty($data['is_wfh']) && $data['is_wfh']) {
+            if ($data['durasi_menit'] > 240) {
+                return back()->withErrors(['durasi_menit' => 'Durasi alokasi WFH/Tidak Masuk maksimal adalah 4 jam (240 menit).']);
+            }
+        }
+
         $presenceId = $data['presence_id'] ?? null;
 
         // If WFH, create a Presence record to allocate to
-        if (!empty($data['is_wfh']) && $data['is_wfh']) {
-            $presence = \App\Models\Presence::create([
+        if (! empty($data['is_wfh']) && $data['is_wfh']) {
+            $presence = Presence::create([
                 'user_id' => $overtime->user_id,
                 'tanggal' => $data['tanggal_wfh'],
-                'jam_masuk' => '08:00:00',
-                'jam_pulang' => '16:00:00', // Assumed 8 hours for WFH full day? No, wait. 
+                'jam_masuk' => '08:30:00',
+                'jam_pulang' => '08:30:00', // Set same so actual is 0
                 'hari' => match (Carbon::parse($data['tanggal_wfh'])->dayOfWeekIso) {
                     1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu', default => '-'
                 },
                 'pekerjaan' => $data['keterangan_wfh'],
                 'menit_tambahan' => 0,
-                'total_jam' => '0 jam 0 menit', // Handled by transfer
+                'total_jam' => '0 Jam 0 Menit',
             ]);
             $presenceId = $presence->id;
         }
@@ -162,6 +206,14 @@ class OvertimeController extends Controller
 
         // Deduct from overtime balance
         $overtime->decrement('sisa_menit', $data['durasi_menit']);
+
+        // Recalculate target presence total_jam
+        if ($presenceId) {
+            $presence = Presence::find($presenceId);
+            if ($presence) {
+                $presence->recalculateTotalJam();
+            }
+        }
 
         return back()->with('status', 'Transfer lembur berhasil dilakukan.');
     }

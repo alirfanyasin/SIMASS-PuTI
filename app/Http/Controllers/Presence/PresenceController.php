@@ -4,9 +4,10 @@ namespace App\Http\Controllers\Presence;
 
 use App\Http\Controllers\Controller;
 use App\Models\Holiday;
-use App\Models\Setting;
 use App\Models\Overtime;
+use App\Models\OvertimeTransfer;
 use App\Models\Presence;
+use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -31,9 +32,9 @@ class PresenceController extends Controller
         $isHoliday = Holiday::isOff($today);
         $faceDescriptor = $user->face_descriptor;
 
-        $officeLat = \App\Models\Setting::where('key', 'office_latitude')->value('value');
-        $officeLng = \App\Models\Setting::where('key', 'office_longitude')->value('value');
-        $officeRadius = \App\Models\Setting::where('key', 'office_radius')->value('value') ?: 100;
+        $officeLat = Setting::where('key', 'office_latitude')->value('value');
+        $officeLng = Setting::where('key', 'office_longitude')->value('value');
+        $officeRadius = Setting::where('key', 'office_radius')->value('value') ?: 100;
 
         return view('pages.presence.presence', compact('todayPresence', 'isHoliday', 'dayName', 'today', 'faceDescriptor', 'officeLat', 'officeLng', 'officeRadius'));
     }
@@ -73,8 +74,8 @@ class PresenceController extends Controller
         if ($user->hasRole('student-staff')) {
             $lat = $request->input('latitude');
             $lng = $request->input('longitude');
-            
-            if (!$lat || !$lng) {
+
+            if (! $lat || ! $lng) {
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
@@ -85,7 +86,7 @@ class PresenceController extends Controller
             if ($officeLat && $officeLng) {
                 $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -121,8 +122,8 @@ class PresenceController extends Controller
         if ($user->hasRole('student-staff')) {
             $lat = $request->input('latitude');
             $lng = $request->input('longitude');
-            
-            if (!$lat || !$lng) {
+
+            if (! $lat || ! $lng) {
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
@@ -133,7 +134,7 @@ class PresenceController extends Controller
             if ($officeLat && $officeLng) {
                 $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -161,10 +162,10 @@ class PresenceController extends Controller
         $fotoPath = $presence->foto;
         if ($request->filled('foto_base64')) {
             $base64 = $request->input('foto_base64');
-            $imageParts = explode(";base64,", $base64);
+            $imageParts = explode(';base64,', $base64);
             $imageBase64 = base64_decode($imageParts[1]);
-            $fileName = uniqid() . '.png';
-            $path = 'presence/' . $fileName;
+            $fileName = uniqid().'.png';
+            $path = 'presence/'.$fileName;
             Storage::disk('public')->put($path, $imageBase64);
             $fotoPath = $path;
         } elseif ($request->hasFile('foto')) {
@@ -198,12 +199,16 @@ class PresenceController extends Controller
     {
         $query = Presence::with('user')->orderBy('tanggal', 'desc');
 
-        if (! Auth::user()->can('manage-presence')) {
-            $query->where('user_id', Auth::user()->id);
+        if (Auth::user()->hasRole('student-staff') || Auth::user()->can('manage-presence')) {
+            $query->whereHas('user', function ($q) {
+                $q->role('student-staff');
+            });
         } else {
-            if ($request->filled('user_id') && $request->user_id !== 'all') {
-                $query->where('user_id', $request->user_id);
-            }
+            $query->where('user_id', Auth::user()->id);
+        }
+
+        if ($request->filled('user_id') && $request->user_id !== 'all') {
+            $query->where('user_id', $request->user_id);
         }
 
         [$startDate, $endDate] = $this->resolveActiveCycleDates($request);
@@ -215,14 +220,24 @@ class PresenceController extends Controller
         $presensiData = $presences->map(fn ($p) => $this->formatPresenceRow($p))->toArray();
 
         $statusMap = $this->getStatusMap();
-        $users = User::whereNotNull('position')->get();
+        $users = User::role('student-staff')->get();
 
         return view('pages.presence.presence-list', compact('presensiData', 'statusMap', 'users', 'startDate', 'endDate'));
     }
 
     public function presenceHistory(Request $request): View
     {
-        $allPresences = Presence::with('user')->orderBy('tanggal', 'desc')->get();
+        $query = Presence::with('user')->orderBy('tanggal', 'desc');
+
+        if (Auth::user()->hasRole('student-staff') || Auth::user()->can('manage-presence') || Auth::user()->hasRole('super-admin')) {
+            if ($request->filled('user_id') && $request->user_id !== 'all') {
+                $query->where('user_id', $request->user_id);
+            }
+        } else {
+            $query->where('user_id', Auth::id());
+        }
+
+        $allPresences = $query->get();
 
         $grouped = [];
 
@@ -258,13 +273,28 @@ class PresenceController extends Controller
             }
 
             if ($p->tanggal >= $grouped[$periodKey]['effStart'] && $p->tanggal <= $grouped[$periodKey]['effEnd']) {
+                $actual = 0;
+                if ($p->jam_masuk && $p->jam_pulang) {
+                    $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
+                }
+                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+                $total = $actual + $transferred;
+
+                $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-').' - '.($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
+                if ($actual === 0 && $total > 0 && $p->jam_masuk) {
+                    $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+                    $end = $start->copy()->addMinutes($total);
+                    $waktu = $start->format('H:i').' - '.$end->format('H:i');
+                }
+
                 $grouped[$periodKey]['total']++;
                 $grouped[$periodKey]['staffs'][$p->user_id] = true;
                 $grouped[$periodKey]['detailData'][] = [
+                    'id' => $p->id,
                     'nama' => $p->user?->name ?? 'Unknown',
                     'hari' => $p->hari ?? '-',
                     'tgl' => Carbon::parse($p->tanggal)->translatedFormat('d M Y'),
-                    'waktu' => ($p->jam_masuk ?? '-').' - '.($p->jam_pulang ?? '-'),
+                    'waktu' => $waktu,
                     'jam' => $p->total_jam ?? '-',
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
                     'foto' => $p->foto ? url('storage/'.$p->foto) : null,
@@ -287,12 +317,17 @@ class PresenceController extends Controller
         $calendarDays = [];
         $viewMode = 'list';
 
+        $startDate = null;
+        $endDate = null;
+
         if ($selectedPeriod && isset($grouped[$selectedPeriod])) {
             $g = $grouped[$selectedPeriod];
             $detailData = $g['detailData'];
             $detailTitle = $g['title'];
             $detailPeriod = $g['period'];
             $viewMode = 'detail';
+            $startDate = $g['effStart'];
+            $endDate = $g['effEnd'];
 
             $start = Carbon::parse($g['effStart']);
             $end = Carbon::parse($g['effEnd']);
@@ -307,8 +342,10 @@ class PresenceController extends Controller
             }
         }
 
+        $users = User::role('student-staff')->get();
+
         return view('pages.presence.presence-history', compact(
-            'months', 'detailData', 'detailTitle', 'detailPeriod', 'viewMode', 'calendarDays'
+            'months', 'detailData', 'detailTitle', 'detailPeriod', 'viewMode', 'calendarDays', 'startDate', 'endDate', 'users'
         ));
     }
 
@@ -325,6 +362,7 @@ class PresenceController extends Controller
         ]);
 
         $presence->update($data);
+        $presence->recalculateTotalJam();
 
         return back()->with('status', 'Data presensi berhasil diperbarui.');
     }
@@ -338,6 +376,79 @@ class PresenceController extends Controller
         $presence->delete();
 
         return back()->with('status', 'Data presensi berhasil dihapus.');
+    }
+
+    public function exportPdf(Request $request): View
+    {
+        $startDate = $request->query('startDate');
+        $endDate = $request->query('endDate');
+        $filterNama = $request->query('filterNama');
+
+        $query = Presence::with('user')->orderBy('tanggal', 'asc');
+
+        if ($filterNama && $filterNama !== 'all') {
+            $query->where('user_id', $filterNama);
+            $user = User::find($filterNama);
+            $nama = $user ? $user->name : 'Semua';
+        } else {
+            $nama = 'Semua Student Staff';
+        }
+
+        if ($startDate && $endDate) {
+            $query->whereBetween('tanggal', [$startDate, $endDate]);
+        }
+
+        $presences = $query->get();
+        $formattedData = [];
+        $totalJam = 0;
+
+        foreach ($presences as $p) {
+            $jam = 0;
+            $stdMasuk = '-';
+            $stdPulang = '-';
+
+            if ($p->jam_masuk && $p->jam_pulang) {
+                $masuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+                $pulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
+
+                $actual = $masuk->diffInMinutes($pulang);
+                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+                $diffInMinutes = $actual + $transferred;
+                $hours = floor($diffInMinutes / 60);
+                $remainder = $diffInMinutes % 60;
+
+                if ($remainder > 30) {
+                    $hours += 1;
+                }
+
+                if ($hours > 8) {
+                    $hours = 8;
+                }
+
+                $jam = $hours;
+
+                if ($jam > 0) {
+                    $stdMasuk = '08:30';
+                    $endHour = 8 + $jam;
+                    $stdPulang = sprintf('%02d:30', $endHour);
+                }
+
+                $totalJam += $jam;
+            }
+
+            $formattedData[] = (object) [
+                'tanggal' => Carbon::parse($p->tanggal)->locale('id')->translatedFormat('l, d F Y'),
+                'waktu' => $stdMasuk !== '-' ? $stdMasuk.' s/d '.$stdPulang : '-',
+                'durasi' => $jam > 0 ? $jam.' Jam' : '-',
+                'pekerjaan' => $p->pekerjaan ?? '-',
+            ];
+        }
+
+        $formattedStartDate = $startDate ? Carbon::parse($startDate)->locale('id')->translatedFormat('j F Y') : '-';
+        $formattedEndDate = $endDate ? Carbon::parse($endDate)->locale('id')->translatedFormat('j F Y') : '-';
+        $bulanHeader = $startDate ? Carbon::parse($startDate)->locale('id')->translatedFormat('F Y') : '';
+
+        return view('pages.presence.export-pdf', compact('formattedData', 'nama', 'formattedStartDate', 'formattedEndDate', 'totalJam', 'bulanHeader'));
     }
 
     // -------------------------------------------------------
@@ -380,19 +491,35 @@ class PresenceController extends Controller
     /** @return array<string, mixed> */
     private function formatPresenceRow(Presence $p): array
     {
-        $jamMasuk = $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—';
+        $origJamMasuk = $p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '—';
+        $jamMasuk = $origJamMasuk;
         $jamPulang = $p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '—';
 
+        $actual = 0;
+        if ($p->jam_masuk && $p->jam_pulang) {
+            $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
+        }
+        $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+        $total = $actual + $transferred;
+
+        if ($actual === 0 && $total > 0 && $p->jam_masuk) {
+            $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+            $end = $start->copy()->addMinutes($total);
+            $jamMasuk = $start->format('H:i');
+            $jamPulang = $end->format('H:i');
+        }
+
         $status = 'tepat';
-        if ($jamMasuk === '—') {
+        if ($origJamMasuk === '—') {
             $status = 'izin';
-        } elseif (str_contains($jamMasuk, ':') && strtotime($jamMasuk) > strtotime('08:00')) {
+        } elseif ($p->jam_masuk && strtotime($origJamMasuk) > strtotime('08:00')) {
             $status = 'telat';
         }
 
         return [
             'id' => $p->id,
-            'tgl' => Carbon::parse($p->tanggal)->translatedFormat('d M Y'),
+            'user_id' => $p->user_id,
+            'tgl' => Carbon::parse($p->tanggal)->locale('id')->translatedFormat('l, d M Y'),
             'nama' => $p->user?->name ?? 'Unknown',
             'cin' => $jamMasuk,
             'cout' => $jamPulang,

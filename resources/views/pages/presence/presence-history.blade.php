@@ -74,25 +74,33 @@
     <!-- TAB CONTENT: TABEL -->
     <div id="content-tabel" class="block space-y-6">
       <!-- Filter -->
-      <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      <form action="{{ route('presence.history') }}" method="GET" class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+        @if(request('period'))
+          <input type="hidden" name="period" value="{{ request('period') }}">
+        @endif
         <div class="p-4 lg:p-5 flex flex-col sm:flex-row items-end gap-4">
           <div class="w-full sm:w-64">
             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-2">Filter Nama</label>
-            <select
+            <select name="user_id"
               class="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500 transition">
-              <option>Semua Student Staff</option>
-              <option>Irfan Yasin</option>
-              <option>Fitriani Latifah</option>
+              <option value="all">Semua Student Staff</option>
+              @foreach($users as $u)
+                <option value="{{ $u->id }}" {{ request('user_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}</option>
+              @endforeach
             </select>
           </div>
           <div class="flex gap-2 w-full sm:w-auto">
-            <button
+            <button type="submit"
               class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">Filter</button>
-            <button
-              class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none">Reset</button>
+            <a href="{{ request('period') ? route('presence.history', ['period' => request('period')]) : route('presence.history') }}"
+              class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center flex-1 sm:flex-none">Reset</a>
+            <button type="button" onclick="exportHistoryPdf()"
+              class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export PDF">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+            </button>
           </div>
         </div>
-      </div>
+      </form>
 
       <!-- Table -->
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden">
@@ -118,7 +126,12 @@
                     <div class="flex items-center gap-3">
                       <div
                         class="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 text-telkom-600 dark:text-telkom-400 flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                        {{ substr($d['nama'] ?? 'U', 0, 1) }}
+                        @php
+                          $name = $d['nama'] ?? 'U';
+                          $words = explode(' ', trim($name));
+                          $initials = count($words) > 1 ? substr($words[0], 0, 1) . substr($words[1], 0, 1) : substr($name, 0, 2);
+                        @endphp
+                        {{ strtoupper($initials) }}
                       </div>
                       {{ $d['nama'] ?? '—' }}
                     </div>
@@ -128,7 +141,7 @@
                   <td class="px-5 py-4 tabular-nums">{{ $d['waktu'] }}</td>
                   <td class="px-5 py-4 tabular-nums font-semibold text-green-600">{{ $d['jam'] }}</td>
                   <td class="px-5 py-4">
-                    <div class="flex items-center justify-center">
+                    <div class="flex items-center justify-center gap-2">
                       <button type="button"
                         onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['waktu'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
                         class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Lihat Detail">
@@ -138,6 +151,30 @@
                           <circle cx="12" cy="12" r="3" />
                         </svg>
                       </button>
+                      @if(Auth::user()->hasRole('super-admin'))
+                        @php
+                            $cin = explode(' - ', $d['waktu'])[0] ?? '';
+                            $cout = explode(' - ', $d['waktu'])[1] ?? '';
+                        @endphp
+                        <button type="button" class="p-1.5 text-gray-400 hover:text-blue-600 transition" title="Edit"
+                          onclick="openEditModal('{{ $d['id'] ?? '' }}', '{{ $cin }}', '{{ $cout }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <path d="M12 20h9" />
+                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                          </svg>
+                        </button>
+                        <button type="button" class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Hapus"
+                          onclick="confirmDelete('{{ $d['id'] ?? '' }}')">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6" />
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            <line x1="10" y1="11" x2="10" y2="17" />
+                            <line x1="14" y1="11" x2="14" y2="17" />
+                          </svg>
+                        </button>
+                      @endif
                     </div>
                   </td>
                 </tr>
@@ -189,6 +226,57 @@
       </div>
     </div>
   </div>
+
+  @if(Auth::user()->hasRole('super-admin'))
+  <!-- Edit Modal -->
+  <div id="editModal"
+    class="fixed inset-0 z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm" onclick="closeEditModal()"></div>
+    
+    <!-- Modal Content -->
+    <div id="editModalContent"
+      class="relative bg-white dark:bg-gray-900 w-full max-w-sm rounded-3xl shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300 border border-gray-100 dark:border-gray-800">
+      
+      <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
+        <h3 class="text-sm font-bold text-gray-900 dark:text-white">Edit Presensi</h3>
+        <button onclick="closeEditModal()" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-xl transition">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      
+      <form id="editForm" method="POST">
+        @csrf
+        @method('PUT')
+        <div class="p-5 space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Masuk</label>
+            <input type="time" name="jam_masuk" id="editJamMasuk" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Pulang</label>
+            <input type="time" name="jam_pulang" id="editJamPulang" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Pekerjaan</label>
+            <textarea name="pekerjaan" id="editPekerjaan" rows="3" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500"></textarea>
+          </div>
+        </div>
+        <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
+          <button type="button" onclick="closeEditModal()" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition">Batal</button>
+          <button type="submit" class="px-4 py-2 text-sm font-semibold text-white gradient-telkom rounded-xl shadow-lg hover:opacity-90 transition">Simpan Perubahan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Form -->
+  <form id="deleteForm" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+  </form>
+  @endif
+
 @endsection
 
 @push('scripts')
@@ -225,5 +313,53 @@
         modal.classList.add('hidden');
       }, 300);
     }
+
+    function exportHistoryPdf() {
+      const startDate = '{{ $startDate ?? "" }}';
+      const endDate = '{{ $endDate ?? "" }}';
+      const userSelect = document.querySelector('select[name="user_id"]');
+      const userId = userSelect ? userSelect.value : 'all';
+      window.open(`/export-pdf?filterNama=${userId}&startDate=${startDate}&endDate=${endDate}`, '_blank');
+    }
+
+    @if(Auth::user()->hasRole('super-admin'))
+    function openEditModal(id, cin, cout, pekerjaan) {
+      if(!id) return;
+      const modal = document.getElementById('editModal');
+      const content = document.getElementById('editModalContent');
+      const form = document.getElementById('editForm');
+      
+      form.action = `/presence/${id}`;
+      document.getElementById('editJamMasuk').value = cin && cin !== '-' ? cin.substring(0, 5) : '';
+      document.getElementById('editJamPulang').value = cout && cout !== '-' ? cout.substring(0, 5) : '';
+      document.getElementById('editPekerjaan').value = pekerjaan;
+
+      modal.classList.remove('hidden');
+      void modal.offsetWidth;
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-95');
+    }
+
+    function closeEditModal() {
+      const modal = document.getElementById('editModal');
+      const content = document.getElementById('editModalContent');
+
+      modal.classList.add('opacity-0');
+      content.classList.add('scale-95');
+
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 300);
+    }
+
+    function confirmDelete(id) {
+      if(!id) return;
+      if(confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
+        const form = document.getElementById('deleteForm');
+        form.action = `/presence/${id}`;
+        form.submit();
+      }
+    }
+    @endif
   </script>
 @endpush

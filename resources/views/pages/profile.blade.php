@@ -4,6 +4,22 @@
 @section('subtitle', 'Informasi akun dan data pribadi')
 
 @section('content')
+  @if (session('status'))
+    <div class="p-4 mb-4 text-sm text-green-800 rounded-2xl bg-green-50 dark:bg-green-900/30 dark:text-green-400 border border-green-100 dark:border-green-800/30">
+      {{ session('status') }}
+    </div>
+  @endif
+
+  @if ($errors->any())
+    <div class="p-4 mb-4 text-sm text-red-800 rounded-2xl bg-red-50 dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-800/30">
+      <ul class="list-disc pl-5 space-y-1">
+        @foreach ($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
   <!-- ============ VIEW: PROFIL ============ -->
   <section id="view-profile" class="view space-y-6">
     <!-- Card Utama Profil -->
@@ -73,26 +89,22 @@
       <div class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-6 space-y-4">
         <h3 class="font-bold text-base border-b border-gray-100 dark:border-gray-800 pb-3">Informasi Pribadi</h3>
         <div class="grid grid-cols-2 gap-4 text-sm">
-          @if (!$isGeneral)
             <div>
-              <p class="text-xs text-gray-400">{{ $isStudent ? 'NIM' : 'NIP / NUP' }}</p>
+              <p class="text-xs text-gray-400">NIM / NIP</p>
+              <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">{{ $user->nim ?? '-' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Email</p>
+              <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5 break-all">{{ $user->email ?? '-' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">No. Telepon</p>
+              <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">{{ $user->phone ?? '-' }}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-400">Username</p>
               <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">{{ $user->username ?? '-' }}</p>
             </div>
-          @endif
-          <div>
-            <p class="text-xs text-gray-400">Email</p>
-            <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5 break-all">{{ $user->email ?? '-' }}</p>
-          </div>
-          <div>
-            <p class="text-xs text-gray-400">No. Telepon</p>
-            <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">-</p>
-          </div>
-          @if (!$isGeneral)
-            <div>
-              <p class="text-xs text-gray-400">Fakultas / Unit</p>
-              <p class="font-semibold text-gray-900 dark:text-gray-100 mt-0.5">Informatika (FIT)</p>
-            </div>
-          @endif
         </div>
       </div>
 
@@ -164,10 +176,33 @@
 
   <!-- Modal Edit Profile -->
   <x-modal id="editProfileModal" size="sm" title="Edit Profil">
-    <form class="space-y-4">
+    <form method="POST" action="{{ route('profile.update') }}" class="space-y-4">
+      @csrf
+      @method('PUT')
       <div>
         <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Lengkap</label>
-        <input type="text" value="{{ $user->name }}" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+        <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Username</label>
+        <input type="text" name="username" value="{{ old('username', $user->username) }}" required
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">NIM / NIP</label>
+        <input type="text" name="nim" value="{{ old('nim', $user->nim) }}"
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">No. WA / Telepon</label>
+        <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+      </div>
+      <div>
+        <label class="block text-xs font-semibold text-gray-500 mb-1">Jabatan / Posisi</label>
+        <input type="text" name="position" value="{{ old('position', $user->position) }}"
+          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
       </div>
       <div>
         <label class="block text-xs font-semibold text-gray-500 mb-1">Email</label>
@@ -175,20 +210,23 @@
           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-sm focus:outline-none text-gray-500"
           title="Email tidak dapat diubah">
       </div>
-      <div>
-        <label class="block text-xs font-semibold text-gray-500 mb-1">No. Telepon</label>
-        <input type="text" value="-"
-          class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
-      </div>
-      @if (!$isGeneral)
-        <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Fakultas / Unit</label>
-          <input type="text" value="Informatika (FIT)" readonly
-            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-sm focus:outline-none text-gray-500">
+      <div class="border-t border-gray-100 dark:border-gray-800 pt-3">
+        <p class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2">Ubah Password (Kosongkan jika tidak diubah)</p>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-500 mb-1">Password Baru</label>
+            <input type="password" name="password" autocomplete="new-password"
+              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-gray-500 mb-1">Konfirmasi Password Baru</label>
+            <input type="password" name="password_confirmation" autocomplete="new-password"
+              class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
         </div>
-      @endif
+      </div>
       <div class="pt-2">
-        <button type="button" onclick="closeModal('editProfileModal')"
+        <button type="submit"
           class="w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition">Simpan
           Perubahan</button>
       </div>
@@ -202,4 +240,11 @@
       openModal('editProfileModal');
     }
   </script>
+  @if ($errors->any())
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        openModal('editProfileModal');
+      });
+    </script>
+  @endif
 @endpush

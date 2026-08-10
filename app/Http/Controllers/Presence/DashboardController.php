@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Presence;
 
 use App\Http\Controllers\Controller;
 use App\Models\Overtime;
+use App\Models\OvertimeTransfer;
 use App\Models\Presence;
+use App\Models\Setting;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
@@ -27,7 +29,7 @@ class DashboardController extends Controller
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->get();
 
-        $jamMasukLimit = \App\Models\Setting::where('key', 'jam_masuk')->value('value') ?? '08:30:00';
+        $jamMasukLimit = Setting::where('key', 'jam_masuk')->value('value') ?? '08:30:00';
         // Ensure it has seconds for comparison
         if (strlen($jamMasukLimit) === 5) {
             $jamMasukLimit .= ':00';
@@ -40,21 +42,43 @@ class DashboardController extends Controller
             'izin' => 0, // Placeholder if no permission model exists yet
         ];
 
-        if ($user->hasRole('student-staff')) {
-            $recentActivity = Presence::with('user')->whereHas('user.roles', function ($q) {
-                    $q->where('name', 'student-staff');
-                })
+        if ($user->hasRole('student-staff') || $user->can('manage-presence')) {
+            $recentPresences = Presence::with('user')->whereHas('user', function ($q) {
+                $q->role('student-staff');
+            })
                 ->orderBy('tanggal', 'desc')
-                ->orderBy('created_at', 'desc')
-                ->take(5)
+                ->take(10)
                 ->get();
         } else {
-            $recentActivity = Presence::where('user_id', $user->id)
+            $recentPresences = Presence::with('user')->where('user_id', $user->id)
                 ->orderBy('tanggal', 'desc')
-                ->orderBy('created_at', 'desc')
-                ->take(5)
+                ->take(10)
                 ->get();
         }
+
+        $activities = collect();
+        foreach ($recentPresences as $p) {
+            if ($p->jam_masuk) {
+                $activities->push((object) [
+                    'type' => 'in',
+                    'time' => $p->jam_masuk,
+                    'date' => $p->tanggal,
+                    'user' => $p->user,
+                    'timestamp' => $p->tanggal.' '.$p->jam_masuk,
+                ]);
+            }
+            if ($p->jam_pulang) {
+                $activities->push((object) [
+                    'type' => 'out',
+                    'time' => $p->jam_pulang,
+                    'date' => $p->tanggal,
+                    'user' => $p->user,
+                    'timestamp' => $p->tanggal.' '.$p->jam_pulang,
+                ]);
+            }
+        }
+
+        $recentActivity = $activities->sortByDesc('timestamp')->take(5)->values();
 
         $overtimeSaldo = Overtime::where('user_id', $user->id)->sum('sisa_menit');
 
@@ -71,16 +95,30 @@ class DashboardController extends Controller
         $weeklyHadir = [];
         $weeklyLembur = [];
         $weeklyLabels = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'];
-        
+
         for ($i = 0; $i < 7; $i++) {
             $date = clone $startOfWeek;
             $date->addDays($i)->format('Y-m-d');
             $p = $weeklyPresences->firstWhere('tanggal', $date->format('Y-m-d'));
             $o = $weeklyOvertimes->firstWhere('tanggal', $date->format('Y-m-d'));
-            
+
             $hours = 0;
             if ($p && $p->jam_masuk && $p->jam_pulang) {
-                $hours = round(Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang)) / 60, 1);
+                $actual = Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang));
+                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+                $diffInMinutes = $actual + $transferred;
+
+                $h = floor($diffInMinutes / 60);
+                $remainder = $diffInMinutes % 60;
+
+                if ($remainder > 30) {
+                    $h += 1;
+                }
+
+                if ($h > 8) {
+                    $h = 8;
+                }
+                $hours = $h;
             }
             $weeklyHadir[] = $hours;
             $weeklyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;
@@ -95,10 +133,24 @@ class DashboardController extends Controller
             $date = Carbon::now()->setDay($i)->format('Y-m-d');
             $p = $presences->firstWhere('tanggal', $date);
             $o = Overtime::where('user_id', $user->id)->where('tanggal', $date)->first();
-            
+
             $hours = 0;
             if ($p && $p->jam_masuk && $p->jam_pulang) {
-                $hours = round(Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang)) / 60, 1);
+                $actual = Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang));
+                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+                $diffInMinutes = $actual + $transferred;
+
+                $h = floor($diffInMinutes / 60);
+                $remainder = $diffInMinutes % 60;
+
+                if ($remainder > 30) {
+                    $h += 1;
+                }
+
+                if ($h > 8) {
+                    $h = 8;
+                }
+                $hours = $h;
             }
             $monthlyHadir[] = $hours;
             $monthlyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;
@@ -109,13 +161,13 @@ class DashboardController extends Controller
             'weekly' => [
                 'labels' => $weeklyLabels,
                 'hadir' => $weeklyHadir,
-                'lembur' => $weeklyLembur
+                'lembur' => $weeklyLembur,
             ],
             'monthly' => [
                 'labels' => $monthlyLabels,
                 'hadir' => $monthlyHadir,
-                'lembur' => $monthlyLembur
-            ]
+                'lembur' => $monthlyLembur,
+            ],
         ];
 
         return view('pages.presence.dashboard', compact('todayPresence', 'stats', 'recentActivity', 'overtimeSaldo', 'chartData'));

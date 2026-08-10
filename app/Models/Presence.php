@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class Presence extends Model
@@ -31,5 +32,29 @@ class Presence extends Model
     public function overtimeTransfers()
     {
         return $this->hasMany(OvertimeTransfer::class);
+    }
+
+    public function recalculateTotalJam(): void
+    {
+        if (! $this->jam_masuk || ! $this->jam_pulang) {
+            $this->total_jam = null;
+            $this->save();
+
+            return;
+        }
+
+        $masuk = Carbon::parse($this->tanggal.' '.$this->jam_masuk);
+        $pulang = Carbon::parse($this->tanggal.' '.$this->jam_pulang);
+        $actual = $masuk->diffInMinutes($pulang);
+
+        $transferred = $this->overtimeTransfers()->sum('durasi_menit');
+
+        $total = $actual + $transferred;
+
+        $jam = floor($total / 60);
+        $menit = $total % 60;
+
+        $this->total_jam = "{$jam} Jam {$menit} Menit";
+        $this->save();
     }
 }

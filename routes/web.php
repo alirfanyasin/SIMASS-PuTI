@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\Presence\PresenceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\SettingsController;
@@ -29,6 +30,9 @@ Route::middleware('auth')->group(function () {
     // Presence Routes
     require __DIR__.'/presence.php';
 
+    // PDF Export
+    Route::get('/export-pdf', [PresenceController::class, 'exportPdf'])->name('export-pdf');
+
     // Ticketing Routes
     Route::prefix('ticketing')->group(function () {
         require __DIR__.'/ticketing.php';
@@ -44,6 +48,7 @@ Route::middleware('auth')->group(function () {
 
     // General Pages
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::middleware('can:manage-roles')->group(function () {
         Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
