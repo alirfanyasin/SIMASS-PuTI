@@ -86,7 +86,7 @@ class PresenceController extends Controller
             if ($officeLat && $officeLng) {
                 $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -134,7 +134,7 @@ class PresenceController extends Controller
             if ($officeLat && $officeLng) {
                 $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -149,7 +149,7 @@ class PresenceController extends Controller
             'foto' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $jamMasuk = Carbon::parse($presence->tanggal.' '.$presence->jam_masuk);
+        $jamMasuk = Carbon::parse($presence->tanggal . ' ' . $presence->jam_masuk);
         $totalDetik = $jamMasuk->diffInSeconds($now);
         $jam = floor($totalDetik / 3600);
         $menit = floor(($totalDetik % 3600) / 60);
@@ -164,12 +164,12 @@ class PresenceController extends Controller
             $base64 = $request->input('foto_base64');
             $imageParts = explode(';base64,', $base64);
             $imageBase64 = base64_decode($imageParts[1]);
-            $fileName = uniqid().'.png';
-            $path = 'presence/'.$fileName;
-            Storage::disk('public')->put($path, $imageBase64);
-            $fotoPath = $path;
+            $fileName = uniqid() . '.jpg';
+            $fotoPath = $this->compressAndSaveImage($imageBase64, $fileName);
         } elseif ($request->hasFile('foto')) {
-            $fotoPath = $request->file('foto')->store('presence', 'public');
+            $file = $request->file('foto');
+            $fileName = uniqid() . '.jpg';
+            $fotoPath = $this->compressAndSaveImage(file_get_contents($file->getRealPath()), $fileName);
         }
 
         $presence->update([
@@ -217,7 +217,7 @@ class PresenceController extends Controller
 
         $presences = $query->get();
 
-        $presensiData = $presences->map(fn ($p) => $this->formatPresenceRow($p))->toArray();
+        $presensiData = $presences->map(fn($p) => $this->formatPresenceRow($p))->toArray();
 
         $statusMap = $this->getStatusMap();
         $users = User::role('student-staff')->get();
@@ -262,7 +262,7 @@ class PresenceController extends Controller
 
                 $grouped[$periodKey] = [
                     'id' => $periodKey,
-                    'title' => $this->getMonthName($payMonth).' '.$payYear,
+                    'title' => $this->getMonthName($payMonth) . ' ' . $payYear,
                     'period' => $this->formatPeriodLabel($effStart, $effEnd),
                     'effStart' => $effStart->format('Y-m-d'),
                     'effEnd' => $effEnd->format('Y-m-d'),
@@ -275,16 +275,16 @@ class PresenceController extends Controller
             if ($p->tanggal >= $grouped[$periodKey]['effStart'] && $p->tanggal <= $grouped[$periodKey]['effEnd']) {
                 $actual = 0;
                 if ($p->jam_masuk && $p->jam_pulang) {
-                    $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
+                    $actual = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal . ' ' . $p->jam_pulang));
                 }
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
                 $total = $actual + $transferred;
 
-                $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-').' - '.($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
+                $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-') . ' - ' . ($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
                 if ($actual === 0 && $total > 0 && $p->jam_masuk) {
-                    $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+                    $start = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
                     $end = $start->copy()->addMinutes($total);
-                    $waktu = $start->format('H:i').' - '.$end->format('H:i');
+                    $waktu = $start->format('H:i') . ' - ' . $end->format('H:i');
                 }
 
                 $grouped[$periodKey]['total']++;
@@ -297,7 +297,7 @@ class PresenceController extends Controller
                     'waktu' => $waktu,
                     'jam' => $p->total_jam ?? '-',
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                    'foto' => $p->foto ? url('storage/'.$p->foto) : null,
+                    'foto' => $p->foto ? url('storage/' . $p->foto) : null,
                 ];
             }
         }
@@ -305,7 +305,7 @@ class PresenceController extends Controller
         krsort($grouped);
 
         $months = array_map(function ($g) {
-            $g['staff'] = count($g['staffs']).' Orang';
+            $g['staff'] = count($g['staffs']) . ' Orang';
 
             return $g;
         }, $grouped);
@@ -345,7 +345,15 @@ class PresenceController extends Controller
         $users = User::role('student-staff')->get();
 
         return view('pages.presence.presence-history', compact(
-            'months', 'detailData', 'detailTitle', 'detailPeriod', 'viewMode', 'calendarDays', 'startDate', 'endDate', 'users'
+            'months',
+            'detailData',
+            'detailTitle',
+            'detailPeriod',
+            'viewMode',
+            'calendarDays',
+            'startDate',
+            'endDate',
+            'users'
         ));
     }
 
@@ -408,8 +416,8 @@ class PresenceController extends Controller
             $stdPulang = '-';
 
             if ($p->jam_masuk && $p->jam_pulang) {
-                $masuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
-                $pulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
+                $masuk = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
+                $pulang = Carbon::parse($p->tanggal . ' ' . $p->jam_pulang);
 
                 $actual = $masuk->diffInMinutes($pulang);
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
@@ -438,8 +446,8 @@ class PresenceController extends Controller
 
             $formattedData[] = (object) [
                 'tanggal' => Carbon::parse($p->tanggal)->locale('id')->translatedFormat('l, d F Y'),
-                'waktu' => $stdMasuk !== '-' ? $stdMasuk.' s/d '.$stdPulang : '-',
-                'durasi' => $jam > 0 ? $jam.' Jam' : '-',
+                'waktu' => $stdMasuk !== '-' ? $stdMasuk . ' s/d ' . $stdPulang : '-',
+                'durasi' => $jam > 0 ? $jam . ' Jam' : '-',
                 'pekerjaan' => $p->pekerjaan ?? '-',
             ];
         }
@@ -462,8 +470,8 @@ class PresenceController extends Controller
         $lonDelta = deg2rad($lon2 - $lon1);
 
         $a = sin($latDelta / 2) * sin($latDelta / 2) +
-             cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
-             sin($lonDelta / 2) * sin($lonDelta / 2);
+            cos(deg2rad($lat1)) * cos(deg2rad($lat2)) *
+            sin($lonDelta / 2) * sin($lonDelta / 2);
 
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
@@ -497,13 +505,13 @@ class PresenceController extends Controller
 
         $actual = 0;
         if ($p->jam_masuk && $p->jam_pulang) {
-            $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
+            $actual = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal . ' ' . $p->jam_pulang));
         }
         $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
         $total = $actual + $transferred;
 
         if ($actual === 0 && $total > 0 && $p->jam_masuk) {
-            $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+            $start = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
             $end = $start->copy()->addMinutes($total);
             $jamMasuk = $start->format('H:i');
             $jamPulang = $end->format('H:i');
@@ -528,7 +536,7 @@ class PresenceController extends Controller
             'durasi' => $p->total_jam ?? '—',
             'status' => $status,
             'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-            'foto' => $p->foto ? url('storage/'.$p->foto) : null,
+            'foto' => $p->foto ? url('storage/' . $p->foto) : null,
         ];
     }
 
@@ -560,17 +568,73 @@ class PresenceController extends Controller
     private function getMonthName(int $month): string
     {
         return match ($month) {
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember',
             default => '',
         };
     }
 
     private function formatPeriodLabel(Carbon $start, Carbon $end): string
     {
-        return $start->format('d').' '.$this->getMonthName((int) $start->format('m')).' '.$start->format('Y')
-            .' - '
-            .$end->format('d').' '.$this->getMonthName((int) $end->format('m')).' '.$end->format('Y');
+        return $start->format('d') . ' ' . $this->getMonthName((int) $start->format('m')) . ' ' . $start->format('Y')
+            . ' - '
+            . $end->format('d') . ' ' . $this->getMonthName((int) $end->format('m')) . ' ' . $end->format('Y');
+    }
+
+    private function compressAndSaveImage(string $imageData, string $filename): string
+    {
+        $image = @imagecreatefromstring($imageData);
+        if (! $image) {
+            $path = 'presence/' . $filename;
+            Storage::disk('public')->put($path, $imageData);
+
+            return $path;
+        }
+
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        $maxDim = 1200;
+        if ($width > $maxDim || $height > $maxDim) {
+            if ($width > $height) {
+                $newWidth = $maxDim;
+                $newHeight = (int) ($height * ($maxDim / $width));
+            } else {
+                $newHeight = $maxDim;
+                $newWidth = (int) ($width * ($maxDim / $height));
+            }
+
+            $resizedImage = imagescale($image, $newWidth, $newHeight, IMG_BILINEAR_FIXED);
+            if ($resizedImage !== false) {
+                imagedestroy($image);
+                $image = $resizedImage;
+            }
+        }
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'img');
+        imagejpeg($image, $tempFile, 75);
+
+        if (filesize($tempFile) > 1024 * 1024) {
+            imagejpeg($image, $tempFile, 60);
+        }
+
+        imagedestroy($image);
+
+        $path = 'presence/' . $filename;
+        Storage::disk('public')->put($path, fopen($tempFile, 'r'));
+
+        @unlink($tempFile);
+
+        return $path;
     }
 }

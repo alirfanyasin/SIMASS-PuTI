@@ -227,6 +227,23 @@
     </div>
   </div>
 
+  <!-- Modal Alert / Warning -->
+  <x-modal id="alertModal" size="sm" title="Perhatian" showCloseButton="true">
+    <div class="flex flex-col items-center text-center p-4">
+      <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <p id="alertModalMessage" class="text-sm font-medium text-gray-600 dark:text-gray-400 leading-relaxed">
+        Pesan alert.
+      </p>
+      <button type="button" onclick="closeModal('alertModal')" class="mt-6 w-full py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-xl text-sm font-bold active:scale-95 transition-all shadow-md">
+        Mengerti
+      </button>
+    </div>
+  </x-modal>
+
   @if(Auth::user()->hasRole('super-admin'))
   <!-- Edit Modal -->
   <div id="editModal"
@@ -282,6 +299,11 @@
 @push('scripts')
   <script>
     function openProofModal(nama, tgl, jam, desc, foto) {
+      if (!foto) {
+        document.getElementById('alertModalMessage').textContent = 'Bukti kehadiran masih belum ada.';
+        openModal('alertModal');
+        return;
+      }
       const modal = document.getElementById('proofModal');
       const content = document.getElementById('proofModalContent');
 
@@ -289,11 +311,7 @@
       document.getElementById('proofDesc').innerText = desc || 'Tidak ada deskripsi pekerjaan.';
 
       const imgEl = document.getElementById('proofImage');
-      if (foto) {
-        imgEl.src = foto;
-      } else {
-        imgEl.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop";
-      }
+      imgEl.src = foto.startsWith('http') || foto.startsWith('/') ? foto : '/storage/' + foto;
 
       modal.classList.remove('hidden');
       // trigger reflow

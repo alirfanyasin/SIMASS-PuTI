@@ -108,17 +108,10 @@ class DashboardController extends Controller
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
                 $diffInMinutes = $actual + $transferred;
 
-                $h = floor($diffInMinutes / 60);
-                $remainder = $diffInMinutes % 60;
-
-                if ($remainder > 30) {
-                    $h += 1;
+                $hours = round($diffInMinutes / 60, 2);
+                if ($hours > 8) {
+                    $hours = 8;
                 }
-
-                if ($h > 8) {
-                    $h = 8;
-                }
-                $hours = $h;
             }
             $weeklyHadir[] = $hours;
             $weeklyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;
@@ -140,17 +133,10 @@ class DashboardController extends Controller
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
                 $diffInMinutes = $actual + $transferred;
 
-                $h = floor($diffInMinutes / 60);
-                $remainder = $diffInMinutes % 60;
-
-                if ($remainder > 30) {
-                    $h += 1;
+                $hours = round($diffInMinutes / 60, 2);
+                if ($hours > 8) {
+                    $hours = 8;
                 }
-
-                if ($h > 8) {
-                    $h = 8;
-                }
-                $hours = $h;
             }
             $monthlyHadir[] = $hours;
             $monthlyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;

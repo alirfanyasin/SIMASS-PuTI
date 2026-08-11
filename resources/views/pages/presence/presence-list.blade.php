@@ -181,55 +181,58 @@
             </div>
             <div class="grid grid-cols-3 gap-2 text-xs mt-3">
               <div>
-                <p class="text-gray-400">Masuk</p>
-                <p class="font-semibold tabular-nums">{{ $d['cin'] }}</p>
+                <p class="text-gray-400 dark:text-gray-500 mb-0.5">Masuk</p>
+                <p class="font-semibold tabular-nums text-gray-950 dark:text-gray-100 text-sm">{{ $d['cin'] }}</p>
               </div>
               <div>
-                <p class="text-gray-400">Pulang</p>
-                <p class="font-semibold tabular-nums">{{ $d['cout'] }}</p>
+                <p class="text-gray-400 dark:text-gray-500 mb-0.5">Pulang</p>
+                <p class="font-semibold tabular-nums text-gray-950 dark:text-gray-100 text-sm">{{ $d['cout'] }}</p>
               </div>
-              <div class="flex items-end justify-between">
-                <div>
-                  <p class="text-gray-400">Durasi</p>
-                  <p class="font-semibold tabular-nums">{{ $d['durasi'] }}</p>
-                </div>
-                <div class="flex items-center gap-1">
-                  <button type="button"
-                    onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
-                    class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
-                    title="Lihat Bukti">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                      stroke-linejoin="round" viewBox="0 0 24 24">
-                      <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  @if(Auth::id() === $d['user_id'] || Auth::user()->can('manage-presence'))
-                  <button type="button"
-                    onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')"
-                    class="p-1.5 text-gray-500 hover:text-blue-600 bg-gray-100 dark:bg-gray-800 hover:bg-blue-50 rounded-lg transition shrink-0"
-                    title="Edit">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                      <path d="M12 20h9" />
-                      <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                    </svg>
-                  </button>
-                  <button type="button"
-                    onclick="confirmDelete({{ $d['id'] }})"
-                    class="p-1.5 text-gray-500 hover:text-telkom-600 bg-gray-100 dark:bg-gray-800 hover:bg-telkom-50 rounded-lg transition shrink-0"
-                    title="Hapus">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                      <polyline points="3 6 5 6 21 6" />
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                      <line x1="10" y1="11" x2="10" y2="17" />
-                      <line x1="14" y1="11" x2="14" y2="17" />
-                    </svg>
-                  </button>
-                  @endif
-                </div>
+              <div>
+                <p class="text-gray-400 dark:text-gray-500 mb-0.5">Durasi</p>
+                <p class="font-semibold tabular-nums text-gray-950 dark:text-gray-100 text-sm">{{ $d['durasi'] }}</p>
               </div>
+            </div>
+
+            <!-- Action buttons row -->
+            <div class="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-800/80">
+              <button type="button"
+                onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
+                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-telkom-600 bg-gray-50 hover:bg-telkom-50 dark:bg-gray-850 dark:hover:bg-telkom-950/20 rounded-xl transition"
+                title="Lihat Bukti">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+                <span>Bukti</span>
+              </button>
+              @if(Auth::id() === $d['user_id'] || Auth::user()->can('manage-presence'))
+              <button type="button"
+                onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')"
+                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 dark:bg-gray-850 dark:hover:bg-blue-950/20 rounded-xl transition"
+                title="Edit">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                <span>Edit</span>
+              </button>
+              <button type="button"
+                onclick="confirmDelete({{ $d['id'] }})"
+                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 dark:bg-gray-850 dark:hover:bg-red-950/20 rounded-xl transition"
+                title="Hapus">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+                <span>Hapus</span>
+              </button>
+              @endif
             </div>
           </div>
         @endforeach
@@ -256,6 +259,23 @@
           <p class="font-medium text-gray-900 dark:text-gray-100 text-xs leading-relaxed" id="proofDesc">Deskripsi</p>
         </div>
       </div>
+    </div>
+  </x-modal>
+
+  <!-- Modal Alert / Warning -->
+  <x-modal id="alertModal" size="sm" title="Perhatian" showCloseButton="true">
+    <div class="flex flex-col items-center text-center p-4">
+      <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-full flex items-center justify-center mb-4">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <p id="alertModalMessage" class="text-sm font-medium text-gray-600 dark:text-gray-400 leading-relaxed">
+        Pesan alert.
+      </p>
+      <button type="button" onclick="closeModal('alertModal')" class="mt-6 w-full py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-950 rounded-xl text-sm font-bold active:scale-95 transition-all shadow-md">
+        Mengerti
+      </button>
     </div>
   </x-modal>
 
@@ -295,16 +315,17 @@
 @push('scripts')
   <script>
     function openProofModal(nama, tgl, jam, desc, foto) {
+      if (!foto) {
+        document.getElementById('alertModalMessage').textContent = 'Bukti kehadiran masih belum ada.';
+        openModal('alertModal');
+        return;
+      }
       document.getElementById('proofDate').innerText = `${tgl || '—'} - ${jam || '—'}`;
       document.getElementById('proofDesc').innerText = desc || 'Tidak ada deskripsi pekerjaan.';
 
       const imgEl = document.getElementById('proofImage');
-      if (foto) {
-        // Handle path rendering correctly
-        imgEl.src = foto.startsWith('http') || foto.startsWith('/') ? foto : '/storage/' + foto;
-      } else {
-        imgEl.src = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=600&auto=format&fit=crop";
-      }
+      // Handle path rendering correctly
+      imgEl.src = foto.startsWith('http') || foto.startsWith('/') ? foto : '/storage/' + foto;
 
       openModal('proofModal');
     }

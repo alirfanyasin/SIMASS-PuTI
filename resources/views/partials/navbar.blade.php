@@ -79,7 +79,7 @@
       </button>
 
       <!-- Notif -->
-      <button
+      {{-- <button
         class="relative p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center">
         <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
           stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
@@ -88,7 +88,7 @@
         </svg>
         <span
           class="absolute top-2 right-2 w-2 h-2 bg-telkom-600 rounded-full ring-2 ring-white dark:ring-gray-900"></span>
-      </button>
+      </button> --}}
 
       <!-- Avatar (mobile) -->
       <a href="{{ route('profile') }}" class="lg:hidden">
