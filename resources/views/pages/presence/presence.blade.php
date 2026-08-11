@@ -33,10 +33,15 @@
             <p id="locationDesc" class="text-xs sm:text-sm text-gray-500 mt-0.5">Mendapatkan koordinat GPS</p>
           </div>
         </div>
-        <div id="locationTag"
-          class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0">
-          <span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span>
-          Menunggu GPS
+        <div class="flex items-center gap-2 shrink-0">
+          <button id="btnRequestGPS" onclick="window.requestGPSPermission()" class="hidden px-3.5 py-1.5 bg-telkom-600 hover:bg-telkom-700 text-white text-xs font-bold rounded-xl active:scale-95 transition-all shadow-sm">
+            Izinkan GPS
+          </button>
+          <div id="locationTag"
+            class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500">
+            <span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span>
+            Menunggu GPS
+          </div>
         </div>
       </div>
 
@@ -84,11 +89,14 @@
           </div>
 
           <!-- Camera Viewfinder -->
-          <div class="relative w-full max-w-sm mx-auto aspect-3/4 bg-gray-100 dark:bg-gray-950 rounded-4xl overflow-hidden flex items-center justify-center border-4 border-dashed border-gray-300 dark:border-gray-700">
+          <div class="relative w-full max-w-sm mx-auto aspect-[3/4] bg-gray-100 dark:bg-gray-950 rounded-4xl overflow-hidden flex items-center justify-center border-4 border-dashed border-gray-300 dark:border-gray-700">
             <!-- Loading State -->
             <div id="cameraLoading" class="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 dark:bg-gray-900 z-20">
-              <div class="w-8 h-8 border-4 border-telkom-200 border-t-telkom-600 rounded-full animate-spin"></div>
-              <p class="text-xs font-semibold mt-3 text-gray-500" id="loadingText">Memuat Model AI...</p>
+              <div id="cameraSpinner" class="w-8 h-8 border-4 border-telkom-200 border-t-telkom-600 rounded-full animate-spin"></div>
+              <p class="text-xs font-semibold mt-3 text-gray-500 text-center px-4" id="loadingText">Memuat Model AI...</p>
+              <button type="button" id="btnRequestCamera" onclick="window.retryCameraAccess()" class="hidden mt-4 px-4 py-2 bg-telkom-600 hover:bg-telkom-700 text-white rounded-xl text-xs font-bold shadow-md active:scale-95 transition-all">
+                Izinkan Kamera
+              </button>
             </div>
 
             <video id="videoFeed" autoplay muted playsinline class="absolute inset-0 w-full h-full object-cover z-10"></video>
@@ -372,12 +380,25 @@
     const btnSubmitFace = document.getElementById('btnSubmitFace');
     const matchStatusText = document.getElementById('matchStatusText');
 
+    window.retryCameraAccess = function() {
+        if (!isModelsLoaded) {
+            initFaceApi();
+        } else {
+            startCamera();
+        }
+    };
+
     async function initFaceApi() {
       if(!video) return; // if presence is done, video element doesn't exist
       
       try {
         const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model';
         
+        const spinner = document.getElementById('cameraSpinner');
+        const btnCamera = document.getElementById('btnRequestCamera');
+        if(spinner) spinner.classList.remove('hidden');
+        if(btnCamera) btnCamera.classList.add('hidden');
+
         await Promise.all([
           faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
           faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
@@ -386,6 +407,7 @@
 
         isModelsLoaded = true;
         loadingText.textContent = "Meminta akses kamera...";
+        if(btnCamera) btnCamera.classList.remove('hidden');
 
         // setup face matcher if data exists
         if(hasRegisteredFace && registeredDescriptorData) {
@@ -398,10 +420,17 @@
       } catch (err) {
         console.error("Error loading face-api models:", err);
         loadingText.textContent = "Gagal memuat AI. Coba reload halaman.";
+        const spinner = document.getElementById('cameraSpinner');
+        if(spinner) spinner.classList.add('hidden');
       }
     }
 
     async function startCamera(deviceId = null) {
+      const spinner = document.getElementById('cameraSpinner');
+      const btnCamera = document.getElementById('btnRequestCamera');
+      if(spinner) spinner.classList.remove('hidden');
+      if(btnCamera) btnCamera.classList.remove('hidden');
+
       if(cameraStream) {
         cameraStream.getTracks().forEach(t => t.stop());
       }
@@ -411,6 +440,9 @@
         video.srcObject = cameraStream;
         try { await video.play(); } catch(e) {}
         
+        if(btnCamera) btnCamera.classList.add('hidden');
+        if(spinner) spinner.classList.add('hidden');
+
         // Populate camera selection dropdown
         const select = document.getElementById('cameraSelect');
         const container = document.getElementById('cameraSelectContainer');
@@ -435,6 +467,8 @@
       } catch (err) {
         console.error("Camera access error:", err);
         loadingText.textContent = "Akses kamera ditolak/gagal.";
+        if(spinner) spinner.classList.add('hidden');
+        if(btnCamera) btnCamera.classList.remove('hidden');
       }
     }
 
@@ -603,23 +637,37 @@
     // Global location validity flag
     window.isLocationValid = false;
 
-    // Auto-init on load if face tab is active
-    document.addEventListener('DOMContentLoaded', () => {
-        if(document.getElementById('tabContent-face')?.classList.contains('block')) {
-            initFaceApi();
-        }
+    // Global location validity flag
+    window.isLocationValid = false;
+    let watchId = null;
+    let map = null;
+    let userMarker = null;
+    let officeCircle = null;
 
-        // Get Geolocation and Check Distance
-        let map = null;
-        let userMarker = null;
-        let officeCircle = null;
+    window.requestGPSPermission = function() {
+        const tag = document.getElementById('locationTag');
+        const btnGPS = document.getElementById('btnRequestGPS');
+        const title = document.getElementById('locationTitle');
+        const desc = document.getElementById('locationDesc');
+
+        if(tag) {
+            tag.className = "flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0";
+            tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span> Menunggu GPS';
+        }
+        if(title) title.textContent = "Mengecek Lokasi...";
+        if(desc) desc.textContent = "Mendapatkan koordinat GPS";
+        if(btnGPS) btnGPS.classList.add('hidden');
 
         if (navigator.geolocation) {
             const officeLat = {{ $officeLat ?? 'null' }};
             const officeLng = {{ $officeLng ?? 'null' }};
             const officeRadius = {{ $officeRadius ?? 100 }};
             
-            navigator.geolocation.watchPosition(position => {
+            if (watchId !== null) {
+                navigator.geolocation.clearWatch(watchId);
+            }
+
+            watchId = navigator.geolocation.watchPosition(position => {
                 const lat = position.coords.latitude;
                 const lng = position.coords.longitude;
                 
@@ -628,10 +676,9 @@
 
                 const banner = document.getElementById('locationBanner');
                 const iconBg = document.getElementById('locationIconBg');
-                const title = document.getElementById('locationTitle');
-                const desc = document.getElementById('locationDesc');
-                const tag = document.getElementById('locationTag');
                 const btnSubmitManual = document.querySelector('#tabContent-manual button[type="submit"]');
+
+                if(btnGPS) btnGPS.classList.add('hidden');
 
                 if (officeLat && officeLng) {
                     const from = turf.point([lng, lat]);
@@ -671,19 +718,22 @@
                     if (distance <= officeRadius) {
                         // Sesuai Radius
                         window.isLocationValid = true;
-                        banner.className = "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
-                        iconBg.className = "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center shrink-0";
-                        title.className = "font-bold text-emerald-900 dark:text-emerald-300 text-base";
-                        title.textContent = `Lokasi Sesuai (Radius ${Math.round(distance)}m)`;
-                        desc.className = "text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-0.5";
-                        desc.textContent = "Anda berada di dalam radius kantor";
-                        tag.className = "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
-                        tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Akurat';
+                        if(banner) banner.className = "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
+                        if(iconBg) iconBg.className = "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center shrink-0";
+                        if(title) {
+                            title.className = "font-bold text-emerald-900 dark:text-emerald-300 text-base";
+                            title.textContent = `Lokasi Sesuai (Radius ${Math.round(distance)}m)`;
+                        }
+                        if(desc) {
+                            desc.className = "text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-0.5";
+                            desc.textContent = "Anda berada di dalam radius kantor";
+                        }
+                        if(tag) {
+                            tag.className = "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
+                            tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Akurat';
+                        }
                         
-                        // Aktifkan button submit manual (Face API punya logic disable sendiri saat wajah tidak cocok, jangan diubah)
                         if(btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
-                        
-                        // Jika sudah diverifikasi wajah sebelumnya, aktifkan tombol
                         if(btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
                         
                         if(officeCircle) {
@@ -692,16 +742,21 @@
                     } else {
                         // Luar Radius
                         window.isLocationValid = false;
-                        banner.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
-                        iconBg.className = "w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 flex items-center justify-center shrink-0";
-                        title.className = "font-bold text-red-900 dark:text-red-300 text-base";
-                        title.textContent = `Lokasi Di Luar Radius (${Math.round(distance)}m)`;
-                        desc.className = "text-xs sm:text-sm text-red-700 dark:text-red-400 mt-0.5";
-                        desc.textContent = `Maksimal radius yang diizinkan adalah ${officeRadius} meter`;
-                        tag.className = "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-                        tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
+                        if(banner) banner.className = "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
+                        if(iconBg) iconBg.className = "w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 flex items-center justify-center shrink-0";
+                        if(title) {
+                            title.className = "font-bold text-red-900 dark:text-red-300 text-base";
+                            title.textContent = `Lokasi Di Luar Radius (${Math.round(distance)}m)`;
+                        }
+                        if(desc) {
+                            desc.className = "text-xs sm:text-sm text-red-700 dark:text-red-400 mt-0.5";
+                            desc.textContent = `Maksimal radius yang diizinkan adalah ${officeRadius} meter`;
+                        }
+                        if(tag) {
+                            tag.className = "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+                            tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
+                        }
                         
-                        // Disable button
                         if(btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
                         if(btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
                         
@@ -710,15 +765,31 @@
                         }
                     }
                 } else {
-                    title.textContent = "Pengaturan Lokasi Belum Diset";
-                    desc.textContent = "Hubungi admin untuk mengatur lokasi kantor";
+                    if(title) title.textContent = "Pengaturan Lokasi Belum Diset";
+                    if(desc) desc.textContent = "Hubungi admin untuk mengatur lokasi kantor";
                 }
             }, error => {
                 console.error("Geolocation error:", error);
-                const title = document.getElementById('locationTitle');
                 if(title) title.textContent = "Gagal Mendapatkan Lokasi";
+                if(desc) desc.textContent = "Izinkan akses GPS di pengaturan browser Anda.";
+                if(tag) {
+                    tag.className = "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+                    tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Akses Ditolak';
+                }
+                if(btnGPS) btnGPS.classList.remove('hidden');
             }, { enableHighAccuracy: true });
+        } else {
+            if(title) title.textContent = "GPS Tidak Didukung";
         }
+    };
+
+    // Auto-init on load if face tab is active
+    document.addEventListener('DOMContentLoaded', () => {
+        if(document.getElementById('tabContent-face')?.classList.contains('block')) {
+            initFaceApi();
+        }
+
+        window.requestGPSPermission();
     });
 
     // Selfie Camera Logic

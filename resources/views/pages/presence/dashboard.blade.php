@@ -22,7 +22,8 @@
               Selamat Pagi
             </span>
             <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">{{ auth()->user()->name }}</h2>
-            <p class="text-white/80 text-xs sm:text-sm mt-1">{{ auth()->user()->position ?? ucfirst(auth()->user()->getRoleNames()->first() ?? 'Staff') }}</p>
+            <p class="text-white/80 text-xs sm:text-sm mt-1">
+              {{ auth()->user()->position ?? ucfirst(auth()->user()->getRoleNames()->first() ?? 'Staff') }}</p>
           </div>
           <div class="flex flex-wrap items-center gap-4 mt-6">
             <div class="flex items-center gap-2 px-3.5 py-2 bg-white/15 backdrop-blur-md rounded-2xl text-xs">
@@ -43,12 +44,17 @@
         <div>
           <div class="flex items-center justify-between mb-4">
             <h3 class="font-bold text-sm">Status Hari Ini</h3>
-            @if(!$todayPresence)
-              <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400">Belum Hadir</span>
+            @if (!$todayPresence)
+              <span
+                class="px-2.5 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400">Belum
+                Hadir</span>
             @elseif(!$todayPresence->jam_pulang)
-              <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Sedang Bekerja</span>
+              <span
+                class="px-2.5 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">Sedang
+                Bekerja</span>
             @else
-              <span class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Selesai</span>
+              <span
+                class="px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Selesai</span>
             @endif
           </div>
           <div class="grid grid-cols-2 gap-4 py-2 border-y border-gray-100 dark:border-gray-800">
@@ -56,11 +62,14 @@
               <p class="text-xs text-gray-400">Check In</p>
               <div class="flex items-center gap-2 mt-0.5">
                 <p class="text-base font-bold text-gray-900 dark:text-gray-100">{{ $todayPresence->jam_masuk ?? '—' }}</p>
-                @if($todayPresence && $todayPresence->jam_masuk && auth()->user()->hasRole('student-staff'))
-                  @if($todayPresence->jam_masuk <= $jamMasukLimit)
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat Waktu</span>
+                @if ($todayPresence && $todayPresence->jam_masuk && auth()->user()->hasRole('student-staff'))
+                  @if ($todayPresence->jam_masuk <= $jamMasukLimit)
+                    <span
+                      class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat
+                      Waktu</span>
                   @else
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
+                    <span
+                      class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
                   @endif
                 @endif
               </div>
@@ -73,19 +82,20 @@
         </div>
 
         @can('create-presence')
-        <a href="{{ route('presence.index') }}"
-          class="mt-4 w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
-          <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          <span>Presensi Sekarang</span>
-        </a>
+          <a href="{{ route('presence.index') }}"
+            class="mt-4 w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
+            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" viewBox="0 0 24 24">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            <span>Presensi Sekarang</span>
+          </a>
         @else
-        <div class="mt-4 w-full py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-xl text-sm font-semibold flex items-center justify-center">
-          Tidak Ada Jadwal Presensi
-        </div>
+          <div
+            class="mt-4 w-full py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-500 rounded-xl text-sm font-semibold flex items-center justify-center">
+            Tidak Ada Jadwal Presensi
+          </div>
         @endcan
       </div>
     </div>
@@ -259,15 +269,18 @@
     <!-- Chart & Aktivitas -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <!-- Chart Container -->
-      <div class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex flex-col">
+      <div
+        class="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex flex-col">
         <div class="flex items-center justify-between mb-4">
           <div>
             <h3 class="font-bold">Statistik Presensi</h3>
             <p class="text-xs text-gray-400" id="chartPeriodLabel">Minggu ini</p>
           </div>
           <div class="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl text-xs">
-            <button id="btnChartWeekly" class="px-3 py-1 rounded-lg bg-white dark:bg-gray-700 font-semibold shadow-sm transition">Mingguan</button>
-            <button id="btnChartMonthly" class="px-3 py-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">Bulanan</button>
+            <button id="btnChartWeekly"
+              class="px-3 py-1 rounded-lg bg-white dark:bg-gray-700 font-semibold shadow-sm transition">Mingguan</button>
+            <button id="btnChartMonthly"
+              class="px-3 py-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition">Bulanan</button>
           </div>
         </div>
         <div class="flex-1 w-full min-h-[250px]">
@@ -284,38 +297,57 @@
         </div>
         <div class="space-y-3">
           @forelse($recentActivity as $activity)
-          @if($activity->type == 'in')
-          <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2">
-                <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
-                @if(auth()->user()->hasRole('student-staff'))
-                  @if($activity->time <= $jamMasukLimit)
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat Waktu</span>
-                  @else
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
-                  @endif
-                @endif
+            @if ($activity->type == 'in')
+              <div class="flex gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
+                    @if (auth()->user()->hasRole('student-staff'))
+                      @if ($activity->time <= $jamMasukLimit)
+                        <span
+                          class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat
+                          Waktu</span>
+                      @else
+                        <span
+                          class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">Terlambat</span>
+                      @endif
+                    @endif
+                  </div>
+                  <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if (auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence'))
+                      <span class="font-bold text-gray-700 dark:text-gray-300">•
+                        {{ $activity->user->name ?? 'Unknown' }}</span>
+                    @endif
+                  </p>
+                </div>
               </div>
-              <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if(auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name ?? 'Unknown' }}</span> @endif</p>
-            </div>
-          </div>
-          @else
-          <div class="flex gap-3">
-            <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-              <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12" /></svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-sm font-medium">Check Out ({{ $activity->date }})</p>
-              <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if(auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence')) <span class="font-bold text-gray-700 dark:text-gray-300">• {{ $activity->user->name ?? 'Unknown' }}</span> @endif</p>
-            </div>
-          </div>
-          @endif
+            @else
+              <div class="flex gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
+                  <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-sm font-medium">Check Out ({{ $activity->date }})</p>
+                  <p class="text-xs text-gray-500">{{ $activity->time }} • PUK @if (auth()->user()->hasRole('student-staff') || auth()->user()->can('manage-presence'))
+                      <span class="font-bold text-gray-700 dark:text-gray-300">•
+                        {{ $activity->user->name ?? 'Unknown' }}</span>
+                    @endif
+                  </p>
+                </div>
+              </div>
+            @endif
           @empty
-          <p class="text-sm text-gray-500 text-center py-4">Belum ada aktivitas.</p>
+            <p class="text-sm text-gray-500 text-center py-4">Belum ada aktivitas.</p>
           @endforelse
         </div>
       </div>
@@ -355,9 +387,9 @@
       if (!chartEl) return;
 
       const isDark = document.documentElement.classList.contains('dark');
-      
+
       const chartData = @json($chartData);
-      
+
       const options = {
         series: [{
           name: 'Hadir',
@@ -392,8 +424,12 @@
         },
         xaxis: {
           categories: chartData.weekly.labels,
-          axisBorder: { show: false },
-          axisTicks: { show: false }
+          axisBorder: {
+            show: false
+          },
+          axisTicks: {
+            show: false
+          }
         },
         yaxis: {
           title: {
@@ -421,7 +457,7 @@
         },
         tooltip: {
           y: {
-            formatter: function (val) {
+            formatter: function(val) {
               return val + " jam"
             }
           }
@@ -437,14 +473,16 @@
       const label = document.getElementById('chartPeriodLabel');
 
       btnWeekly.addEventListener('click', () => {
-        btnWeekly.classList.add('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900', 'dark:text-white');
+        btnWeekly.classList.add('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900',
+          'dark:text-white');
         btnWeekly.classList.remove('text-gray-400', 'hover:text-gray-600', 'dark:hover:text-gray-200');
-        
-        btnMonthly.classList.remove('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900', 'dark:text-white');
+
+        btnMonthly.classList.remove('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900',
+          'dark:text-white');
         btnMonthly.classList.add('text-gray-400', 'hover:text-gray-600', 'dark:hover:text-gray-200');
-        
+
         label.textContent = 'Minggu ini';
-        
+
         chart.updateSeries([{
           name: 'Hadir',
           data: chartData.weekly.hadir
@@ -453,17 +491,21 @@
           data: chartData.weekly.lembur
         }]);
         chart.updateOptions({
-          xaxis: { categories: chartData.weekly.labels }
+          xaxis: {
+            categories: chartData.weekly.labels
+          }
         });
       });
 
       btnMonthly.addEventListener('click', () => {
-        btnMonthly.classList.add('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900', 'dark:text-white');
+        btnMonthly.classList.add('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900',
+          'dark:text-white');
         btnMonthly.classList.remove('text-gray-400', 'hover:text-gray-600', 'dark:hover:text-gray-200');
-        
-        btnWeekly.classList.remove('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900', 'dark:text-white');
+
+        btnWeekly.classList.remove('bg-white', 'dark:bg-gray-700', 'font-semibold', 'shadow-sm', 'text-gray-900',
+          'dark:text-white');
         btnWeekly.classList.add('text-gray-400', 'hover:text-gray-600', 'dark:hover:text-gray-200');
-        
+
         label.textContent = 'Bulan ini';
 
         chart.updateSeries([{
@@ -474,7 +516,9 @@
           data: chartData.monthly.lembur
         }]);
         chart.updateOptions({
-          xaxis: { categories: chartData.monthly.labels }
+          xaxis: {
+            categories: chartData.monthly.labels
+          }
         });
       });
     });

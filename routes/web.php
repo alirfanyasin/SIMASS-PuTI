@@ -28,14 +28,14 @@ Route::post('/logout', [LoginController::class, 'logout'])
 // ---------------------------------------------------------
 Route::middleware('auth')->group(function () {
     // Presence Routes
-    require __DIR__.'/presence.php';
+    require __DIR__ . '/presence.php';
 
     // PDF Export
     Route::get('/export-pdf', [PresenceController::class, 'exportPdf'])->name('export-pdf');
 
     // Ticketing Routes
     Route::prefix('ticketing')->group(function () {
-        require __DIR__.'/ticketing.php';
+        require __DIR__ . '/ticketing.php';
     });
 
     // Holiday Management (super-admin + staff only)

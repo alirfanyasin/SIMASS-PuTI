@@ -13,9 +13,9 @@ test('login page is accessible to guests', function () {
         ->assertSee('Username SSO');
 });
 
-test('unauthenticated user is redirected to login from protected routes', function () {
+test('unauthenticated user is redirected to landing page from protected routes', function () {
     $this->get('/presence/dashboard')
-        ->assertRedirect('/login');
+        ->assertRedirect('/');
 });
 
 test('authenticated user can access dashboard', function () {
@@ -28,11 +28,11 @@ test('authenticated user can access dashboard', function () {
 
 test('guest cannot access presence routes', function () {
     $this->get('/presence/')
-        ->assertRedirect('/login');
+        ->assertRedirect('/');
 
     $this->get('/presence/list')
-        ->assertRedirect('/login');
+        ->assertRedirect('/');
 
     $this->get('/presence/overtime')
-        ->assertRedirect('/login');
+        ->assertRedirect('/');
 });
