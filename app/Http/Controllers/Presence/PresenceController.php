@@ -79,14 +79,20 @@ class PresenceController extends Controller
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
+            // Backend coordinate validation (primary fake GPS defense)
+            $coordError = $this->validateCoordinates((float) $lat, (float) $lng);
+            if ($coordError) {
+                return back()->withErrors(['location' => $coordError]);
+            }
+
             $officeLat = Setting::where('key', 'office_latitude')->value('value');
             $officeLng = Setting::where('key', 'office_longitude')->value('value');
             $officeRadius = Setting::where('key', 'office_radius')->value('value') ?: 100;
 
             if ($officeLat && $officeLng) {
-                $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
+                $distance = $this->calculateDistance((float) $officeLat, (float) $officeLng, (float) $lat, (float) $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -127,14 +133,20 @@ class PresenceController extends Controller
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
+            // Backend coordinate validation (primary fake GPS defense)
+            $coordError = $this->validateCoordinates((float) $lat, (float) $lng);
+            if ($coordError) {
+                return back()->withErrors(['location' => $coordError]);
+            }
+
             $officeLat = Setting::where('key', 'office_latitude')->value('value');
             $officeLng = Setting::where('key', 'office_longitude')->value('value');
             $officeRadius = Setting::where('key', 'office_radius')->value('value') ?: 100;
 
             if ($officeLat && $officeLng) {
-                $distance = $this->calculateDistance($officeLat, $officeLng, $lat, $lng);
+                $distance = $this->calculateDistance((float) $officeLat, (float) $officeLng, (float) $lat, (float) $lng);
                 if ($distance > $officeRadius) {
-                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi (' . round($distance) . ' meter dari batas yang diizinkan).']);
+                    return back()->withErrors(['location' => 'Anda berada di luar jangkauan presensi ('.round($distance).' meter dari batas yang diizinkan).']);
                 }
             }
         }
@@ -149,7 +161,7 @@ class PresenceController extends Controller
             'foto' => ['nullable', 'image', 'max:2048'],
         ]);
 
-        $jamMasuk = Carbon::parse($presence->tanggal . ' ' . $presence->jam_masuk);
+        $jamMasuk = Carbon::parse($presence->tanggal.' '.$presence->jam_masuk);
         $totalDetik = $jamMasuk->diffInSeconds($now);
         $jam = floor($totalDetik / 3600);
         $menit = floor(($totalDetik % 3600) / 60);
@@ -164,11 +176,11 @@ class PresenceController extends Controller
             $base64 = $request->input('foto_base64');
             $imageParts = explode(';base64,', $base64);
             $imageBase64 = base64_decode($imageParts[1]);
-            $fileName = uniqid() . '.jpg';
+            $fileName = uniqid().'.jpg';
             $fotoPath = $this->compressAndSaveImage($imageBase64, $fileName);
         } elseif ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $fileName = uniqid() . '.jpg';
+            $fileName = uniqid().'.jpg';
             $fotoPath = $this->compressAndSaveImage(file_get_contents($file->getRealPath()), $fileName);
         }
 
@@ -217,7 +229,7 @@ class PresenceController extends Controller
 
         $presences = $query->get();
 
-        $presensiData = $presences->map(fn($p) => $this->formatPresenceRow($p))->toArray();
+        $presensiData = $presences->map(fn ($p) => $this->formatPresenceRow($p))->toArray();
 
         $statusMap = $this->getStatusMap();
         $users = User::role('student-staff')->get();
@@ -262,7 +274,7 @@ class PresenceController extends Controller
 
                 $grouped[$periodKey] = [
                     'id' => $periodKey,
-                    'title' => $this->getMonthName($payMonth) . ' ' . $payYear,
+                    'title' => $this->getMonthName($payMonth).' '.$payYear,
                     'period' => $this->formatPeriodLabel($effStart, $effEnd),
                     'effStart' => $effStart->format('Y-m-d'),
                     'effEnd' => $effEnd->format('Y-m-d'),
@@ -275,16 +287,16 @@ class PresenceController extends Controller
             if ($p->tanggal >= $grouped[$periodKey]['effStart'] && $p->tanggal <= $grouped[$periodKey]['effEnd']) {
                 $actual = 0;
                 if ($p->jam_masuk && $p->jam_pulang) {
-                    $actual = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal . ' ' . $p->jam_pulang));
+                    $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
                 }
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
                 $total = $actual + $transferred;
 
-                $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-') . ' - ' . ($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
+                $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-').' - '.($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
                 if ($actual === 0 && $total > 0 && $p->jam_masuk) {
-                    $start = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
+                    $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
                     $end = $start->copy()->addMinutes($total);
-                    $waktu = $start->format('H:i') . ' - ' . $end->format('H:i');
+                    $waktu = $start->format('H:i').' - '.$end->format('H:i');
                 }
 
                 $grouped[$periodKey]['total']++;
@@ -297,7 +309,7 @@ class PresenceController extends Controller
                     'waktu' => $waktu,
                     'jam' => $p->total_jam ?? '-',
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-                    'foto' => $p->foto ? url('storage/' . $p->foto) : null,
+                    'foto' => $p->foto ? url('storage/'.$p->foto) : null,
                 ];
             }
         }
@@ -305,7 +317,7 @@ class PresenceController extends Controller
         krsort($grouped);
 
         $months = array_map(function ($g) {
-            $g['staff'] = count($g['staffs']) . ' Orang';
+            $g['staff'] = count($g['staffs']).' Orang';
 
             return $g;
         }, $grouped);
@@ -416,8 +428,8 @@ class PresenceController extends Controller
             $stdPulang = '-';
 
             if ($p->jam_masuk && $p->jam_pulang) {
-                $masuk = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
-                $pulang = Carbon::parse($p->tanggal . ' ' . $p->jam_pulang);
+                $masuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
+                $pulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
 
                 $actual = $masuk->diffInMinutes($pulang);
                 $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
@@ -446,8 +458,8 @@ class PresenceController extends Controller
 
             $formattedData[] = (object) [
                 'tanggal' => Carbon::parse($p->tanggal)->locale('id')->translatedFormat('l, d F Y'),
-                'waktu' => $stdMasuk !== '-' ? $stdMasuk . ' s/d ' . $stdPulang : '-',
-                'durasi' => $jam > 0 ? $jam . ' Jam' : '-',
+                'waktu' => $stdMasuk !== '-' ? $stdMasuk.' s/d '.$stdPulang : '-',
+                'durasi' => $jam > 0 ? $jam.' Jam' : '-',
                 'pekerjaan' => $p->pekerjaan ?? '-',
             ];
         }
@@ -463,7 +475,69 @@ class PresenceController extends Controller
     // Private Helpers
     // -------------------------------------------------------
 
-    private function calculateDistance($lat1, $lon1, $lat2, $lon2)
+    /**
+     * Validate GPS coordinates against known fake GPS patterns.
+     * Returns an error message string if invalid, or null if OK.
+     */
+    private function validateCoordinates(float $lat, float $lng): ?string
+    {
+        // 1. Basic range check
+        if ($lat < -90 || $lat > 90 || $lng < -180 || $lng > 180) {
+            return 'Koordinat GPS tidak valid (di luar jangkauan geografis).';
+        }
+
+        // 2. Null-island check (0,0 is a classic fake GPS default)
+        if ($lat === 0.0 && $lng === 0.0) {
+            return 'Koordinat GPS tidak valid (titik nol terdeteksi).';
+        }
+
+        // 3. Suspiciously round coordinates — fake GPS apps often produce
+        //    coordinates with very few decimal digits (e.g. 1.3000000 or -6.2000)
+        $latStr = (string) $lat;
+        $lngStr = (string) $lng;
+        $latDecimals = strlen(strstr($latStr, '.') ?: '') - 1;
+        $lngDecimals = strlen(strstr($lngStr, '.') ?: '') - 1;
+
+        if ($latDecimals < 4 || $lngDecimals < 4) {
+            return 'Koordinat GPS mencurigakan (presisi tidak mencukupi). Matikan aplikasi GPS palsu jika ada.';
+        }
+
+        // 4. Known Chrome DevTools default coordinates
+        $devToolsPresets = [
+            [51.507351, -0.127758],   // London (Chrome default)
+            [35.676192, 139.650311],  // Tokyo
+            [-22.906847, -43.172897], // Rio de Janeiro
+            [40.714272, -74.005966],  // New York
+            [48.856613, 2.352222],    // Paris
+            [-33.868820, 151.209296], // Sydney
+        ];
+        foreach ($devToolsPresets as [$pLat, $pLng]) {
+            if (abs($lat - $pLat) < 0.01 && abs($lng - $pLng) < 0.01) {
+                return 'Koordinat GPS tidak valid (Developer Tools Sensors terdeteksi).';
+            }
+        }
+
+        // 5. Indonesia bounding box check (loose — only if office is configured)
+        $officeLat = Setting::where('key', 'office_latitude')->value('value');
+        $officeLng = Setting::where('key', 'office_longitude')->value('value');
+
+        if ($officeLat && $officeLng) {
+            // Derive a generous bounding box around the office (±2 degrees ≈ ±220 km)
+            $buffer = 2.0;
+            $minLat = (float) $officeLat - $buffer;
+            $maxLat = (float) $officeLat + $buffer;
+            $minLng = (float) $officeLng - $buffer;
+            $maxLng = (float) $officeLng + $buffer;
+
+            if ($lat < $minLat || $lat > $maxLat || $lng < $minLng || $lng > $maxLng) {
+                return 'Lokasi terlalu jauh dari area kantor. GPS palsu mungkin aktif.';
+            }
+        }
+
+        return null;
+    }
+
+    private function calculateDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
         $earthRadius = 6371000; // in meters
         $latDelta = deg2rad($lat2 - $lat1);
@@ -505,13 +579,13 @@ class PresenceController extends Controller
 
         $actual = 0;
         if ($p->jam_masuk && $p->jam_pulang) {
-            $actual = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal . ' ' . $p->jam_pulang));
+            $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
         }
         $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
         $total = $actual + $transferred;
 
         if ($actual === 0 && $total > 0 && $p->jam_masuk) {
-            $start = Carbon::parse($p->tanggal . ' ' . $p->jam_masuk);
+            $start = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
             $end = $start->copy()->addMinutes($total);
             $jamMasuk = $start->format('H:i');
             $jamPulang = $end->format('H:i');
@@ -536,7 +610,7 @@ class PresenceController extends Controller
             'durasi' => $p->total_jam ?? '—',
             'status' => $status,
             'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
-            'foto' => $p->foto ? url('storage/' . $p->foto) : null,
+            'foto' => $p->foto ? url('storage/'.$p->foto) : null,
         ];
     }
 
@@ -586,16 +660,16 @@ class PresenceController extends Controller
 
     private function formatPeriodLabel(Carbon $start, Carbon $end): string
     {
-        return $start->format('d') . ' ' . $this->getMonthName((int) $start->format('m')) . ' ' . $start->format('Y')
-            . ' - '
-            . $end->format('d') . ' ' . $this->getMonthName((int) $end->format('m')) . ' ' . $end->format('Y');
+        return $start->format('d').' '.$this->getMonthName((int) $start->format('m')).' '.$start->format('Y')
+            .' - '
+            .$end->format('d').' '.$this->getMonthName((int) $end->format('m')).' '.$end->format('Y');
     }
 
     private function compressAndSaveImage(string $imageData, string $filename): string
     {
         $image = @imagecreatefromstring($imageData);
         if (! $image) {
-            $path = 'presence/' . $filename;
+            $path = 'presence/'.$filename;
             Storage::disk('public')->put($path, $imageData);
 
             return $path;
@@ -630,7 +704,7 @@ class PresenceController extends Controller
 
         imagedestroy($image);
 
-        $path = 'presence/' . $filename;
+        $path = 'presence/'.$filename;
         Storage::disk('public')->put($path, fopen($tempFile, 'r'));
 
         @unlink($tempFile);

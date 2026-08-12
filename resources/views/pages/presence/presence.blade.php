@@ -381,16 +381,18 @@
       let lastLat = null;
       let lastLng = null;
       let lastAccuracy = null;
-      let driftCheckCount = 0;
+      let gpsUpdateCount = 0;
       let coordinateVarianceDetected = false;
+      // Track whether we have a HIGH-ACCURACY validated fix (required for attendance)
+      let isHighAccuracyValidated = false;
 
       // Intercept form submissions to enforce actual browser coordinates
       document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form.action && (form.action.includes('check-in') || form.action.includes('check-out'))) {
-          if (!window.isLocationValid) {
+          if (!window.isLocationValid || !isHighAccuracyValidated) {
             e.preventDefault();
-            alert('Akses Ditolak: Lokasi tidak valid atau terdeteksi menggunakan GPS palsu.');
+            alert('Akses Ditolak: Lokasi belum terverifikasi atau terdeteksi menggunakan GPS palsu. Tunggu hingga GPS akurat terverifikasi.');
             return false;
           }
 
@@ -403,76 +405,91 @@
         }
       });
 
-      function detectFakeLocation(position) {
+      /**
+       * Deteksi GPS palsu berbasis analisis PERILAKU sinyal, bukan native code check.
+       * Native code check mudah ditembus ekstensi Fake GPS modern.
+       */
+      function detectFakeLocation(position, isHighAccuracy) {
         const coords = position.coords;
+        const now = Date.now();
 
-        // 1. Check if Geolocation APIs are native (Detect Chrome extensions and basic JS overrides)
-        const isGCPNative = navigator.geolocation.getCurrentPosition.toString().includes('[native code]');
-        const isWPNative = navigator.geolocation.watchPosition.toString().includes('[native code]');
-        if (!isGCPNative || !isWPNative) {
-          return {
-            spoofed: true,
-            reason: "Aplikasi/ekstensi lokasi palsu (GPS Spoofing) terdeteksi."
-          };
-        }
-
-        // 2. Check prototype tampering
-        try {
-          if (!Geolocation.prototype.getCurrentPosition.toString().includes('[native code]') ||
-            !Geolocation.prototype.watchPosition.toString().includes('[native code]')) {
+        // 1. Timestamp staleness check — GPS palsu sering pakai timestamp lama / fixed
+        if (isHighAccuracy) {
+          const ageSec = (now - position.timestamp) / 1000;
+          if (ageSec > 30) {
             return {
               spoofed: true,
-              reason: "Modifikasi Geolocation terdeteksi (Gaya Tidak Valid)."
+              reason: 'Sinyal GPS kedaluwarsa (timestamp terlalu lama). GPS palsu mungkin aktif.'
             };
           }
-        } catch (e) {}
+        }
 
-        // 3. Automation checks
+        // 2. Automation / headless browser check
         if (navigator.webdriver) {
           return {
             spoofed: true,
-            reason: "Akses menggunakan browser otomatis dilarang."
+            reason: 'Akses menggunakan browser otomatis dilarang.'
           };
         }
 
-        // 4. Invalid or mock accuracy checks
-        // Mobile GPS accuracy is never exactly 0 or 1.
+        // 3. Accuracy = 0 or 1 — impossible for real GPS
         if (coords.accuracy === 0 || coords.accuracy === 1) {
           return {
             spoofed: true,
-            reason: "Akurasi GPS tidak valid (GPS Palsu terdeteksi)."
+            reason: 'Akurasi GPS tidak valid (GPS Palsu terdeteksi).'
           };
         }
 
-        // 5. Chrome DevTools Default Geolocation Override detection
-        if (coords.accuracy === 150 &&
-          (Math.abs(coords.latitude - 51.507351) < 0.001 ||
-            Math.abs(coords.latitude - 35.676192) < 0.001 ||
-            Math.abs(coords.latitude - -22.906847) < 0.001)) {
+        // 4. Chrome DevTools default sensor presets
+        const devToolsPresets = [
+          [51.507351, -0.127758],
+          [35.676192, 139.650311],
+          [-22.906847, -43.172897],
+          [40.714272, -74.005966],
+          [48.856613, 2.352222],
+          [-33.868820, 151.209296],
+        ];
+        for (const [pLat, pLng] of devToolsPresets) {
+          if (Math.abs(coords.latitude - pLat) < 0.01 && Math.abs(coords.longitude - pLng) < 0.01) {
+            return {
+              spoofed: true,
+              reason: 'Developer Tools Sensors terdeteksi.'
+            };
+          }
+        }
+
+        // 5. Suspiciously low decimal precision — real GPS has >= 5 decimal places
+        //    Fake GPS apps often set e.g. -6.2000000 or 107.0000
+        const latStr = coords.latitude.toString();
+        const lngStr = coords.longitude.toString();
+        const latDec = (latStr.split('.')[1] || '').length;
+        const lngDec = (lngStr.split('.')[1] || '').length;
+        if (latDec < 4 || lngDec < 4) {
           return {
             spoofed: true,
-            reason: "Developer Tools Sensors terdeteksi."
+            reason: 'Presisi koordinat GPS mencurigakan. Matikan aplikasi GPS palsu jika ada.'
           };
         }
 
-        // 6. GPS Drift check (only for mobile devices where touch is present)
-        if (lastLat !== null && lastLng !== null) {
+        // 6. No variance after multiple high-accuracy updates (mobile only)
+        //    Real GPS always has micro-fluctuations. A fixed coordinate = spoofed.
+        if (isHighAccuracy && lastLat !== null && lastLng !== null) {
           const latDiff = Math.abs(coords.latitude - lastLat);
           const lngDiff = Math.abs(coords.longitude - lastLng);
-          const accDiff = Math.abs(coords.accuracy - lastAccuracy);
+          const accDiff = Math.abs(coords.accuracy - (lastAccuracy || 0));
 
-          if (latDiff > 0 || lngDiff > 0 || accDiff > 0) {
+          if (latDiff > 0.000001 || lngDiff > 0.000001 || accDiff > 0) {
             coordinateVarianceDetected = true;
           }
 
-          driftCheckCount++;
+          gpsUpdateCount++;
 
           const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-          // If GPS is under 25m accuracy (high quality mobile GPS), it MUST have some drift fluctuations after 4 updates.
-          if (isMobileDevice && driftCheckCount >= 4 && !coordinateVarianceDetected && coords.accuracy < 25) {
+          // After 5 high-accuracy updates, real mobile GPS MUST show some fluctuation
+          if (isMobileDevice && gpsUpdateCount >= 5 && !coordinateVarianceDetected && coords.accuracy < 30) {
             return {
               spoofed: true,
-              reason: "GPS palsu terdeteksi (Tidak ada fluktuasi sinyal satelit)."
+              reason: 'GPS palsu terdeteksi (Koordinat tidak berfluktuasi — sinyal satelit palsu).'
             };
           }
         }
@@ -481,9 +498,7 @@
         lastLng = coords.longitude;
         lastAccuracy = coords.accuracy;
 
-        return {
-          spoofed: false
-        };
+        return { spoofed: false };
       }
 
       function switchTab(tabId) {
@@ -851,14 +866,57 @@
 
       // Global location validity flag
       window.isLocationValid = false;
-
-      // Global location validity flag
-      window.isLocationValid = false;
       let watchId = null;
+      let highAccWatchId = null;
       let map = null;
       let userMarker = null;
       let officeCircle = null;
 
+      /**
+       * Update the map marker only — does NOT affect button state.
+       * Called for both low-accuracy (fast) and high-accuracy positions.
+       */
+      function updateMapDisplay(lat, lng) {
+        const officeLat = {{ $officeLat ?? 'null' }};
+        const officeLng = {{ $officeLng ?? 'null' }};
+        const officeRadius = {{ $officeRadius ?? 100 }};
+
+        if (!officeLat || !officeLng) return;
+
+        const mapContainer = document.getElementById('mapContainer');
+        if (mapContainer) {
+          mapContainer.classList.remove('hidden');
+
+          if (!map) {
+            map = L.map('map', { zoomControl: false }).setView([officeLat, officeLng], 17);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+              attribution: '&copy; OpenStreetMap'
+            }).addTo(map);
+
+            officeCircle = L.circle([officeLat, officeLng], {
+              color: '#ef4444',
+              fillColor: '#ef4444',
+              fillOpacity: 0.1,
+              weight: 2,
+              radius: officeRadius
+            }).addTo(map);
+          }
+
+          if (userMarker) {
+            userMarker.setLatLng([lat, lng]);
+          } else {
+            userMarker = L.marker([lat, lng]).addTo(map).bindPopup('Lokasi Anda').openPopup();
+          }
+
+          const group = new L.featureGroup([userMarker, officeCircle]);
+          map.fitBounds(group.getBounds(), { padding: [30, 30] });
+        }
+      }
+
+      /**
+       * processPosition: validates a HIGH-ACCURACY GPS fix.
+       * This controls whether attendance buttons are enabled.
+       */
       function processPosition(position) {
         const tag = document.getElementById('locationTag');
         const btnGPS = document.getElementById('btnRequestGPS');
@@ -872,10 +930,11 @@
         const officeLng = {{ $officeLng ?? 'null' }};
         const officeRadius = {{ $officeRadius ?? 100 }};
 
-        // 1. Run fake location detection
-        const check = detectFakeLocation(position);
+        // Run behavioral fake GPS detection (high-accuracy mode)
+        const check = detectFakeLocation(position, true);
         if (check.spoofed) {
           window.isLocationValid = false;
+          isHighAccuracyValidated = false;
           if (banner) banner.className =
             "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
           if (iconBg) iconBg.className =
@@ -893,13 +952,13 @@
               "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
             tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> GPS Tidak Aman';
           }
-
           if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
           if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
 
-          if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
+          // Stop watching after spoofing detected
+          if (highAccWatchId !== null) {
+            navigator.geolocation.clearWatch(highAccWatchId);
+            highAccWatchId = null;
           }
           return true; // Spoofed
         }
@@ -907,6 +966,8 @@
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
 
+        // Only high-accuracy validated coordinates are used for form submission
+        isHighAccuracyValidated = true;
         realLatitude = lat;
         realLongitude = lng;
 
@@ -915,49 +976,15 @@
 
         if (btnGPS) btnGPS.classList.add('hidden');
 
+        // Update map with validated position
+        updateMapDisplay(lat, lng);
+
         if (officeLat && officeLng) {
           const from = turf.point([lng, lat]);
           const to = turf.point([officeLng, officeLat]);
-          const distance = turf.distance(from, to, {
-            units: 'meters'
-          });
-
-          // Tampilkan Map
-          const mapContainer = document.getElementById('mapContainer');
-          if (mapContainer) {
-            mapContainer.classList.remove('hidden');
-
-            if (!map) {
-              map = L.map('map', {
-                zoomControl: false
-              }).setView([officeLat, officeLng], 17);
-              L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap'
-              }).addTo(map);
-
-              officeCircle = L.circle([officeLat, officeLng], {
-                color: '#ef4444',
-                fillColor: '#ef4444',
-                fillOpacity: 0.1,
-                weight: 2,
-                radius: officeRadius
-              }).addTo(map);
-            }
-
-            if (userMarker) {
-              userMarker.setLatLng([lat, lng]);
-            } else {
-              userMarker = L.marker([lat, lng]).addTo(map).bindPopup('Lokasi Anda').openPopup();
-            }
-
-            const group = new L.featureGroup([userMarker, officeCircle]);
-            map.fitBounds(group.getBounds(), {
-              padding: [30, 30]
-            });
-          }
+          const distance = turf.distance(from, to, { units: 'meters' });
 
           if (distance <= officeRadius) {
-            // Sesuai Radius
             window.isLocationValid = true;
             if (banner) banner.className =
               "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
@@ -965,29 +992,21 @@
               "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center shrink-0";
             if (title) {
               title.className = "font-bold text-emerald-900 dark:text-emerald-300 text-base";
-              title.textContent = `Lokasi Sesuai (Radius ${Math.round(distance)}m)`;
+              title.textContent = `Lokasi Terverifikasi (${Math.round(distance)}m)`;
             }
             if (desc) {
               desc.className = "text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-0.5";
-              desc.textContent = "Anda berada di dalam radius kantor";
+              desc.textContent = "GPS akurat — Anda berada di dalam radius kantor";
             }
             if (tag) {
               tag.className =
                 "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Akurat';
+              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Terverifikasi';
             }
-
             if (btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
             if (btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
-
-            if (officeCircle) {
-              officeCircle.setStyle({
-                color: '#10b981',
-                fillColor: '#10b981'
-              });
-            }
+            if (officeCircle) officeCircle.setStyle({ color: '#10b981', fillColor: '#10b981' });
           } else {
-            // Luar Radius
             window.isLocationValid = false;
             if (banner) banner.className =
               "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
@@ -1006,16 +1025,9 @@
                 "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
               tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
             }
-
             if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
             if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
-
-            if (officeCircle) {
-              officeCircle.setStyle({
-                color: '#ef4444',
-                fillColor: '#ef4444'
-              });
-            }
+            if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
           }
         } else {
           if (title) title.textContent = "Pengaturan Lokasi Belum Diset";
@@ -1039,63 +1051,75 @@
         if (desc) desc.textContent = "Mendapatkan koordinat GPS";
         if (btnGPS) btnGPS.classList.add('hidden');
 
-        if (navigator.geolocation) {
-          if (watchId !== null) {
-            navigator.geolocation.clearWatch(watchId);
-            watchId = null;
-          }
-
-          // Step 1: Try high accuracy getCurrentPosition with a short timeout
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              const isSpoofed = processPosition(position);
-              if (!isSpoofed) {
-                startWatchingGPS();
-              }
-            },
-            error => {
-              console.warn("High accuracy GPS failed/timed out, attempting low accuracy fallback...", error);
-              // Step 2: Try low accuracy getCurrentPosition fallback
-              navigator.geolocation.getCurrentPosition(
-                position => {
-                  const isSpoofed = processPosition(position);
-                  if (!isSpoofed) {
-                    startWatchingGPS();
-                  }
-                },
-                errorFallback => {
-                  console.error("GPS Fallback failed too:", errorFallback);
-                  handleLocationError(errorFallback);
-                }, {
-                  enableHighAccuracy: false,
-                  timeout: 5000,
-                  maximumAge: 30000
-                }
-              );
-            }, {
-              enableHighAccuracy: true,
-              timeout: 5000,
-              maximumAge: 0
-            }
-          );
-        } else {
+        if (!navigator.geolocation) {
           if (title) title.textContent = "GPS Tidak Didukung";
+          return;
         }
+
+        // Clear any previous watches
+        if (watchId !== null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+        if (highAccWatchId !== null) { navigator.geolocation.clearWatch(highAccWatchId); highAccWatchId = null; }
+
+        // ── PHASE 1: Fast display (low accuracy / cached) ──────────────────────
+        // Show map position quickly without blocking attendance button.
+        // We use maximumAge to accept a cached position immediately.
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            // Just update the map marker for fast feedback, no fake-GPS check yet
+            updateMapDisplay(position.coords.latitude, position.coords.longitude);
+            // Show loading indicator while high-accuracy kicks in
+            if (tag) {
+              tag.className =
+                "flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0";
+              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Memverifikasi GPS...';
+            }
+            if (title) {
+              title.className = "font-bold text-amber-900 dark:text-amber-300 text-base";
+              title.textContent = "Memverifikasi GPS...";
+            }
+            if (desc) {
+              desc.className = "text-xs sm:text-sm text-amber-700 dark:text-amber-400 mt-0.5";
+              desc.textContent = "Peta ditampilkan. Menunggu GPS akurat untuk absensi.";
+            }
+          },
+          () => { /* Phase 1 failure is non-critical, Phase 2 will handle it */ },
+          { enableHighAccuracy: false, timeout: 3000, maximumAge: 60000 }
+        );
+
+        // ── PHASE 2: Strict validation (high accuracy, no cache) ───────────────
+        // Only after this succeeds will attendance buttons become enabled.
+        navigator.geolocation.getCurrentPosition(
+          position => {
+            const isSpoofed = processPosition(position);
+            if (!isSpoofed) {
+              startWatchingGPS();
+            }
+          },
+          error => {
+            console.warn('High accuracy GPS failed, trying low accuracy fallback...', error);
+            // Phase 2 fallback: low accuracy — still run full fake GPS check
+            navigator.geolocation.getCurrentPosition(
+              position => {
+                const isSpoofed = processPosition(position);
+                if (!isSpoofed) startWatchingGPS();
+              },
+              errorFallback => {
+                console.error('GPS Fallback failed too:', errorFallback);
+                handleLocationError(errorFallback);
+              },
+              { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
+            );
+          },
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
       };
 
       function startWatchingGPS() {
-        if (watchId !== null) return;
-        watchId = navigator.geolocation.watchPosition(
-          position => {
-            processPosition(position);
-          },
-          error => {
-            console.error("Background GPS watch error:", error);
-          }, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
+        if (highAccWatchId !== null) return;
+        highAccWatchId = navigator.geolocation.watchPosition(
+          position => { processPosition(position); },
+          error => { console.error('Background GPS watch error:', error); },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
         );
       }
 
