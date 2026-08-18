@@ -72,7 +72,7 @@
             <line x1="12" y1="16" x2="12" y2="12" />
             <line x1="12" y1="8" x2="12.01" y2="8" />
           </svg>
-          <p>Menampilkan data presensi dari tanggal <strong>16 Juli 2026</strong> sampai <strong>14 Agustus 2026</strong>.
+          <p>Menampilkan data presensi dari tanggal <strong>{{ \Carbon\Carbon::parse($startDate)->format('d M Y') }}</strong> sampai <strong>{{ \Carbon\Carbon::parse($endDate)->format('d M Y') }}</strong>.
           </p>
         </div>
       </form>

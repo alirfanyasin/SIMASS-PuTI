@@ -159,6 +159,7 @@
                   @csrf
                   <input type="hidden" name="latitude" class="geo-lat">
                   <input type="hidden" name="longitude" class="geo-lng">
+                  <input type="hidden" name="location_token" class="geo-token">
 
                   @if ($todayPresence && !$todayPresence->jam_pulang)
                     <div class="space-y-4 mb-4 text-left">
@@ -252,6 +253,7 @@
               @csrf
               <input type="hidden" name="latitude" class="geo-lat">
               <input type="hidden" name="longitude" class="geo-lng">
+              <input type="hidden" name="location_token" class="geo-token">
 
               <div
                 class="p-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 text-center">
@@ -334,16 +336,13 @@
 
   @push('scripts')
     <!-- Load Turf.js for Location Distance Calculation -->
-    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/turf.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/turf.min.js"></script>
 
     <!-- Load Leaflet for Maps -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
-    <!-- Face API Script — must load BEFORE the inline script block that uses faceapi -->
-    <script src="/face-api.min.js"></script>
 
     <style>
       @keyframes scan {
@@ -386,24 +385,137 @@
       // Track whether we have a HIGH-ACCURACY validated fix (required for attendance)
       let isHighAccuracyValidated = false;
 
-      // Intercept form submissions to enforce actual browser coordinates
+      // Intercept form submissions to enforce server-issued token + actual browser coordinates
       document.addEventListener('submit', function(e) {
         const form = e.target;
         if (form.action && (form.action.includes('check-in') || form.action.includes('check-out'))) {
+          // 1. Must have a server-issued location token
+          if (!locationToken) {
+            e.preventDefault();
+            alert('Akses Ditolak: Token verifikasi lokasi tidak ada. Muat ulang halaman dan tunggu GPS terverifikasi.');
+            return false;
+          }
+
+          // 2. Token must not be expired client-side (server will also check)
+          if (locationTokenIssuedAt && (Date.now() - locationTokenIssuedAt) > TOKEN_TTL_MS) {
+            e.preventDefault();
+            invalidateToken('Token lokasi sudah kedaluwarsa. GPS sedang diverifikasi ulang...');
+            alert('Token verifikasi lokasi sudah kedaluwarsa. Tunggu sebentar dan coba lagi.');
+            return false;
+          }
+
+          // 3. Must have high-accuracy GPS validated
           if (!window.isLocationValid || !isHighAccuracyValidated) {
             e.preventDefault();
             alert('Akses Ditolak: Lokasi belum terverifikasi atau terdeteksi menggunakan GPS palsu. Tunggu hingga GPS akurat terverifikasi.');
             return false;
           }
 
-          const latInput = form.querySelector('input[name="latitude"]');
-          const lngInput = form.querySelector('input[name="longitude"]');
-          if (latInput && lngInput && realLatitude !== null && realLongitude !== null) {
-            latInput.value = realLatitude;
-            lngInput.value = realLongitude;
+          // 4. Inject real coordinates from memory into form fields
+          // (these match what the server recorded in the token)
+          if (realLatitude !== null && realLongitude !== null) {
+            form.querySelectorAll('.geo-lat').forEach(el => el.value = realLatitude);
+            form.querySelectorAll('.geo-lng').forEach(el => el.value = realLongitude);
           }
         }
       });
+
+      /**
+       * ────────────────────────────────────────────────────────
+       * LOCATION TOKEN SYSTEM
+       * ────────────────────────────────────────────────────────
+       * The server issues a short-lived HMAC-signed token after
+       * validating the coordinates. The token is stored in memory
+       * and injected into the form on submit.
+       *
+       * This makes ALL client-side manipulation useless:
+       *   - window.isLocationValid = true  → rejected (no valid token)
+       *   - editing hidden lat/lng fields   → rejected (coord mismatch)
+       *   - JS injection before submit      → rejected (no token)
+       */
+      let locationToken = null;        // The current server-issued token
+      let locationTokenIssuedAt = null; // When the token was issued (ms)
+      const TOKEN_TTL_MS = 110_000;    // 110 s — slightly under server's 120 s
+      let tokenRefreshTimer = null;
+
+      /**
+       * Request a new location token from the server.
+       * Called after GPS coordinates pass the client-side fake-GPS checks.
+       */
+      async function requestLocationToken(lat, lng, accuracy) {
+        try {
+          const res = await fetch('{{ route('presence.location-token') }}', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            },
+            body: JSON.stringify({ latitude: lat, longitude: lng, accuracy: accuracy }),
+          });
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            const reason = data.reason || data.message || 'Koordinat ditolak oleh server.';
+            return { ok: false, reason };
+          }
+
+          const data = await res.json();
+          return { ok: true, token: data.token };
+        } catch (err) {
+          console.error('Token request failed:', err);
+          return { ok: false, reason: 'Gagal menghubungi server untuk verifikasi lokasi.' };
+        }
+      }
+
+      function setLocationToken(token) {
+        locationToken = token;
+        locationTokenIssuedAt = Date.now();
+        document.querySelectorAll('.geo-token').forEach(el => el.value = token);
+
+        // Schedule auto-refresh 90 s after issuance (before the 120 s server TTL)
+        clearTimeout(tokenRefreshTimer);
+        tokenRefreshTimer = setTimeout(() => {
+          // If we still have valid coordinates, silently refresh the token
+          if (realLatitude !== null && realLongitude !== null && lastAccuracy !== null) {
+            requestLocationToken(realLatitude, realLongitude, lastAccuracy).then(result => {
+              if (result.ok) {
+                setLocationToken(result.token);
+              } else {
+                // Token refresh failed — invalidate so submit will be blocked
+                invalidateToken('Verifikasi lokasi kedaluwarsa. Muat ulang halaman.');
+              }
+            });
+          } else {
+            invalidateToken('Data GPS tidak tersedia untuk refresh token.');
+          }
+        }, 90_000);
+      }
+
+      function invalidateToken(reason) {
+        locationToken = null;
+        locationTokenIssuedAt = null;
+        document.querySelectorAll('.geo-token').forEach(el => el.value = '');
+        clearTimeout(tokenRefreshTimer);
+
+        // Update UI to show GPS needs re-verification
+        const title = document.getElementById('locationTitle');
+        const desc = document.getElementById('locationDesc');
+        const tag = document.getElementById('locationTag');
+        const banner = document.getElementById('locationBanner');
+        const iconBg = document.getElementById('locationIconBg');
+        const btnSubmitManual = document.querySelector('#tabContent-manual button[type="submit"]');
+
+        window.isLocationValid = false;
+        isHighAccuracyValidated = false;
+
+        if (banner) banner.className = 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4';
+        if (iconBg) iconBg.className = 'w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 flex items-center justify-center shrink-0';
+        if (title) { title.className = 'font-bold text-amber-900 dark:text-amber-300 text-base'; title.textContent = 'Verifikasi Lokasi Kedaluwarsa'; }
+        if (desc) { desc.className = 'text-xs sm:text-sm text-amber-700 dark:text-amber-400 mt-0.5'; desc.textContent = reason; }
+        if (tag) { tag.className = 'flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0'; tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Token Kedaluwarsa'; }
+        if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
+        if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
+      }
 
       /**
        * Deteksi GPS palsu berbasis analisis PERILAKU sinyal, bukan native code check.
@@ -412,6 +524,7 @@
       function detectFakeLocation(position, isHighAccuracy) {
         const coords = position.coords;
         const now = Date.now();
+        const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
 
         // 1. Timestamp staleness check — GPS palsu sering pakai timestamp lama / fixed
         if (isHighAccuracy) {
@@ -431,8 +544,26 @@
             reason: 'Akses menggunakan browser otomatis dilarang.'
           };
         }
+        
+        // 3. Chrome DevTools Protocol (CDP) & Emulator Checks
+        // CDP default accuracy is exactly 150.
+        if (coords.accuracy === 150) {
+          return {
+            spoofed: true,
+            reason: 'Emulator / Chrome DevTools (CDP) terdeteksi (Akurasi mencurigakan).'
+          };
+        }
+        
+        // CDP and desktop emulators usually do not provide these hardware sensor values.
+        // On real mobile devices, these are usually non-null (often 0 if stationary, but not null).
+        if (isMobileDevice && coords.altitude === null && coords.altitudeAccuracy === null && coords.heading === null && coords.speed === null) {
+          return {
+            spoofed: true,
+            reason: 'Sensor hardware tidak terdeteksi (Emulator/Fake GPS Chrome CDP).'
+          };
+        }
 
-        // 3. Accuracy = 0 or 1 — impossible for real GPS
+        // 4. Accuracy = 0 or 1 — impossible for real GPS
         if (coords.accuracy === 0 || coords.accuracy === 1) {
           return {
             spoofed: true,
@@ -440,7 +571,7 @@
           };
         }
 
-        // 4. Chrome DevTools default sensor presets
+        // 5. Chrome DevTools default sensor presets
         const devToolsPresets = [
           [51.507351, -0.127758],
           [35.676192, 139.650311],
@@ -458,7 +589,7 @@
           }
         }
 
-        // 5. Suspiciously low decimal precision — real GPS has >= 5 decimal places
+        // 6. Suspiciously low decimal precision — real GPS has >= 5 decimal places
         //    Fake GPS apps often set e.g. -6.2000000 or 107.0000
         const latStr = coords.latitude.toString();
         const lngStr = coords.longitude.toString();
@@ -471,7 +602,7 @@
           };
         }
 
-        // 6. No variance after multiple high-accuracy updates (mobile only)
+        // 7. No variance after multiple high-accuracy updates (mobile only)
         //    Real GPS always has micro-fluctuations. A fixed coordinate = spoofed.
         if (isHighAccuracy && lastLat !== null && lastLng !== null) {
           const latDiff = Math.abs(coords.latitude - lastLat);
@@ -484,9 +615,8 @@
 
           gpsUpdateCount++;
 
-          const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-          // After 5 high-accuracy updates, real mobile GPS MUST show some fluctuation
-          if (isMobileDevice && gpsUpdateCount >= 5 && !coordinateVarianceDetected && coords.accuracy < 30) {
+          // After 4 high-accuracy updates, real mobile GPS MUST show some fluctuation
+          if (isMobileDevice && gpsUpdateCount >= 4 && !coordinateVarianceDetected && coords.accuracy < 30) {
             return {
               spoofed: true,
               reason: 'GPS palsu terdeteksi (Koordinat tidak berfluktuasi — sinyal satelit palsu).'
@@ -608,11 +738,10 @@
           if (spinner) spinner.classList.remove('hidden');
           if (btnCamera) btnCamera.classList.add('hidden');
 
-          await Promise.all([
-            faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-            faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
-            faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
-          ]);
+          // Load models sequentially to prevent overwhelming PHP built-in server (php artisan serve)
+          await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+          await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+          await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
 
           isModelsLoaded = true;
           loadingText.textContent = "Meminta akses kamera...";
@@ -854,11 +983,7 @@
       switchTab = function(tabId) {
         originalSwitchTab(tabId);
         if (tabId === 'face') {
-          if (!isModelsLoaded) {
-            initFaceApi();
-          } else {
-            startCamera();
-          }
+          checkAndInitFaceApi();
         } else {
           stopCamera();
         }
@@ -933,8 +1058,8 @@
         // Run behavioral fake GPS detection (high-accuracy mode)
         const check = detectFakeLocation(position, true);
         if (check.spoofed) {
-          window.isLocationValid = false;
-          isHighAccuracyValidated = false;
+          invalidateToken(check.reason);
+          // Update banner for spoofed state (handled partially by invalidateToken, but we enforce red styling)
           if (banner) banner.className =
             "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
           if (iconBg) iconBg.className =
@@ -952,8 +1077,6 @@
               "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
             tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> GPS Tidak Aman';
           }
-          if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
-          if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
 
           // Stop watching after spoofing detected
           if (highAccWatchId !== null) {
@@ -965,14 +1088,12 @@
 
         const lat = position.coords.latitude;
         const lng = position.coords.longitude;
+        const accuracy = position.coords.accuracy;
 
-        // Only high-accuracy validated coordinates are used for form submission
+        // Only high-accuracy validated coordinates are used
         isHighAccuracyValidated = true;
         realLatitude = lat;
         realLongitude = lng;
-
-        document.querySelectorAll('.geo-lat').forEach(el => el.value = lat);
-        document.querySelectorAll('.geo-lng').forEach(el => el.value = lng);
 
         if (btnGPS) btnGPS.classList.add('hidden');
 
@@ -985,28 +1106,30 @@
           const distance = turf.distance(from, to, { units: 'meters' });
 
           if (distance <= officeRadius) {
-            window.isLocationValid = true;
-            if (banner) banner.className =
-              "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
-            if (iconBg) iconBg.className =
-              "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center shrink-0";
-            if (title) {
-              title.className = "font-bold text-emerald-900 dark:text-emerald-300 text-base";
-              title.textContent = `Lokasi Terverifikasi (${Math.round(distance)}m)`;
+            // Check if we already have a valid token
+            if (locationToken && locationTokenIssuedAt && (Date.now() - locationTokenIssuedAt) < TOKEN_TTL_MS) {
+              window.isLocationValid = true;
+              showVerifiedUI(distance, banner, iconBg, title, desc, tag, btnSubmitManual);
+            } else {
+              // Request server token
+              if (tag) {
+                tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Mengamankan Sesi...';
+              }
+              if (title) title.textContent = "Meminta Token Server...";
+
+              requestLocationToken(lat, lng, accuracy).then(result => {
+                if (result.ok) {
+                  setLocationToken(result.token);
+                  window.isLocationValid = true;
+                  showVerifiedUI(distance, banner, iconBg, title, desc, tag, btnSubmitManual);
+                } else {
+                  invalidateToken(result.reason);
+                  showErrorUI(result.reason, banner, iconBg, title, desc, tag, btnSubmitManual);
+                }
+              });
             }
-            if (desc) {
-              desc.className = "text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-0.5";
-              desc.textContent = "GPS akurat — Anda berada di dalam radius kantor";
-            }
-            if (tag) {
-              tag.className =
-                "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Terverifikasi';
-            }
-            if (btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
-            if (btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
-            if (officeCircle) officeCircle.setStyle({ color: '#10b981', fillColor: '#10b981' });
           } else {
+            invalidateToken('Lokasi di luar radius kantor.');
             window.isLocationValid = false;
             if (banner) banner.className =
               "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
@@ -1025,15 +1148,57 @@
                 "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
               tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
             }
-            if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
-            if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
             if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
           }
         } else {
           if (title) title.textContent = "Pengaturan Lokasi Belum Diset";
           if (desc) desc.textContent = "Hubungi admin untuk mengatur lokasi kantor";
         }
-        return false; // Not spoofed
+        return false; // Not client spoofed
+      }
+
+      function showVerifiedUI(distance, banner, iconBg, title, desc, tag, btnSubmitManual) {
+        if (banner) banner.className =
+          "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
+        if (iconBg) iconBg.className =
+          "w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 flex items-center justify-center shrink-0";
+        if (title) {
+          title.className = "font-bold text-emerald-900 dark:text-emerald-300 text-base";
+          title.textContent = `Lokasi Terverifikasi (${Math.round(distance)}m)`;
+        }
+        if (desc) {
+          desc.className = "text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 mt-0.5";
+          desc.textContent = "GPS akurat — Anda berada di dalam radius kantor";
+        }
+        if (tag) {
+          tag.className =
+            "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
+          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Terverifikasi';
+        }
+        if (btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
+        if (btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
+        if (officeCircle) officeCircle.setStyle({ color: '#10b981', fillColor: '#10b981' });
+      }
+
+      function showErrorUI(reason, banner, iconBg, title, desc, tag, btnSubmitManual) {
+        if (banner) banner.className =
+          "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900/50 rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4";
+        if (iconBg) iconBg.className =
+          "w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/40 text-red-600 flex items-center justify-center shrink-0";
+        if (title) {
+          title.className = "font-bold text-red-900 dark:text-red-300 text-base";
+          title.textContent = "Verifikasi Server Gagal";
+        }
+        if (desc) {
+          desc.className = "text-xs sm:text-sm text-red-700 dark:text-red-400 mt-0.5";
+          desc.textContent = reason;
+        }
+        if (tag) {
+          tag.className =
+            "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Ditolak Server';
+        }
+        if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
       }
 
       window.requestGPSPermission = function() {
@@ -1107,10 +1272,10 @@
                 console.error('GPS Fallback failed too:', errorFallback);
                 handleLocationError(errorFallback);
               },
-              { enableHighAccuracy: false, timeout: 8000, maximumAge: 30000 }
+              { enableHighAccuracy: false, timeout: 5000, maximumAge: 30000 }
             );
           },
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          { enableHighAccuracy: true, timeout: 4000, maximumAge: 0 }
         );
       };
 
@@ -1140,13 +1305,34 @@
         if (btnGPS) btnGPS.classList.remove('hidden');
       }
 
-      // Auto-init on load if face tab is active
-      document.addEventListener('DOMContentLoaded', () => {
-        if (document.getElementById('tabContent-face')?.classList.contains('block')) {
-          initFaceApi();
+      // Function to check and load Face API safely
+      function checkAndInitFaceApi() {
+        if (typeof faceapi !== 'undefined') {
+          if (!isModelsLoaded) {
+            initFaceApi();
+          } else {
+            startCamera();
+          }
+        } else {
+          setTimeout(checkAndInitFaceApi, 500);
         }
+      }
 
+      // Auto-init on load
+      document.addEventListener('DOMContentLoaded', () => {
+        // Load Face API dynamically so it doesn't block DOMContentLoaded
+        const script = document.createElement('script');
+        script.src = '/face-api.min.js';
+        script.async = true;
+        document.body.appendChild(script);
+
+        // Prioritize GPS check first so it doesn't get blocked
         window.requestGPSPermission();
+        
+        // Start checking for face API if the tab is active
+        if (document.getElementById('tabContent-face')?.classList.contains('block')) {
+          checkAndInitFaceApi();
+        }
       });
 
       // Selfie Camera Logic

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Presence\CalendarController;
 use App\Http\Controllers\Presence\DashboardController;
+use App\Http\Controllers\Presence\LocationTokenController;
 use App\Http\Controllers\Presence\OvertimeController;
 use App\Http\Controllers\Presence\PresenceController;
 use App\Http\Controllers\Presence\StudentStaffController;
@@ -18,6 +19,8 @@ Route::prefix('presence')->name('presence.')->group(function () {
         Route::post('/check-out', [PresenceController::class, 'checkOut'])->name('check-out');
         Route::post('/register-face', [PresenceController::class, 'registerFace'])->name('register-face');
         Route::delete('/remove-face', [PresenceController::class, 'removeFace'])->name('remove-face');
+        // Location token — issues a server-signed GPS verification token
+        Route::post('/location-token', [LocationTokenController::class, 'issue'])->name('location-token');
     });
 
     // Presence list & history

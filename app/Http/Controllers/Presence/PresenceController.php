@@ -79,7 +79,21 @@ class PresenceController extends Controller
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
-            // Backend coordinate validation (primary fake GPS defense)
+            // Verify the server-signed location token (primary GPS spoofing defence).
+            // The token was issued by LocationTokenController after the server already
+            // validated the coordinates — so any manipulation of latitude/longitude
+            // hidden fields or JS variables will be caught here.
+            $locationToken = $request->input('location_token', '');
+            if (empty($locationToken)) {
+                return back()->withErrors(['location' => 'Token verifikasi lokasi tidak ada. Muat ulang halaman dan coba lagi.']);
+            }
+
+            $tokenError = LocationTokenController::verify($request, $locationToken, (float) $lat, (float) $lng);
+            if ($tokenError) {
+                return back()->withErrors(['location' => $tokenError]);
+            }
+
+            // Backend coordinate validation (secondary defence — deep checks)
             $coordError = $this->validateCoordinates((float) $lat, (float) $lng);
             if ($coordError) {
                 return back()->withErrors(['location' => $coordError]);
@@ -133,7 +147,18 @@ class PresenceController extends Controller
                 return back()->withErrors(['location' => 'Lokasi Anda tidak terdeteksi. Pastikan Anda memberikan izin akses lokasi pada browser.']);
             }
 
-            // Backend coordinate validation (primary fake GPS defense)
+            // Verify the server-signed location token (primary GPS spoofing defence).
+            $locationToken = $request->input('location_token', '');
+            if (empty($locationToken)) {
+                return back()->withErrors(['location' => 'Token verifikasi lokasi tidak ada. Muat ulang halaman dan coba lagi.']);
+            }
+
+            $tokenError = LocationTokenController::verify($request, $locationToken, (float) $lat, (float) $lng);
+            if ($tokenError) {
+                return back()->withErrors(['location' => $tokenError]);
+            }
+
+            // Backend coordinate validation (secondary defence — deep checks)
             $coordError = $this->validateCoordinates((float) $lat, (float) $lng);
             if ($coordError) {
                 return back()->withErrors(['location' => $coordError]);
