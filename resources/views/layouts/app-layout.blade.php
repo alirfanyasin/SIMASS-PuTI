@@ -60,6 +60,10 @@
 
       // 3. DevTools Detection via Dimension Difference (if docked)
       const checkDimensions = () => {
+        // Skip dimension check on mobile devices to prevent false positives from soft keyboards or address bar resizing
+        const isMobile = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+        if (isMobile) return false;
+
         const threshold = 160;
         const widthDiff = window.outerWidth - window.innerWidth > threshold;
         const heightDiff = window.outerHeight - window.innerHeight > threshold;
