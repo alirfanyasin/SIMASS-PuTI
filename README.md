@@ -43,7 +43,7 @@ Web Aplikasi Presensi, Ticketing, dan Inventory Unit PuTI Telkom University Sura
 4. **Generate Application Key & Migrasi Database**:
    ```bash
    docker compose exec app php artisan key:generate
-   docker compose exec app php artisan migrate --seed
+   docker compose exec app php artisan migrate:fresh --seed
    ```
 
 5. **Akses Aplikasi**:
