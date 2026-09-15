@@ -66,7 +66,7 @@ class LoginController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('presence.dashboard'));
+        return redirect()->intended(route('portal'));
     }
 
     public function logout(Request $request): RedirectResponse

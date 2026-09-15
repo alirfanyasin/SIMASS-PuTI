@@ -4,16 +4,15 @@
     <!-- Left -->
     <div class="flex items-center gap-3">
       <!-- Mobile logo -->
-      <div class="lg:hidden flex items-center gap-2">
+      <a href="{{ route('portal') }}" class="lg:hidden flex items-center gap-2 hover:opacity-80 transition-opacity">
         <div class="w-9 h-9 rounded-lg bg-white p-1 flex items-center justify-center shrink-0 shadow-sm">
           <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
         </div>
         <div>
-          <div class="text-sm">Portal PuTI</div>
+          <div class="text-sm font-bold">Portal PuTI</div>
           <div class="text-xs text-gray-500 dark:text-gray-400">Kampus Surabaya</div>
         </div>
-
-      </div>
+      </a>
       <!-- Page title (desktop) -->
       <div class="hidden lg:block">
         <h1 id="pageTitle" class="text-xl font-bold">@yield('title', 'Dashboard')</h1>

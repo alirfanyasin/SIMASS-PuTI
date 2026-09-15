@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\HolidayController;
+use App\Http\Controllers\PortalController;
 use App\Http\Controllers\Presence\PresenceController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RolePermissionController;
@@ -27,15 +28,17 @@ Route::post('/logout', [LoginController::class, 'logout'])
 // Authenticated Routes
 // ---------------------------------------------------------
 Route::middleware('auth')->group(function () {
+    Route::get('/portal', [PortalController::class, 'index'])->name('portal');
+
     // Presence Routes
-    require __DIR__ . '/presence.php';
+    require __DIR__.'/presence.php';
 
     // PDF Export
     Route::get('/export-pdf', [PresenceController::class, 'exportPdf'])->name('export-pdf');
 
     // Ticketing Routes
     Route::prefix('ticketing')->group(function () {
-        require __DIR__ . '/ticketing.php';
+        require __DIR__.'/ticketing.php';
     });
 
     // Holiday Management (super-admin + staff only)
