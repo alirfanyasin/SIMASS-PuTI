@@ -18,18 +18,18 @@ RUN docker-php-ext-install \
     zip
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
+ENV COMPOSER_PROCESS_TIMEOUT=2000
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY composer.json composer.lock ./
+COPY . .
 
 RUN composer install --no-interaction --prefer-dist --no-scripts --no-autoloader
-
-COPY . .
 
 RUN composer dump-autoload --optimize
 
 EXPOSE 9000
 
 CMD ["php-fpm"]
+
 

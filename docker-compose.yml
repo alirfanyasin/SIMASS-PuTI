@@ -34,8 +34,8 @@ services:
     environment:
       MYSQL_DATABASE: db_simass
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_PASSWORD:
       MYSQL_USER: simass
+      MYSQL_PASSWORD: simass123
     ports:
       - "3306:3306"
     volumes:
