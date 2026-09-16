@@ -438,7 +438,7 @@
         },
         fill: {
           opacity: 1,
-          colors: ['#e60012', '#f59e0b']
+          colors: ['#EE2737', '#f59e0b']
         },
         legend: {
           position: 'bottom',

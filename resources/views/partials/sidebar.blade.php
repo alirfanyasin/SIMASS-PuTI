@@ -1,11 +1,13 @@
 @php
-    $currentApp = match (true) {
-        request()->routeIs('presence.*') || request()->routeIs('holiday.*') || request()->routeIs('export-pdf')
-            => 'Presensi',
-        request()->routeIs('ticket.*') => 'Ticketing',
-        request()->routeIs('inventory.*') => 'Inventaris',
-        default => null,
-    };
+    if (request()->routeIs('presence.*') || request()->routeIs('holiday.*') || request()->routeIs('export-pdf')) {
+        session(['active_module' => 'Presensi']);
+    } elseif (request()->routeIs('ticket.*')) {
+        session(['active_module' => 'Ticketing']);
+    } elseif (request()->routeIs('inventory.*')) {
+        session(['active_module' => 'Inventaris']);
+    }
+
+    $currentApp = session('active_module', 'Presensi');
 
     $menuGroups = [
         'Presensi' => [

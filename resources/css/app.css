@@ -13,11 +13,13 @@
     --color-telkom-300: #ff9d9d;
     --color-telkom-400: #ff6464;
     --color-telkom-500: #f23b3b;
-    --color-telkom-600: #e60012;
-    --color-telkom-700: #c2000f;
-    --color-telkom-800: #a3000d;
-    --color-telkom-900: #87000a;
-    --color-telkom-950: #4d0006;
+    --color-telkom-600: #ed1e28;
+    --color-telkom-700: #b6252a;
+    --color-telkom-800: #931c20;
+    --color-telkom-900: #731317;
+    --color-telkom-950: #450a0e;
+    --color-telkom-red: #ed1e28;
+    --color-telkom-maroon: #b6252a;
 }
 
 * {
@@ -41,8 +43,12 @@ button, a, [role="button"], input[type="button"], input[type="submit"], input[ty
 }
 
 .gradient-telkom {
-    background: linear-gradient(135deg, #e60012 0%, #87000a 100%) !important;
+    background: #ed1e28 !important;
     color: #ffffff !important;
+}
+
+.gradient-telkom:hover {
+    background: #b6252a !important;
 }
 
 .dot-grid {
@@ -155,9 +161,8 @@ html.dark .theme-toggle-moon {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, #e60012 0%, #87000a 100%);
+    background: #b6252a;
     color: white;
-    box-shadow: 0 8px 20px -6px rgba(230, 0, 18, 0.5);
 }
 
 .nav-item.active svg {
@@ -165,7 +170,7 @@ html.dark .theme-toggle-moon {
 }
 
 .mobile-nav-item.active {
-    color: #e60012;
+    color: #b6252a;
 }
 
 .mobile-nav-item.active .nav-icon-wrap {
@@ -230,19 +235,15 @@ html.dark .theme-toggle-moon {
 }
 
 .gradient-telkom {
-    background: linear-gradient(135deg, #e60012 0%, #87000a 100%);
+    background: #ed1e28;
 }
 
 .gradient-soft {
-    background: linear-gradient(135deg, #fff1f1 0%, #ffe0e0 100%);
+    background: #fff1f1;
 }
 
 .dark .gradient-soft {
-    background: linear-gradient(
-        135deg,
-        rgba(230, 0, 18, 0.12) 0%,
-        rgba(230, 0, 18, 0.04) 100%
-    );
+    background: #1f2937;
 }
 
 .card-hover {

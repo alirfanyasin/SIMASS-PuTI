@@ -70,7 +70,7 @@
       <!-- Main Headline -->
       <h1 class="text-4xl sm:text-6xl font-black tracking-tight leading-[1.1] text-gray-900 dark:text-white">
         Sistem Presensi & Manajemen <br class="hidden sm:inline">
-        <span class="bg-gradient-to-r from-telkom-500 to-telkom-700 bg-clip-text text-transparent">Asisten Staff PuTI</span>
+        <span class="text-telkom-600 dark:text-telkom-500">Asisten Staff PuTI</span>
       </h1>
 
       <!-- Subheadline -->

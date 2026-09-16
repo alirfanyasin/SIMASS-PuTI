@@ -1,10 +1,6 @@
 @extends('layouts.app-layout')
 
-@section('title')
-  Overtime & Lembur <span
-    class="bg-red-100 text-red-700 text-[10px] sm:text-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1.5 align-middle ml-2 font-medium tracking-wide"><span
-      class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>Pengelolaan Jam Kerja</span>
-@endsection
+@section('title', 'Overtime & Lembur')
 @section('subtitle', 'Kelola kelebihan jam kerja harian dan alokasikan untuk melengkapi hari kerja lainnya.')
 
 
