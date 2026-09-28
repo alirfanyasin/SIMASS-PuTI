@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Presence;
 
 use App\Http\Controllers\Controller;
 use App\Models\Overtime;
-use App\Models\OvertimeTransfer;
 use App\Models\Presence;
-use App\Models\Setting;
+use App\Services\PresenceTimeCalculator;
 use Illuminate\Support\Carbon;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
+    public function __construct(private readonly PresenceTimeCalculator $timeCalculator) {}
+
     public function index(): View
     {
         $user = auth()->user();
@@ -25,15 +26,12 @@ class DashboardController extends Controller
         $startOfMonth = Carbon::now()->startOfMonth()->format('Y-m-d');
         $endOfMonth = Carbon::now()->endOfMonth()->format('Y-m-d');
 
-        $presences = Presence::where('user_id', $user->id)
+        $presences = Presence::with('overtimeTransfers')
+            ->where('user_id', $user->id)
             ->whereBetween('tanggal', [$startOfMonth, $endOfMonth])
             ->get();
 
-        $jamMasukLimit = Setting::where('key', 'jam_masuk')->value('value') ?? '08:30:00';
-        // Ensure it has seconds for comparison
-        if (strlen($jamMasukLimit) === 5) {
-            $jamMasukLimit .= ':00';
-        }
+        $jamMasukLimit = $this->timeCalculator->workStart();
 
         $stats = [
             'hadir' => $presences->count(),
@@ -85,7 +83,8 @@ class DashboardController extends Controller
         // Prepare Chart Data
         $startOfWeek = Carbon::now()->startOfWeek();
         $endOfWeek = Carbon::now()->endOfWeek();
-        $weeklyPresences = Presence::where('user_id', $user->id)
+        $weeklyPresences = Presence::with('overtimeTransfers')
+            ->where('user_id', $user->id)
             ->whereBetween('tanggal', [$startOfWeek->format('Y-m-d'), $endOfWeek->format('Y-m-d')])
             ->get();
         $weeklyOvertimes = Overtime::where('user_id', $user->id)
@@ -104,14 +103,7 @@ class DashboardController extends Controller
 
             $hours = 0;
             if ($p && $p->jam_masuk && $p->jam_pulang) {
-                $actual = Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang));
-                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
-                $diffInMinutes = $actual + $transferred;
-
-                $hours = round($diffInMinutes / 60, 2);
-                if ($hours > 8) {
-                    $hours = 8;
-                }
+                $hours = $this->timeCalculator->roundedDisplayHours($p);
             }
             $weeklyHadir[] = $hours;
             $weeklyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;
@@ -129,14 +121,7 @@ class DashboardController extends Controller
 
             $hours = 0;
             if ($p && $p->jam_masuk && $p->jam_pulang) {
-                $actual = Carbon::parse($p->jam_masuk)->diffInMinutes(Carbon::parse($p->jam_pulang));
-                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
-                $diffInMinutes = $actual + $transferred;
-
-                $hours = round($diffInMinutes / 60, 2);
-                if ($hours > 8) {
-                    $hours = 8;
-                }
+                $hours = $this->timeCalculator->roundedDisplayHours($p);
             }
             $monthlyHadir[] = $hours;
             $monthlyLembur[] = $o ? round($o->durasi_menit / 60, 1) : 0;

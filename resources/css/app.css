@@ -11,14 +11,14 @@
     --color-telkom-100: #ffe0e0;
     --color-telkom-200: #ffc5c5;
     --color-telkom-300: #ff9d9d;
-    --color-telkom-400: #ff6464;
-    --color-telkom-500: #f23b3b;
-    --color-telkom-600: #ed1e28;
-    --color-telkom-700: #b6252a;
-    --color-telkom-800: #931c20;
-    --color-telkom-900: #731317;
+    --color-telkom-400: #e45157;
+    --color-telkom-500: #cf343b;
+    --color-telkom-600: #b6252a;
+    --color-telkom-700: #931c20;
+    --color-telkom-800: #731317;
+    --color-telkom-900: #5b0f13;
     --color-telkom-950: #450a0e;
-    --color-telkom-red: #ed1e28;
+    --color-telkom-red: #b6252a;
     --color-telkom-maroon: #b6252a;
 }
 
@@ -43,12 +43,15 @@ button, a, [role="button"], input[type="button"], input[type="submit"], input[ty
 }
 
 .gradient-telkom {
-    background: #ed1e28 !important;
+    background: #b6252a !important;
     color: #ffffff !important;
+    box-shadow: 0 10px 24px -12px rgba(115, 19, 23, 0.7);
 }
 
-.gradient-telkom:hover {
-    background: #b6252a !important;
+.gradient-telkom:not(:disabled):hover {
+    background: #931c20 !important;
+    opacity: 1 !important;
+    box-shadow: 0 14px 28px -12px rgba(69, 10, 14, 0.8);
 }
 
 .dot-grid {
@@ -234,10 +237,6 @@ html.dark .theme-toggle-moon {
     animation-delay: 1.25s;
 }
 
-.gradient-telkom {
-    background: #ed1e28;
-}
-
 .gradient-soft {
     background: #fff1f1;
 }
@@ -330,4 +329,195 @@ html.dark .theme-toggle-moon {
         rgba(255, 255, 255, 0.04) 1px,
         transparent 1px
     );
+}
+
+/* Portal hub */
+body:has(> main.max-w-5xl) {
+    background:
+        radial-gradient(circle at 8% 5%, rgba(182, 37, 42, 0.1), transparent 28rem),
+        radial-gradient(circle at 92% 92%, rgba(147, 28, 32, 0.08), transparent 30rem),
+        #f8fafc;
+}
+
+.dark body:has(> main.max-w-5xl) {
+    background:
+        radial-gradient(circle at 8% 5%, rgba(182, 37, 42, 0.16), transparent 28rem),
+        radial-gradient(circle at 92% 92%, rgba(115, 19, 23, 0.14), transparent 30rem),
+        #030712;
+}
+
+body:has(> main.max-w-5xl) > header {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    border-color: rgba(226, 232, 240, 0.8);
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 0 8px 30px -24px rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(18px);
+}
+
+.dark body:has(> main.max-w-5xl) > header {
+    border-color: rgba(55, 65, 81, 0.7);
+    background: rgba(17, 24, 39, 0.88);
+}
+
+body:has(> main.max-w-5xl) > header img {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.4rem;
+    border: 1px solid #ffe0e0;
+    border-radius: 0.9rem;
+    background: #ffffff;
+    box-shadow: 0 8px 20px -12px rgba(15, 23, 42, 0.45);
+}
+
+body:has(> main.max-w-5xl) > header form button {
+    border-radius: 0.75rem;
+    background: #b6252a;
+    padding: 0.6rem 1rem;
+    color: #ffffff;
+    font-weight: 700;
+    transition: background-color 150ms ease, transform 150ms ease;
+}
+
+body:has(> main.max-w-5xl) > header form button:hover {
+    background: #931c20;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+body:has(> main.max-w-5xl) > main {
+    width: 100%;
+    max-width: 76rem;
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 2rem;
+    background: linear-gradient(135deg, #731317 0%, #b6252a 58%, #931c20 100%);
+    padding: 3.5rem 2rem;
+    color: #ffffff;
+    box-shadow: 0 28px 60px -32px rgba(69, 10, 14, 0.85);
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child::before,
+body:has(> main.max-w-5xl) > main > div:first-child::after {
+    content: counter(portal-decoration);
+    font-size: 0;
+    position: absolute;
+    z-index: -1;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child::before {
+    top: -6rem;
+    right: -3rem;
+    width: 18rem;
+    height: 18rem;
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child::after {
+    bottom: -7rem;
+    left: 8%;
+    width: 14rem;
+    height: 14rem;
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child > div:first-child {
+    border-color: rgba(255, 255, 255, 0.22);
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    backdrop-filter: blur(8px);
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child h1 {
+    color: #ffffff;
+    text-wrap: balance;
+}
+
+body:has(> main.max-w-5xl) > main > div:first-child p {
+    color: rgba(255, 255, 255, 0.78);
+    text-wrap: balance;
+}
+
+body:has(> main.max-w-5xl) > main > .grid {
+    gap: 1.25rem;
+}
+
+body:has(> main.max-w-5xl) > main > .grid > a,
+body:has(> main.max-w-5xl) > main > .grid > div {
+    min-height: 18rem;
+    overflow: hidden;
+    border-color: rgba(226, 232, 240, 0.9);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 20px 45px -32px rgba(15, 23, 42, 0.48);
+}
+
+.dark body:has(> main.max-w-5xl) > main > .grid > a,
+.dark body:has(> main.max-w-5xl) > main > .grid > div {
+    border-color: rgba(55, 65, 81, 0.85);
+    background: rgba(17, 24, 39, 0.92);
+}
+
+body:has(> main.max-w-5xl) > main > .grid > a::before {
+    content: counter(portal-accent);
+    font-size: 0;
+    position: absolute;
+    inset: 0 0 auto;
+    height: 0.3rem;
+    background: linear-gradient(90deg, #731317, #b6252a);
+}
+
+body:has(> main.max-w-5xl) > main > .grid > a:hover {
+    border-color: #b6252a;
+    box-shadow: 0 28px 55px -30px rgba(115, 19, 23, 0.5);
+    transform: translateY(-0.35rem);
+}
+
+body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) h3,
+body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:last-child {
+    color: #931c20;
+}
+
+.dark body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) h3,
+.dark body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:last-child {
+    color: #ff9d9d;
+}
+
+body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > div:first-child > div:first-child {
+    background: #fff1f1;
+    color: #931c20;
+}
+
+.dark body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > div:first-child > div:first-child {
+    background: rgba(115, 19, 23, 0.35);
+    color: #ff9d9d;
+}
+
+@media (max-width: 640px) {
+    body:has(> main.max-w-5xl) > header {
+        padding: 0.8rem 1rem;
+    }
+
+    body:has(> main.max-w-5xl) > header > div:last-child > span {
+        display: none;
+    }
+
+    body:has(> main.max-w-5xl) > main {
+        padding: 1rem;
+    }
+
+    body:has(> main.max-w-5xl) > main > div:first-child {
+        border-radius: 1.5rem;
+        padding: 2.5rem 1.25rem;
+    }
+
+    body:has(> main.max-w-5xl) > main > .grid > a,
+    body:has(> main.max-w-5xl) > main > .grid > div {
+        min-height: 16rem;
+    }
 }

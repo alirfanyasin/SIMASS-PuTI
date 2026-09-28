@@ -47,12 +47,8 @@ class Presence extends Model
         $pulang = Carbon::parse($this->tanggal.' '.$this->jam_pulang);
         $actual = $masuk->diffInMinutes($pulang);
 
-        $transferred = $this->overtimeTransfers()->sum('durasi_menit');
-
-        $total = $actual + $transferred;
-
-        $jam = floor($total / 60);
-        $menit = $total % 60;
+        $jam = floor($actual / 60);
+        $menit = $actual % 60;
 
         $this->total_jam = "{$jam} Jam {$menit} Menit";
         $this->save();

@@ -8,6 +8,7 @@ use App\Models\Overtime;
 use App\Models\OvertimeTransfer;
 use App\Models\Presence;
 use App\Models\User;
+use App\Services\PresenceTimeCalculator;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,6 +17,8 @@ use Illuminate\View\View;
 
 class OvertimeController extends Controller
 {
+    public function __construct(private readonly PresenceTimeCalculator $timeCalculator) {}
+
     public function index(Request $request): View
     {
         $now = Carbon::now();
@@ -71,7 +74,8 @@ class OvertimeController extends Controller
 
         // Fetch eligible presences (less than 8 hours) grouped by user_id
         $eligiblePresences = [];
-        $presencesQuery = Presence::whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
+        $presencesQuery = Presence::with('overtimeTransfers')
+            ->whereBetween('tanggal', [$startDate->format('Y-m-d'), $endDate->format('Y-m-d')])
             ->whereNotNull('jam_pulang');
 
         if (! Auth::user()->can('manage-presence')) {
@@ -80,11 +84,8 @@ class OvertimeController extends Controller
 
         $presences = $presencesQuery->get();
         foreach ($presences as $p) {
-            $jamMasuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
-            $jamPulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
-            $actualMenit = $jamMasuk->diffInMinutes($jamPulang);
-
-            $transferredMenit = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+            $actualMenit = $this->timeCalculator->regularMinutes($p);
+            $transferredMenit = $p->overtimeTransfers->sum('durasi_menit');
             $totalMenit = (int) ($actualMenit + $transferredMenit);
 
             if ($totalMenit < 480) { // less than 8 hours
@@ -183,8 +184,8 @@ class OvertimeController extends Controller
             $presence = Presence::create([
                 'user_id' => $overtime->user_id,
                 'tanggal' => $data['tanggal_wfh'],
-                'jam_masuk' => '08:30:00',
-                'jam_pulang' => '08:30:00', // Set same so actual is 0
+                'jam_masuk' => $this->timeCalculator->workStart(),
+                'jam_pulang' => $this->timeCalculator->workStart(),
                 'hari' => match (Carbon::parse($data['tanggal_wfh'])->dayOfWeekIso) {
                     1 => 'Senin', 2 => 'Selasa', 3 => 'Rabu', 4 => 'Kamis', 5 => 'Jumat', 6 => 'Sabtu', 7 => 'Minggu', default => '-'
                 },

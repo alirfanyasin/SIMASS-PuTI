@@ -1,9 +1,6 @@
 <?php
 
 use App\Models\Holiday;
-use App\Models\Presence;
-use App\Models\Setting;
-use Carbon\Carbon;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -24,40 +21,7 @@ Schedule::call(function () {
     }
 })->yearlyOn(1, 1, '00:00')->name('check-and-seed-holidays')->withoutOverlapping();
 
-// Auto-checkout at jam_pulang
-Schedule::call(function () {
-    $jamPulangSetting = Setting::where('key', 'jam_pulang')->value('value');
-    if (! $jamPulangSetting) {
-        return;
-    }
-
-    $jamPulangTimeStr = Carbon::parse($jamPulangSetting)->format('H:i');
-    $currentTimeStr = now()->format('H:i');
-
-    if ($currentTimeStr >= $jamPulangTimeStr) {
-        $today = now()->format('Y-m-d');
-        $presences = Presence::where('tanggal', $today)
-            ->whereNull('jam_pulang')
-            ->get();
-
-        foreach ($presences as $presence) {
-            if ($presence->jam_masuk) {
-                $jamMasuk = Carbon::parse($presence->tanggal.' '.$presence->jam_masuk);
-                $autoCheckoutTime = Carbon::parse($today.' '.$jamPulangTimeStr.':00');
-
-                if ($jamMasuk->greaterThan($autoCheckoutTime)) {
-                    $autoCheckoutTime = now();
-                }
-
-                $totalDetik = $jamMasuk->diffInSeconds($autoCheckoutTime);
-                $jam = floor($totalDetik / 3600);
-                $menit = floor(($totalDetik % 3600) / 60);
-
-                $presence->update([
-                    'jam_pulang' => $autoCheckoutTime->format('H:i:s'),
-                    'total_jam' => "{$jam}j {$menit}m",
-                ]);
-            }
-        }
-    }
-})->everyMinute()->name('auto-checkout')->withoutOverlapping();
+Schedule::command('presence:auto-checkout')
+    ->everyMinute()
+    ->name('auto-checkout')
+    ->withoutOverlapping();

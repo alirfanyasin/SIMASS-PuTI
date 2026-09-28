@@ -4,11 +4,10 @@ namespace App\Http\Controllers\Presence;
 
 use App\Http\Controllers\Controller;
 use App\Models\Holiday;
-use App\Models\Overtime;
-use App\Models\OvertimeTransfer;
 use App\Models\Presence;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\PresenceTimeCalculator;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,6 +18,8 @@ use Illuminate\View\View;
 
 class PresenceController extends Controller
 {
+    public function __construct(private readonly PresenceTimeCalculator $timeCalculator) {}
+
     public function presence(): View
     {
         $user = Auth::user();
@@ -70,6 +71,13 @@ class PresenceController extends Controller
         $today = Carbon::today()->format('Y-m-d');
         $now = Carbon::now();
 
+        $attendanceDeadline = Carbon::parse($today.' '.$this->timeCalculator->workEnd());
+        if ($now->greaterThanOrEqualTo($attendanceDeadline)) {
+            return back()->withErrors([
+                'check_in' => 'Batas check-in hari ini sudah berakhir pada pukul '.$attendanceDeadline->format('H:i').'.',
+            ]);
+        }
+
         // Geolocation Check for student-staff
         if ($user->hasRole('student-staff')) {
             $lat = $request->input('latitude');
@@ -120,7 +128,7 @@ class PresenceController extends Controller
         //     'pekerjaan' => ['required', 'string', 'max:500'],
         // ]);
 
-        Presence::create([
+        $presence = Presence::create([
             'user_id' => $user->id,
             'tanggal' => $today,
             'jam_masuk' => $now->format('H:i:s'),
@@ -128,6 +136,8 @@ class PresenceController extends Controller
             'pekerjaan' => null,
             'menit_tambahan' => 0,
         ]);
+
+        $this->timeCalculator->syncEarlyOvertime($presence);
 
         return redirect()->route('presence.list')->with('status', 'Check-in berhasil! Selamat bekerja 🎉');
     }
@@ -191,11 +201,6 @@ class PresenceController extends Controller
         $jam = floor($totalDetik / 3600);
         $menit = floor(($totalDetik % 3600) / 60);
 
-        // Calculate overtime — standard working hours = 8 hours (28800 seconds)
-        $standardDetik = 28800;
-        $overtimeDetik = max(0, $totalDetik - $standardDetik);
-        $overtimeMenit = (int) round($overtimeDetik / 60);
-
         $fotoPath = $presence->foto;
         if ($request->filled('foto_base64')) {
             $base64 = $request->input('foto_base64');
@@ -214,27 +219,16 @@ class PresenceController extends Controller
             'pekerjaan' => $request->string('pekerjaan'),
             'foto' => $fotoPath,
             'total_jam' => "{$jam}j {$menit}m",
-            'menit_tambahan' => $overtimeMenit,
         ]);
 
-        // Auto-create overtime record if applicable
-        if ($overtimeMenit > 0) {
-            Overtime::create([
-                'user_id' => $user->id,
-                'presence_id' => $presence->id,
-                'tanggal' => $today,
-                'durasi_menit' => $overtimeMenit,
-                'sisa_menit' => $overtimeMenit,
-                'keterangan' => 'Lembur otomatis (kelebihan jam kerja harian)',
-            ]);
-        }
+        $this->timeCalculator->syncEarlyOvertime($presence);
 
         return redirect()->route('presence.list')->with('status', "Check-out berhasil! Total kerja: {$jam}j {$menit}m 👋");
     }
 
     public function presenceList(Request $request): View
     {
-        $query = Presence::with('user')->orderBy('tanggal', 'desc');
+        $query = Presence::with(['user', 'overtimeTransfers'])->orderBy('tanggal', 'desc');
 
         if (Auth::user()->hasRole('student-staff') || Auth::user()->can('manage-presence')) {
             $query->whereHas('user', function ($q) {
@@ -264,7 +258,7 @@ class PresenceController extends Controller
 
     public function presenceHistory(Request $request): View
     {
-        $query = Presence::with('user')->orderBy('tanggal', 'desc');
+        $query = Presence::with(['user', 'overtimeTransfers'])->orderBy('tanggal', 'desc');
 
         if (Auth::user()->hasRole('student-staff') || Auth::user()->can('manage-presence') || Auth::user()->hasRole('super-admin')) {
             if ($request->filled('user_id') && $request->user_id !== 'all') {
@@ -310,12 +304,8 @@ class PresenceController extends Controller
             }
 
             if ($p->tanggal >= $grouped[$periodKey]['effStart'] && $p->tanggal <= $grouped[$periodKey]['effEnd']) {
-                $actual = 0;
-                if ($p->jam_masuk && $p->jam_pulang) {
-                    $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
-                }
-                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
-                $total = $actual + $transferred;
+                $actual = $this->timeCalculator->regularMinutes($p);
+                $total = $this->timeCalculator->displayMinutes($p);
 
                 $waktu = ($p->jam_masuk ? substr($p->jam_masuk, 0, 5) : '-').' - '.($p->jam_pulang ? substr($p->jam_pulang, 0, 5) : '-');
                 if ($actual === 0 && $total > 0 && $p->jam_masuk) {
@@ -332,7 +322,7 @@ class PresenceController extends Controller
                     'hari' => $p->hari ?? '-',
                     'tgl' => Carbon::parse($p->tanggal)->translatedFormat('d M Y'),
                     'waktu' => $waktu,
-                    'jam' => $p->total_jam ?? '-',
+                    'jam' => $this->timeCalculator->displayDuration($p),
                     'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
                     'foto' => $p->foto ? url('storage/'.$p->foto) : null,
                 ];
@@ -401,10 +391,12 @@ class PresenceController extends Controller
         }
 
         $data = $request->validate([
-            'jam_masuk' => ['required'],
-            'jam_pulang' => ['nullable'],
+            'jam_masuk' => ['required', 'date_format:H:i'],
+            'jam_pulang' => ['nullable', 'date_format:H:i', 'after_or_equal:jam_masuk'],
             'pekerjaan' => ['nullable', 'string'],
             'foto' => ['nullable', 'image', 'max:2048'],
+        ], [
+            'jam_pulang.after_or_equal' => 'Jam pulang tidak boleh lebih kecil dari jam masuk.',
         ]);
 
         $fotoPath = $presence->foto;
@@ -426,6 +418,7 @@ class PresenceController extends Controller
 
         $presence->update($data);
         $presence->recalculateTotalJam();
+        $this->timeCalculator->syncEarlyOvertime($presence);
 
         return back()->with('status', 'Data presensi berhasil diperbarui.');
     }
@@ -447,7 +440,7 @@ class PresenceController extends Controller
         $endDate = $request->query('endDate');
         $filterNama = $request->query('filterNama');
 
-        $query = Presence::with('user')->orderBy('tanggal', 'asc');
+        $query = Presence::with(['user', 'overtimeTransfers'])->orderBy('tanggal', 'asc');
 
         if ($filterNama && $filterNama !== 'all') {
             $query->where('user_id', $filterNama);
@@ -471,29 +464,12 @@ class PresenceController extends Controller
             $stdPulang = '-';
 
             if ($p->jam_masuk && $p->jam_pulang) {
-                $masuk = Carbon::parse($p->tanggal.' '.$p->jam_masuk);
-                $pulang = Carbon::parse($p->tanggal.' '.$p->jam_pulang);
-
-                $actual = $masuk->diffInMinutes($pulang);
-                $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
-                $diffInMinutes = $actual + $transferred;
-                $hours = floor($diffInMinutes / 60);
-                $remainder = $diffInMinutes % 60;
-
-                if ($remainder > 30) {
-                    $hours += 1;
-                }
-
-                if ($hours > 8) {
-                    $hours = 8;
-                }
-
-                $jam = $hours;
+                $jam = $this->timeCalculator->roundedDisplayHours($p);
 
                 if ($jam > 0) {
-                    $stdMasuk = '08:30';
-                    $endHour = 8 + $jam;
-                    $stdPulang = sprintf('%02d:30', $endHour);
+                    $standardStart = Carbon::parse($p->tanggal.' '.$this->timeCalculator->workStart());
+                    $stdMasuk = $standardStart->format('H:i');
+                    $stdPulang = $standardStart->copy()->addHours($jam)->format('H:i');
                 }
 
                 $totalJam += $jam;
@@ -624,7 +600,9 @@ class PresenceController extends Controller
         if ($p->jam_masuk && $p->jam_pulang) {
             $actual = Carbon::parse($p->tanggal.' '.$p->jam_masuk)->diffInMinutes(Carbon::parse($p->tanggal.' '.$p->jam_pulang));
         }
-        $transferred = OvertimeTransfer::where('presence_id', $p->id)->sum('durasi_menit');
+        $transferred = $p->relationLoaded('overtimeTransfers')
+            ? (int) $p->overtimeTransfers->sum('durasi_menit')
+            : (int) $p->overtimeTransfers()->sum('durasi_menit');
         $total = $actual + $transferred;
 
         if ($actual === 0 && $total > 0 && $p->jam_masuk) {
@@ -637,7 +615,7 @@ class PresenceController extends Controller
         $status = 'tepat';
         if ($origJamMasuk === '—') {
             $status = 'izin';
-        } elseif ($p->jam_masuk && strtotime($origJamMasuk) > strtotime('08:00')) {
+        } elseif ($p->jam_masuk && strtotime($origJamMasuk) > strtotime($this->timeCalculator->workStart())) {
             $status = 'telat';
         }
 
@@ -650,7 +628,7 @@ class PresenceController extends Controller
             'cout' => $jamPulang,
             'raw_cin' => $p->jam_masuk,
             'raw_cout' => $p->jam_pulang,
-            'durasi' => $p->total_jam ?? '—',
+            'durasi' => $this->timeCalculator->displayDuration($p),
             'status' => $status,
             'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
             'raw_pekerjaan' => $p->pekerjaan,

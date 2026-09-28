@@ -389,9 +389,30 @@
       document.getElementById('editJamMasuk').value = cin ? cin.substring(0, 5) : '';
       document.getElementById('editJamPulang').value = cout ? cout.substring(0, 5) : '';
       document.getElementById('editPekerjaan').value = pekerjaan;
+      validateEditCheckoutTime();
 
       openModal('editModal');
     }
+
+    function validateEditCheckoutTime() {
+      const checkIn = document.getElementById('editJamMasuk');
+      const checkOut = document.getElementById('editJamPulang');
+      const isInvalid = checkIn.value && checkOut.value && checkOut.value < checkIn.value;
+
+      checkOut.min = checkIn.value;
+      checkOut.setCustomValidity(isInvalid ? 'Jam pulang tidak boleh lebih kecil dari jam masuk.' : '');
+
+      return !isInvalid;
+    }
+
+    document.getElementById('editJamMasuk').addEventListener('input', validateEditCheckoutTime);
+    document.getElementById('editJamPulang').addEventListener('input', validateEditCheckoutTime);
+    document.getElementById('editForm').addEventListener('submit', function (event) {
+      if (!validateEditCheckoutTime()) {
+        event.preventDefault();
+        document.getElementById('editJamPulang').reportValidity();
+      }
+    });
 
     function openLengkapiModal(id, cin, cout, pekerjaan) {
       const form = document.getElementById('lengkapiForm');
