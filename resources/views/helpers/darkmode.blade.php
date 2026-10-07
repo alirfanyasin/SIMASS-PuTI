@@ -8,9 +8,9 @@
     if (window.statsChart) updateChartTheme();
   }
 
+  // Default page is pure white (#FFFFFF / light mode first) per Don Norman & Zander Whitehurst guidelines
   const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const shouldUseDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
+  const shouldUseDark = savedTheme === 'dark';
   if (shouldUseDark) {
     document.documentElement.classList.add('dark');
   } else {

@@ -2,13 +2,12 @@
 
 @section('content')
     <div class="text-center mb-10 pt-4">
-        <div
-            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-telkom-50 dark:bg-telkom-950 text-telkom-700 dark:text-telkom-400 text-xs font-semibold uppercase tracking-wider mb-4 border border-telkom-200 dark:border-telkom-900">
-            Portal Utama PuTI
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight">Selamat Datang, {{ auth()->user()->name }}</h1>
+        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white">Halo
+            {{ auth()->user()->name }},</h1>
         <p class="text-gray-500 dark:text-gray-400 mt-2.5 max-w-lg mx-auto text-sm sm:text-base">
-            Pilih modul aplikasi yang ingin Anda akses di lingkungan Direktorat PuTI Telkom University Surabaya.
+            <b>Selamat Datang di Portal PuTI Telkom University Surabaya</b>
+            <br>
+            Silahkan pilih modul aplikasi yang ingin Anda akses.
         </p>
     </div>
 
@@ -90,13 +89,15 @@
                     WebOsistant
                 </h3>
                 <p class="text-sm text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">
-                    Asisten otomasi pencarian situs backlink, audit legitimasi domain, dan pelaporan strategi web presence PuTI.
+                    Asisten otomasi pencarian situs backlink, audit legitimasi domain, dan pelaporan strategi web presence
+                    PuTI.
                 </p>
             </div>
             <div
                 class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between text-sm text-gray-400">
                 <span>Segera Hadir</span>
-                <span class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fase 4</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fase
+                    4</span>
             </div>
         </div>
 
@@ -124,7 +125,42 @@
             <div
                 class="mt-6 pt-4 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between text-sm text-gray-400">
                 <span>Segera Hadir</span>
-                <span class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fase 5</span>
+                <span class="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fase
+                    5</span>
+            </div>
+        </div>
+
+        {{-- 5. NING Network Monitoring (Phase 6 - Existing App / Webhook Integration) --}}
+        <div
+            class="relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-3xl border border-blue-200 dark:border-blue-900/50 p-7 shadow-sm select-none">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <div
+                        class="w-13 h-13 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
+                    </div>
+                    <span
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                        Aplikasi Eksisting
+                    </span>
+                </div>
+                <h3 class="font-bold text-xl text-gray-900 dark:text-white">
+                    NING (Network Monitoring)
+                </h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
+                    Sistem pemantauan telemetri real-time Access Point, Switch, dan Router kampus (Aplikasi mandiri;
+                    integrasi webhook ke e-Ticket segera).
+                </p>
+            </div>
+            <div
+                class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm text-blue-600 dark:text-blue-400 font-semibold">
+                <span class="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 font-normal">
+                    <i data-lucide="webhook" class="w-3.5 h-3.5"></i> Integrasi Webhook
+                </span>
+                <span
+                    class="text-xs px-2 py-0.5 rounded bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold">Fase
+                    6</span>
             </div>
         </div>
 
