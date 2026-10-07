@@ -37,9 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/export-pdf', [PresenceController::class, 'exportPdf'])->name('export-pdf');
 
     // Ticketing Routes
-    Route::prefix('ticketing')->group(function () {
-        require __DIR__.'/ticketing.php';
-    });
+    require __DIR__.'/ticketing.php';
 
     // Holiday Management (super-admin + staff only)
     Route::prefix('holiday')->name('holiday.')->middleware('can:manage-holiday')->group(function () {

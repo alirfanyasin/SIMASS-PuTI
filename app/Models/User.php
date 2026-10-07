@@ -67,4 +67,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(OvertimeTransfer::class);
     }
+
+    public function tickets()
+    {
+        return $this->hasMany(Ticket::class, 'user_id');
+    }
+
+    public function assignedTickets()
+    {
+        return $this->hasMany(Ticket::class, 'assigned_to');
+    }
 }
