@@ -404,7 +404,25 @@ class PresenceController extends Controller
             'jam_masuk' => ['required'],
             'jam_pulang' => ['nullable'],
             'pekerjaan' => ['nullable', 'string'],
+            'foto' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        $fotoPath = $presence->foto;
+        if ($request->has('foto_base64') && ! empty($request->input('foto_base64'))) {
+            $base64 = $request->input('foto_base64');
+            $imageParts = explode(';base64,', $base64);
+            if (count($imageParts) == 2) {
+                $imageBase64 = base64_decode($imageParts[1]);
+                $fileName = uniqid().'.jpg';
+                $fotoPath = $this->compressAndSaveImage($imageBase64, $fileName);
+            }
+        } elseif ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $fileName = uniqid().'.jpg';
+            $fotoPath = $this->compressAndSaveImage(file_get_contents($file->getRealPath()), $fileName);
+        }
+
+        $data['foto'] = $fotoPath;
 
         $presence->update($data);
         $presence->recalculateTotalJam();
@@ -635,7 +653,9 @@ class PresenceController extends Controller
             'durasi' => $p->total_jam ?? '—',
             'status' => $status,
             'pekerjaan' => $p->pekerjaan ?? 'Tidak ada deskripsi',
+            'raw_pekerjaan' => $p->pekerjaan,
             'foto' => $p->foto ? url('storage/'.$p->foto) : null,
+            'is_lengkap' => ! empty($p->pekerjaan) && ! empty($p->foto),
         ];
     }
 

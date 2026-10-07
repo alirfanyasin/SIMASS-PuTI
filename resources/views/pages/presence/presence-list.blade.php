@@ -129,6 +129,9 @@
                 <td class="px-5 py-3.5 tabular-nums font-semibold text-green-600">{{ $d['durasi'] }}</td>
                 <td class="px-5 py-3.5">
                   <div class="flex items-center justify-center gap-2">
+                    @if(!$d['is_lengkap'] && Auth::id() === $d['user_id'] && !empty($d['raw_cout']))
+                      <button type="button" onclick="openLengkapiModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['raw_pekerjaan'] ?? '') }}')" class="px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-bold uppercase rounded-md hover:bg-amber-200 dark:hover:bg-amber-900/50 transition whitespace-nowrap" title="Lengkapi">Lengkapi</button>
+                    @endif
                     <button type="button"
                       onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
                       class="p-1 text-gray-500 hover:text-telkom-600 transition" title="Lihat Bukti">
@@ -195,42 +198,50 @@
             </div>
 
             <!-- Action buttons row -->
-            <div class="flex items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-800/80">
+            <div class="flex flex-wrap items-center justify-end gap-2 mt-4 pt-3 border-t border-gray-100 dark:border-gray-800/80">
               <button type="button"
                 onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['cin'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
-                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-telkom-600 bg-gray-50 hover:bg-telkom-50 dark:bg-gray-850 dark:hover:bg-telkom-950/20 rounded-xl transition"
+                class="flex items-center justify-center p-2 text-gray-500 hover:text-telkom-600 bg-gray-50 hover:bg-telkom-50 dark:bg-gray-850 dark:hover:bg-telkom-950/20 rounded-xl transition"
                 title="Lihat Bukti">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                   stroke-linejoin="round" viewBox="0 0 24 24">
                   <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
                   <circle cx="12" cy="12" r="3" />
                 </svg>
-                <span>Bukti</span>
               </button>
+              @if(!$d['is_lengkap'] && Auth::id() === $d['user_id'] && !empty($d['raw_cout']))
+              <button type="button"
+                onclick="openLengkapiModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['raw_pekerjaan'] ?? '') }}')"
+                class="flex items-center justify-center p-2 text-amber-600 hover:text-amber-800 bg-amber-50 hover:bg-amber-100 dark:bg-amber-900/20 dark:hover:bg-amber-900/40 rounded-xl transition"
+                title="Lengkapi">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+              </button>
+              @endif
               @if(Auth::id() === $d['user_id'] || Auth::user()->can('manage-presence'))
               <button type="button"
                 onclick="openEditModal({{ $d['id'] }}, '{{ $d['raw_cin'] }}', '{{ $d['raw_cout'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')"
-                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 dark:bg-gray-850 dark:hover:bg-blue-950/20 rounded-xl transition"
+                class="flex items-center justify-center p-2 text-gray-500 hover:text-blue-600 bg-gray-50 hover:bg-blue-50 dark:bg-gray-850 dark:hover:bg-blue-950/20 rounded-xl transition"
                 title="Edit">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
-                <span>Edit</span>
               </button>
               <button type="button"
                 onclick="confirmDelete({{ $d['id'] }})"
-                class="flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-gray-600 dark:text-gray-400 hover:text-red-600 bg-gray-50 hover:bg-red-50 dark:bg-gray-850 dark:hover:bg-red-950/20 rounded-xl transition"
+                class="flex items-center justify-center p-2 text-gray-500 hover:text-red-600 bg-gray-50 hover:bg-red-50 dark:bg-gray-850 dark:hover:bg-red-950/20 rounded-xl transition"
                 title="Hapus">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
                   stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
                   <polyline points="3 6 5 6 21 6" />
                   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
                   <line x1="10" y1="11" x2="10" y2="17" />
                   <line x1="14" y1="11" x2="14" y2="17" />
                 </svg>
-                <span>Hapus</span>
               </button>
               @endif
             </div>
@@ -305,6 +316,47 @@
     </form>
   </x-modal>
 
+  <!-- Lengkapi Modal -->
+  <x-modal id="lengkapiModal" size="sm" title="Lengkapi Presensi" bodyClass="!p-0" headerClass="p-4 border-b border-gray-100 dark:border-gray-800">
+    <form id="lengkapiForm" method="POST" enctype="multipart/form-data">
+      @csrf
+      @method('PUT')
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Pekerjaan</label>
+          <textarea name="pekerjaan" id="lengkapiPekerjaan" rows="3" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Foto Bukti Kehadiran</label>
+          <div id="cameraContainer" class="relative w-full aspect-video bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden shadow-inner flex items-center justify-center mb-2">
+            <!-- Video for live preview -->
+            <video id="lengkapiVideo" autoplay playsinline class="w-full h-full object-cover hidden"></video>
+            <!-- Canvas to hold the captured image -->
+            <canvas id="lengkapiCanvas" class="hidden"></canvas>
+            <!-- Image to display captured result -->
+            <img id="lengkapiPreview" class="w-full h-full object-cover hidden" />
+            
+            <button type="button" id="startCameraBtn" onclick="startCamera()" class="absolute flex flex-col items-center justify-center text-gray-400 hover:text-telkom-600 transition">
+              <svg class="w-8 h-8 mb-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span class="text-xs font-medium">Buka Kamera</span>
+            </button>
+          </div>
+          <div class="flex justify-center gap-2">
+            <button type="button" id="captureBtn" onclick="capturePhoto()" class="hidden px-4 py-1.5 bg-telkom-600 hover:bg-telkom-700 text-white text-xs font-semibold rounded-lg shadow transition">Ambil Foto</button>
+            <button type="button" id="retakeBtn" onclick="retakePhoto()" class="hidden px-4 py-1.5 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 text-xs font-bold rounded-lg shadow-sm transition">Ulangi</button>
+          </div>
+          <input type="hidden" name="foto_base64" id="lengkapiFotoBase64" required>
+        </div>
+        <input type="hidden" name="jam_masuk" id="lengkapiJamMasuk">
+        <input type="hidden" name="jam_pulang" id="lengkapiJamPulang">
+      </div>
+      <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
+        <button type="button" onclick="closeModal('lengkapiModal')" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition">Batal</button>
+        <button type="submit" class="px-4 py-2 text-sm font-semibold text-white gradient-telkom rounded-xl shadow-lg hover:opacity-90 transition">Simpan</button>
+      </div>
+    </form>
+  </x-modal>
+
   <!-- Delete Form -->
   <form id="deleteForm" method="POST" class="hidden">
     @csrf
@@ -341,6 +393,17 @@
       openModal('editModal');
     }
 
+    function openLengkapiModal(id, cin, cout, pekerjaan) {
+      const form = document.getElementById('lengkapiForm');
+      
+      form.action = `/presence/${id}`;
+      document.getElementById('lengkapiJamMasuk').value = cin ? cin.substring(0, 5) : '';
+      document.getElementById('lengkapiJamPulang').value = cout ? cout.substring(0, 5) : '';
+      document.getElementById('lengkapiPekerjaan').value = pekerjaan;
+
+      openModal('lengkapiModal');
+    }
+
     function confirmDelete(id) {
       if(confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
         const form = document.getElementById('deleteForm');
@@ -354,6 +417,86 @@
       const startDate = document.querySelector('input[name="start_date"]').value;
       const endDate = document.querySelector('input[name="end_date"]').value;
       window.open(`/export-pdf?filterNama=${userId}&startDate=${startDate}&endDate=${endDate}`, '_blank');
+    }
+
+    // Camera JS for Lengkapi Modal
+    let videoStream = null;
+    const video = document.getElementById('lengkapiVideo');
+    const canvas = document.getElementById('lengkapiCanvas');
+    const preview = document.getElementById('lengkapiPreview');
+    const base64Input = document.getElementById('lengkapiFotoBase64');
+    const startBtn = document.getElementById('startCameraBtn');
+    const captureBtn = document.getElementById('captureBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+
+    function startCamera() {
+      preview.classList.add('hidden');
+      retakeBtn.classList.add('hidden');
+      startBtn.classList.add('hidden');
+      video.classList.remove('hidden');
+      captureBtn.classList.remove('hidden');
+
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
+        .then(stream => {
+          videoStream = stream;
+          video.srcObject = stream;
+        })
+        .catch(err => {
+          console.error("Camera access denied:", err);
+          alert("Gagal mengakses kamera. Pastikan izin kamera telah diberikan.");
+          startBtn.classList.remove('hidden');
+          video.classList.add('hidden');
+          captureBtn.classList.add('hidden');
+        });
+    }
+
+    function capturePhoto() {
+      if (!videoStream) return;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      // Draw without horizontal flip (tanpa mirror)
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+      base64Input.value = dataUrl;
+      preview.src = dataUrl;
+
+      stopCamera();
+      
+      video.classList.add('hidden');
+      captureBtn.classList.add('hidden');
+      preview.classList.remove('hidden');
+      retakeBtn.classList.remove('hidden');
+    }
+
+    function retakePhoto() {
+      base64Input.value = '';
+      startCamera();
+    }
+
+    function stopCamera() {
+      if (videoStream) {
+        videoStream.getTracks().forEach(track => track.stop());
+        videoStream = null;
+      }
+    }
+
+    // Override closeModal to also stop camera
+    if (typeof window.originalCloseModal === 'undefined') {
+      window.originalCloseModal = window.closeModal;
+      window.closeModal = function(id) {
+        if (id === 'lengkapiModal') {
+          stopCamera();
+          video.classList.add('hidden');
+          captureBtn.classList.add('hidden');
+          preview.classList.add('hidden');
+          retakeBtn.classList.add('hidden');
+          startBtn.classList.remove('hidden');
+          base64Input.value = '';
+        }
+        window.originalCloseModal(id);
+      }
     }
   </script>
 @endpush
