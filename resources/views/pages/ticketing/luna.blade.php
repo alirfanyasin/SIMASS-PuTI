@@ -82,10 +82,42 @@
     input.value = '';
     container.scrollTop = container.scrollHeight;
 
-    // Mock AI Typing and response
-    setTimeout(() => {
+    // Append Typing Indicator
+    const typingId = 'typing-' + Date.now();
+    const typingMsg = document.createElement('div');
+    typingMsg.id = typingId;
+    typingMsg.className = 'flex gap-3 max-w-[80%]';
+    typingMsg.innerHTML = `
+      <div class="w-8 h-8 rounded-xl bg-telkom-50 dark:bg-telkom-950/50 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shrink-0 shadow-sm border border-telkom-100/10">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
+          <circle cx="12" cy="12" r="2" />
+          <path d="m17 7-5 5" />
+        </svg>
+      </div>
+      <div class="bg-white dark:bg-gray-850 px-4 py-3 rounded-3xl rounded-tl-sm border border-gray-150 dark:border-gray-800 shadow-sm text-xs text-gray-500 italic flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-telkom-500 animate-ping"></span> Luna sedang mengetik...
+      </div>
+    `;
+    container.appendChild(typingMsg);
+    container.scrollTop = container.scrollHeight;
+
+    // Send to Backend API
+    fetch('{{ route('ticket.luna-chat') }}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+      },
+      body: JSON.stringify({ message: text })
+    })
+    .then(res => res.json())
+    .then(data => {
+      const typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+
       const aiMsg = document.createElement('div');
-      aiMsg.className = 'flex gap-3 max-w-[80%]';
+      aiMsg.className = 'flex gap-3 max-w-[85%]';
       aiMsg.innerHTML = `
         <div class="w-8 h-8 rounded-xl bg-telkom-50 dark:bg-telkom-950/50 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shrink-0 shadow-sm border border-telkom-100/10">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
@@ -94,13 +126,22 @@
             <path d="m17 7-5 5" />
           </svg>
         </div>
-        <div class="bg-white dark:bg-gray-850 p-4 rounded-3xl rounded-tl-sm border border-gray-150 dark:border-gray-800 shadow-sm text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          Terima kasih atas laporan Anda. Saya sedang meneruskan pesan Anda ke tim support terkait. Silakan tunggu update status penanganan pada menu **Tiket Saya**.
+        <div class="bg-white dark:bg-gray-850 p-4 rounded-3xl rounded-tl-sm border border-gray-150 dark:border-gray-800 shadow-sm text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+          ${data.reply}
         </div>
       `;
       container.appendChild(aiMsg);
       container.scrollTop = container.scrollHeight;
-    }, 1000);
+    })
+    .catch(() => {
+      const typingEl = document.getElementById(typingId);
+      if (typingEl) typingEl.remove();
+
+      const errEl = document.createElement('div');
+      errEl.className = 'text-xs text-red-500 italic px-4';
+      errEl.textContent = 'Gagal terhubung ke layanan Luna AI. Silakan coba kembali.';
+      container.appendChild(errEl);
+    });
   }
 </script>
 @endpush
