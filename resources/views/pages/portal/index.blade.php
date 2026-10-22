@@ -19,7 +19,8 @@
                     $isRed = $mod->code === 'presensi';
                     $isGreen = $mod->code === 'eticket';
                 @endphp
-                <a href="{{ $mod->route_name ? route($mod->route_name) : '#' }}"
+                <a href="{{ $mod->getTargetUrl() }}"
+                    @if ($mod->isExternalLink()) target="_blank" rel="noopener noreferrer" @endif
                     class="group relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-7 {{ $isDark ? 'hover:border-gray-900 dark:hover:border-gray-100' : ($isGreen ? 'hover:border-emerald-600 dark:hover:border-emerald-500' : 'hover:border-telkom-600 dark:hover:border-telkom-600') }} hover:shadow-md transition-all duration-150 cursor-pointer select-none">
                     <div class="pointer-events-none">
                         <div class="flex items-center justify-between mb-5">
@@ -39,20 +40,14 @@
                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
                             {{ $mod->description }}
                         </p>
-                        @if ($mod->code === 'admin')
-                            <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">Kontrol Terpusat PuTI Surabaya</p>
-                        @elseif ($mod->code === 'presensi')
-                            <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">Courtesy to Irfan Yasin S.Kom (Student
-                                Staff PuTI Gen. 2023)</p>
-                        @elseif ($mod->code === 'eticket')
-                            <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">Courtesy to Reynanda Shaquile S.Kom
-                                (TLH PuTI Gen. 2024)</p>
+                        @if ($mod->credit)
+                            <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">{{ $mod->credit }}</p>
                         @endif
                     </div>
                     <div
                         class="pointer-events-none mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm font-semibold {{ $isDark ? 'text-gray-900 dark:text-gray-100' : ($isGreen ? 'text-emerald-600 dark:text-emerald-400' : 'text-telkom-700 dark:text-telkom-400') }}">
                         <span>Buka {{ $mod->name }}</span>
-                        <i data-lucide="arrow-right"
+                        <i data-lucide="{{ $mod->isExternalLink() ? 'external-link' : 'arrow-right' }}"
                             class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"></i>
                     </div>
                 </a>
@@ -77,8 +72,9 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-2 leading-relaxed">
                                 {{ $mod->description }}
                             </p>
-                            <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">Courtesy to Reza Eka Firmansyah S.Kom
-                                (TLH PuTI Gen. 2024)</p>
+                            @if ($mod->credit)
+                                <p class="text-xs text-gray-500 dark:text-gray-700 mt-4">{{ $mod->credit }}</p>
+                            @endif
                         </div>
                         <div
                             class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between text-sm text-blue-600 dark:text-blue-400 font-semibold">

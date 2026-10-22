@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AuditLogController;
 use App\Http\Controllers\Admin\MasterDataController;
+use App\Http\Controllers\Admin\PortalModuleController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/users/import-csv', [UserController::class, 'importCsv'])->name('users.import-csv');
     Route::patch('/users/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
     Route::resource('users', UserController::class)->except(['create', 'show', 'edit']);
+
+    // Portal Module Management
+    Route::resource('modules', PortalModuleController::class)->except(['create', 'show', 'edit']);
 
     // Master Data & Locations
     Route::get('/master-data', [MasterDataController::class, 'index'])->name('master-data.index');

@@ -14,15 +14,10 @@
     $menuGroups = [
         'Admin' => [
             ['icon' => 'layout-dashboard', 'item' => 'Dashboard', 'route' => 'admin.dashboard'],
+            ['icon' => 'layout-grid', 'item' => 'Modul Portal', 'route' => 'admin.modules.index'],
             ['icon' => 'users', 'item' => 'Manajemen Akun', 'route' => 'admin.users.index'],
             ['icon' => 'database', 'item' => 'Data Master & SLA', 'route' => 'admin.master-data.index'],
             ['icon' => 'history', 'item' => 'Audit Log', 'route' => 'admin.audit-logs.index'],
-            [
-                'icon' => 'calendar-off',
-                'item' => 'Hari Libur',
-                'route' => 'holiday.index',
-                'permission' => 'manage-holiday',
-            ],
         ],
         'Presensi' => [
             [

@@ -16,6 +16,11 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
 
+  {{-- jQuery & Select2 --}}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -38,6 +43,72 @@
   <x-toast />
 
   @stack('scripts')
+
+  {{-- Global Select2 Initializer (> 5 options = search, <= 5 = without search) --}}
+  <script>
+    window.initSelect2Auto = function(root) {
+      if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined') {
+        return;
+      }
+
+      const $context = root ? $(root) : $(document);
+      $context.find('select:not([data-no-select2]):not(.no-select2)').each(function() {
+        const $el = $(this);
+        if ($el.attr('id') === 'cameraSelect' || $el.hasClass('select2-offscreen')) {
+          return;
+        }
+
+        const optionCount = $el.find('option').length;
+        const enableSearch = optionCount > 5;
+
+        const $modal = $el.closest('.fixed, [role="dialog"], .modal');
+        const parent = $modal.length ? $modal : $(document.body);
+
+        if ($el.hasClass('select2-hidden-accessible')) {
+          $el.select2('destroy');
+        }
+
+        $el.select2({
+          minimumResultsForSearch: enableSearch ? 0 : Infinity,
+          width: '100%',
+          dropdownParent: parent,
+          placeholder: $el.attr('placeholder') || undefined
+        });
+
+        // Trigger native events so Alpine x-model updates
+        $el.off('select2:select.simass select2:clear.simass').on('select2:select.simass select2:clear.simass', function() {
+          this.dispatchEvent(new Event('input', { bubbles: true }));
+          this.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      });
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      window.initSelect2Auto();
+    });
+
+    if (window.MutationObserver) {
+      const selectObserver = new MutationObserver(function(mutations) {
+        for (const mutation of mutations) {
+          if (mutation.type === 'attributes' && (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+            const target = mutation.target;
+            if (target && target.style && target.style.display !== 'none' && target.querySelectorAll) {
+              if (target.querySelectorAll('select:not([data-no-select2])').length > 0) {
+                setTimeout(() => window.initSelect2Auto(target), 30);
+              }
+            }
+          } else if (mutation.type === 'childList') {
+            for (const node of mutation.addedNodes) {
+              if (node.nodeType === 1 && node.querySelectorAll && node.querySelectorAll('select:not([data-no-select2])').length > 0) {
+                setTimeout(() => window.initSelect2Auto(node), 30);
+              }
+            }
+          }
+        }
+      });
+      selectObserver.observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ['style', 'class'] });
+    }
+  </script>
 
   @production
   {{-- Anti-Inspect Protection (Aggressive) --}}
