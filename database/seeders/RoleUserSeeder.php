@@ -60,26 +60,15 @@ class RoleUserSeeder extends Seeder
         $allPermissions = Permission::where('name', '!=', 'create-presence')->get();
         $superAdmin->syncPermissions($allPermissions);
 
-        /** @var Role $coordinator */
-        $coordinator = Role::firstOrCreate(['name' => 'coordinator', 'guard_name' => 'web']);
-        $coordinator->syncPermissions([
+        /** @var Role $unithead */
+        $unithead = Role::firstOrCreate(['name' => 'unit-head', 'guard_name' => 'web']);
+        $unithead->syncPermissions([
             'view-presence',
             'manage-presence',
             'manage-overtime',
             'view-holiday',
             'view-settings',
         ]);
-
-        /** @var Role $technician */
-        $technician = Role::firstOrCreate(['name' => 'technician', 'guard_name' => 'web']);
-        $technician->syncPermissions([
-            'view-presence',
-            'create-presence',
-            'view-presence-history',
-        ]);
-
-        /** @var Role $nocViewer */
-        $nocViewer = Role::firstOrCreate(['name' => 'noc-viewer', 'guard_name' => 'web']);
 
         /** @var Role $studentStaff */
         $studentStaff = Role::firstOrCreate(['name' => 'student-staff', 'guard_name' => 'web']);
@@ -138,7 +127,17 @@ class RoleUserSeeder extends Seeder
                 'position' => 'IT Manager',
                 'role' => 'super-admin',
             ],
-
+            // unit-head
+            [
+                'id' => 6,
+                'name' => 'Selfina Anggraini',
+                'username' => 'selfinaanggraini',
+                'email' => 'selfinaanggraini@telkomuniversity.ac.id',
+                'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'IT Manager',
+                'role' => 'unit-head',
+            ],
             // student-staff (map to existing legacy IDs)
             [
                 'id' => 1,
@@ -203,16 +202,6 @@ class RoleUserSeeder extends Seeder
                 'role' => 'staff',
             ],
             [
-                'id' => 6,
-                'name' => 'Selfina Anggraini',
-                'username' => 'selfinaanggraini',
-                'email' => 'selfinaanggraini@telkomuniversity.ac.id',
-                'password' => Hash::make('password'),
-                'type' => 'Staf',
-                'position' => 'IT Manager',
-                'role' => 'staff',
-            ],
-            [
                 'id' => 7,
                 'name' => 'Rahadian A. Setyawan',
                 'username' => 'rahadiansetyawan',
@@ -238,7 +227,7 @@ class RoleUserSeeder extends Seeder
             'super-admin' => $superAdmin,
             'student-staff' => $studentStaff,
             'staff' => $staff,
-            'user' => $user,
+            'unit-head' => $unithead,
         ];
 
         User::unguard();
@@ -286,7 +275,7 @@ class RoleUserSeeder extends Seeder
         $this->command->info('✅ Roles, permissions, and users seeded successfully.');
         $this->command->table(
             ['Username', 'Email', 'Role'],
-            collect($usersData)->map(fn ($u) => [$u['username'], $u['email'], $u['role']])->toArray()
+            collect($usersData)->map(fn($u) => [$u['username'], $u['email'], $u['role']])->toArray()
         );
     }
 }
