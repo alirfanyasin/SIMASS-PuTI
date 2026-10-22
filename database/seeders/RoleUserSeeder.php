@@ -38,6 +38,13 @@ class RoleUserSeeder extends Seeder
             // Roles
             'view-roles',
             'manage-roles',
+
+            // Admin Console
+            'access-admin',
+            'manage-users',
+            'manage-modules',
+            'manage-master-data',
+            'view-audit-logs',
         ];
 
         foreach ($permissions as $permission) {
@@ -52,6 +59,27 @@ class RoleUserSeeder extends Seeder
         $superAdmin = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'web']);
         $allPermissions = Permission::where('name', '!=', 'create-presence')->get();
         $superAdmin->syncPermissions($allPermissions);
+
+        /** @var Role $coordinator */
+        $coordinator = Role::firstOrCreate(['name' => 'coordinator', 'guard_name' => 'web']);
+        $coordinator->syncPermissions([
+            'view-presence',
+            'manage-presence',
+            'manage-overtime',
+            'view-holiday',
+            'view-settings',
+        ]);
+
+        /** @var Role $technician */
+        $technician = Role::firstOrCreate(['name' => 'technician', 'guard_name' => 'web']);
+        $technician->syncPermissions([
+            'view-presence',
+            'create-presence',
+            'view-presence-history',
+        ]);
+
+        /** @var Role $nocViewer */
+        $nocViewer = Role::firstOrCreate(['name' => 'noc-viewer', 'guard_name' => 'web']);
 
         /** @var Role $studentStaff */
         $studentStaff = Role::firstOrCreate(['name' => 'student-staff', 'guard_name' => 'web']);

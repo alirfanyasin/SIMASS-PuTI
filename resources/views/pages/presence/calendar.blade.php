@@ -67,10 +67,6 @@
                   class="inline-flex items-center justify-center w-6 h-6 sm:w-8 sm:h-8 rounded-full text-xs sm:text-sm font-semibold {{ $isToday ? 'bg-telkom-600 text-white' : ($isOff ? 'text-red-600 dark:text-red-400' : 'text-gray-700 dark:text-gray-300 group-hover:text-telkom-600') }}">
                   {{ $data['day'] }}
                 </span>
-
-                @if (!$isOff && !$isToday)
-                  <span class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-green-500 mt-1 sm:mt-2 mr-0 sm:mr-1"></span>
-                @endif
               </div>
 
               @if ($data['holiday'])

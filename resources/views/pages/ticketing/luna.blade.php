@@ -27,8 +27,8 @@
                         <div class="flex items-center gap-2">
                             <h3 class="font-bold text-base text-gray-900 dark:text-white">Luna AI Assistant</h3>
                             <span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                                Online
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Asisten Resmi PuTI Telkom University

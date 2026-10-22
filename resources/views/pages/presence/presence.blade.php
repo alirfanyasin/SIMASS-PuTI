@@ -39,8 +39,7 @@
             Izinkan GPS
           </button>
           <div id="locationTag"
-            class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500">
-            <span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span>
+            class="flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500">
             Menunggu GPS
           </div>
         </div>
@@ -512,7 +511,7 @@
         if (iconBg) iconBg.className = 'w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 flex items-center justify-center shrink-0';
         if (title) { title.className = 'font-bold text-amber-900 dark:text-amber-300 text-base'; title.textContent = 'Verifikasi Lokasi Kedaluwarsa'; }
         if (desc) { desc.className = 'text-xs sm:text-sm text-amber-700 dark:text-amber-400 mt-0.5'; desc.textContent = reason; }
-        if (tag) { tag.className = 'flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0'; tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Token Kedaluwarsa'; }
+        if (tag) { tag.className = 'flex items-center px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0'; tag.innerHTML = 'Token Kedaluwarsa'; }
         if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
         if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
       }
@@ -1074,8 +1073,8 @@
           }
           if (tag) {
             tag.className =
-              "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-            tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> GPS Tidak Aman';
+              "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+            tag.innerHTML = 'GPS Tidak Aman';
           }
 
           // Stop watching after spoofing detected
@@ -1113,7 +1112,7 @@
             } else {
               // Request server token
               if (tag) {
-                tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Mengamankan Sesi...';
+                tag.innerHTML = 'Mengamankan Sesi...';
               }
               if (title) title.textContent = "Meminta Token Server...";
 
@@ -1145,8 +1144,8 @@
             }
             if (tag) {
               tag.className =
-                "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
+                "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+              tag.innerHTML = 'Di Luar Jangkauan';
             }
             if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
           }
@@ -1172,8 +1171,8 @@
         }
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Terverifikasi';
+            "flex items-center px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
+          tag.innerHTML = 'GPS Terverifikasi';
         }
         if (btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
         if (btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
@@ -1195,8 +1194,8 @@
         }
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Ditolak Server';
+            "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+          tag.innerHTML = 'Ditolak Server';
         }
         if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
       }
@@ -1209,8 +1208,8 @@
 
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span> Menunggu GPS';
+            "flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0";
+          tag.innerHTML = 'Menunggu GPS';
         }
         if (title) title.textContent = "Mengecek Lokasi...";
         if (desc) desc.textContent = "Mendapatkan koordinat GPS";
@@ -1235,8 +1234,8 @@
             // Show loading indicator while high-accuracy kicks in
             if (tag) {
               tag.className =
-                "flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Memverifikasi GPS...';
+                "flex items-center px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0";
+              tag.innerHTML = 'Memverifikasi GPS...';
             }
             if (title) {
               title.className = "font-bold text-amber-900 dark:text-amber-300 text-base";
@@ -1299,8 +1298,8 @@
         if (desc) desc.textContent = "Izinkan akses GPS di pengaturan browser Anda.";
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Akses Ditolak';
+            "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+          tag.innerHTML = 'Akses Ditolak';
         }
         if (btnGPS) btnGPS.classList.remove('hidden');
       }

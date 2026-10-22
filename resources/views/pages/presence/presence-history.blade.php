@@ -393,11 +393,7 @@
 
     function confirmDelete(id) {
       if(!id) return;
-      if(confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/presence/${id}`;
-        form.submit();
-      }
+      window.confirmDelete(id, 'data presensi ini');
     }
     @endif
   </script>

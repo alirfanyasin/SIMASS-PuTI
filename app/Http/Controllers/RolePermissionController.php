@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolePermissionController extends Controller
 {
@@ -20,7 +20,7 @@ class RolePermissionController extends Controller
         // Get all permissions and group them logically for display
         $allPermissions = Permission::pluck('name')->toArray();
         $permissions = [];
-        
+
         foreach ($allPermissions as $perm) {
             if (str_contains($perm, 'presence') || str_contains($perm, 'overtime')) {
                 $permissions['Presensi'][] = $perm;

@@ -62,8 +62,7 @@
     <div class="max-w-4xl mx-auto px-4 text-center space-y-6 sm:space-y-8">
       
       <!-- Announcement Pill -->
-      <div class="inline-flex items-center gap-2 px-4 py-2 bg-telkom-50 dark:bg-telkom-950/40 border border-telkom-200/50 dark:border-telkom-900/50 rounded-full text-xs font-bold text-telkom-600 dark:text-telkom-400 shadow-sm animate-bounce">
-        <span class="w-2 h-2 rounded-full bg-telkom-500 animate-pulse"></span>
+      <div class="inline-flex items-center px-4 py-2 bg-telkom-50 dark:bg-telkom-950/40 border border-telkom-200/50 dark:border-telkom-900/50 rounded-full text-xs font-bold text-telkom-600 dark:text-telkom-400 shadow-sm animate-bounce">
         SIMASS v2.0 - Face Recognition AI
       </div>
 

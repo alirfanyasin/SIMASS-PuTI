@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="min-h-screen bg-gray-50/70 dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased selection:bg-telkom-100 selection:text-telkom-800 transition-colors duration-200" style="font-family:'Plus Jakarta Sans',sans-serif">
@@ -56,6 +57,8 @@
   </main>
 
   @include('helpers.darkmode')
+  <x-confirm-delete />
+  <x-toast />
   @stack('scripts')
 </body>
 </html>

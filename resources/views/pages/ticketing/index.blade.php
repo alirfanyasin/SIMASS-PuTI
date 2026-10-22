@@ -185,8 +185,7 @@
                     ];
                     $badgeStyle = $badgeStyles[$ticket->user_status_color] ?? $badgeStyles['gray'];
                   @endphp
-                  <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border {{ $badgeStyle }}">
-                    <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border {{ $badgeStyle }}">
                     {{ $ticket->user_status_label }}
                   </span>
                 </td>

@@ -7,6 +7,11 @@
   <title>{!! html_entity_decode(strip_tags(trim($__env->yieldContent('title', 'Presensi')))) !!} — Portal PuTI</title>
   <link rel="icon" type="image/webp" href="{{ asset('logo-puti.webp') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
@@ -34,6 +39,7 @@
 
   @stack('scripts')
 
+  @production
   {{-- Anti-Inspect Protection (Aggressive) --}}
   <script>
     (function() {
@@ -114,6 +120,7 @@
       });
     })();
   </script>
+  @endproduction
 </body>
 
 </html>

@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
     // Ticketing Routes
     require __DIR__.'/ticketing.php';
 
+    // Admin Console Routes (Fase 2B)
+    require __DIR__.'/admin.php';
+
     // Holiday Management (super-admin + staff only)
     Route::prefix('holiday')->name('holiday.')->middleware('can:manage-holiday')->group(function () {
         Route::get('/', [HolidayController::class, 'index'])->name('index');

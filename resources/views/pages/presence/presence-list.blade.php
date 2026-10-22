@@ -426,11 +426,7 @@
     }
 
     function confirmDelete(id) {
-      if(confirm('Apakah Anda yakin ingin menghapus data presensi ini?')) {
-        const form = document.getElementById('deleteForm');
-        form.action = `/presence/${id}`;
-        form.submit();
-      }
+      window.confirmDelete(id, 'data presensi ini');
     }
 
     function exportPdf() {

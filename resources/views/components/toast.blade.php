@@ -40,6 +40,27 @@
 
 <script>
   window.showToast = function(msg, type = 'success', duration = 3500) {
+    if (typeof Swal !== 'undefined') {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: duration,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl dark:bg-gray-900 dark:text-gray-100 text-xs font-semibold'
+        },
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+      });
+      return Toast.fire({
+        icon: type,
+        title: msg
+      });
+    }
+
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
@@ -132,6 +153,78 @@
     el.classList.add('toast-hiding');
     el.addEventListener('animationend', () => el.remove(), { once: true });
   };
+
+  // Global window.alert override with SweetAlert2
+  window.alert = function(msg) {
+    if (typeof Swal !== 'undefined') {
+      let icon = 'info';
+      let title = 'Informasi';
+      const lower = String(msg).toLowerCase();
+      if (lower.includes('error') || lower.includes('gagal') || lower.includes('ditolak') || lower.includes('tidak aman')) {
+        icon = 'error';
+        title = 'Terjadi Kesalahan';
+      } else if (lower.includes('peringatan') || lower.includes('perhatian') || lower.includes('kedaluwarsa') || lower.includes('pilih')) {
+        icon = 'warning';
+        title = 'Perhatian';
+      } else if (lower.includes('berhasil') || lower.includes('sukses')) {
+        icon = 'success';
+        title = 'Berhasil';
+      }
+
+      return Swal.fire({
+        icon: icon,
+        title: title,
+        text: msg,
+        confirmButtonText: 'Mengerti',
+        customClass: {
+          popup: 'rounded-3xl dark:bg-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 shadow-2xl p-6',
+          confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm'
+        },
+        buttonsStyling: false
+      });
+    }
+  };
+
+  // Intercept forms using onsubmit confirm(...)
+  document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (!form || form.dataset.swalBypassed) return;
+    const onsubmitAttr = form.getAttribute('onsubmit');
+    if (onsubmitAttr && onsubmitAttr.includes('confirm(')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const match = onsubmitAttr.match(/confirm\(['"](.*?)['"]\)/);
+      const text = match ? match[1] : 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Konfirmasi',
+          text: text,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Lanjutkan',
+          cancelButtonText: 'Batal',
+          reverseButtons: true,
+          customClass: {
+            popup: 'rounded-3xl dark:bg-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 shadow-2xl p-6',
+            confirmButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm',
+            cancelButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-150 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-700 dark:text-gray-300 mr-2 transition'
+          },
+          buttonsStyling: false
+        }).then((res) => {
+          if (res.isConfirmed) {
+            form.dataset.swalBypassed = 'true';
+            form.submit();
+          }
+        });
+      } else {
+        if (window.confirm(text)) {
+          form.dataset.swalBypassed = 'true';
+          form.submit();
+        }
+      }
+    }
+  }, true);
 
   document.addEventListener('DOMContentLoaded', () => {
     @if(session('success')) showToast("{!! addslashes(session('success')) !!}", 'success'); @endif
