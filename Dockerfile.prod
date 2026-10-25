@@ -1,0 +1,16 @@
+FROM node:22-alpine AS assets
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM serversideup/php:8.4-fpm-nginx
+
+USER root
+RUN install-php-extensions gd bcmath
+USER www-data
+
+COPY --chown=www-data:www-data . /var/www/html
+COPY --chown=www-data:www-data --from=assets /app/public/build /var/www/html/public/build
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
