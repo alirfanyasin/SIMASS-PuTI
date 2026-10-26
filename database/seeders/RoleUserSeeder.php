@@ -38,6 +38,13 @@ class RoleUserSeeder extends Seeder
             // Roles
             'view-roles',
             'manage-roles',
+
+            // Admin Console
+            'access-admin',
+            'manage-users',
+            'manage-modules',
+            'manage-master-data',
+            'view-audit-logs',
         ];
 
         foreach ($permissions as $permission) {
@@ -52,6 +59,16 @@ class RoleUserSeeder extends Seeder
         $superAdmin = Role::firstOrCreate(['name' => 'super-admin', 'guard_name' => 'web']);
         $allPermissions = Permission::where('name', '!=', 'create-presence')->get();
         $superAdmin->syncPermissions($allPermissions);
+
+        /** @var Role $unithead */
+        $unithead = Role::firstOrCreate(['name' => 'unit-head', 'guard_name' => 'web']);
+        $unithead->syncPermissions([
+            'view-presence',
+            'manage-presence',
+            'manage-overtime',
+            'view-holiday',
+            'view-settings',
+        ]);
 
         /** @var Role $studentStaff */
         $studentStaff = Role::firstOrCreate(['name' => 'student-staff', 'guard_name' => 'web']);
@@ -110,7 +127,17 @@ class RoleUserSeeder extends Seeder
                 'position' => 'IT Manager',
                 'role' => 'super-admin',
             ],
-
+            // unit-head
+            [
+                'id' => 6,
+                'name' => 'Selfina Anggraini',
+                'username' => 'selfinaanggraini',
+                'email' => 'selfinaanggraini@telkomuniversity.ac.id',
+                'password' => Hash::make('password'),
+                'type' => 'Staf',
+                'position' => 'IT Manager',
+                'role' => 'unit-head',
+            ],
             // student-staff (map to existing legacy IDs)
             [
                 'id' => 1,
@@ -175,16 +202,6 @@ class RoleUserSeeder extends Seeder
                 'role' => 'staff',
             ],
             [
-                'id' => 6,
-                'name' => 'Selfina Anggraini',
-                'username' => 'selfinaanggraini',
-                'email' => 'selfinaanggraini@telkomuniversity.ac.id',
-                'password' => Hash::make('password'),
-                'type' => 'Staf',
-                'position' => 'IT Manager',
-                'role' => 'staff',
-            ],
-            [
                 'id' => 7,
                 'name' => 'Rahadian A. Setyawan',
                 'username' => 'rahadiansetyawan',
@@ -210,7 +227,7 @@ class RoleUserSeeder extends Seeder
             'super-admin' => $superAdmin,
             'student-staff' => $studentStaff,
             'staff' => $staff,
-            'user' => $user,
+            'unit-head' => $unithead,
         ];
 
         User::unguard();

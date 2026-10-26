@@ -7,9 +7,19 @@
   <title>{!! html_entity_decode(strip_tags(trim($__env->yieldContent('title', 'Presensi')))) !!} — Portal PuTI</title>
   <link rel="icon" type="image/webp" href="{{ asset('logo-puti.webp') }}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <style>
+    [x-cloak] { display: none !important; }
+  </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet">
+
+  {{-- jQuery & Select2 --}}
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -34,6 +44,73 @@
 
   @stack('scripts')
 
+  {{-- Global Select2 Initializer (> 5 options = search, <= 5 = without search) --}}
+  <script>
+    window.initSelect2Auto = function(root) {
+      if (typeof jQuery === 'undefined' || typeof jQuery.fn.select2 === 'undefined') {
+        return;
+      }
+
+      const $context = root ? $(root) : $(document);
+      $context.find('select:not([data-no-select2]):not(.no-select2)').each(function() {
+        const $el = $(this);
+        if ($el.attr('id') === 'cameraSelect' || $el.hasClass('select2-offscreen')) {
+          return;
+        }
+
+        const optionCount = $el.find('option').length;
+        const enableSearch = optionCount > 5;
+
+        const $modal = $el.closest('.fixed, [role="dialog"], .modal');
+        const parent = $modal.length ? $modal : $(document.body);
+
+        if ($el.hasClass('select2-hidden-accessible')) {
+          $el.select2('destroy');
+        }
+
+        $el.select2({
+          minimumResultsForSearch: enableSearch ? 0 : Infinity,
+          width: '100%',
+          dropdownParent: parent,
+          placeholder: $el.attr('placeholder') || undefined
+        });
+
+        // Trigger native events so Alpine x-model updates
+        $el.off('select2:select.simass select2:clear.simass').on('select2:select.simass select2:clear.simass', function() {
+          this.dispatchEvent(new Event('input', { bubbles: true }));
+          this.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      });
+    };
+
+    document.addEventListener('DOMContentLoaded', function() {
+      window.initSelect2Auto();
+    });
+
+    if (window.MutationObserver) {
+      const selectObserver = new MutationObserver(function(mutations) {
+        for (const mutation of mutations) {
+          if (mutation.type === 'attributes' && (mutation.attributeName === 'style' || mutation.attributeName === 'class')) {
+            const target = mutation.target;
+            if (target && target.style && target.style.display !== 'none' && target.querySelectorAll) {
+              if (target.querySelectorAll('select:not([data-no-select2])').length > 0) {
+                setTimeout(() => window.initSelect2Auto(target), 30);
+              }
+            }
+          } else if (mutation.type === 'childList') {
+            for (const node of mutation.addedNodes) {
+              if (node.nodeType === 1 && node.querySelectorAll && node.querySelectorAll('select:not([data-no-select2])').length > 0) {
+                setTimeout(() => window.initSelect2Auto(node), 30);
+              }
+            }
+          }
+        }
+      });
+      selectObserver.observe(document.body, { attributes: true, childList: true, subtree: true, attributeFilter: ['style', 'class'] });
+    }
+  </script>
+
+  @production
   {{-- Anti-Inspect Protection (Aggressive) --}}
   <script>
     (function() {
@@ -78,13 +155,12 @@
             // Nuke the DOM
             document.body.innerHTML = `
               <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;font-family:system-ui,sans-serif;background:#000;color:#ef4444;">
-                <svg width="80" height="80" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-bottom:1rem">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                </svg>
+                <i data-lucide="alert-triangle" style="width:80px;height:80px;margin-bottom:1rem;"></i>
                 <h1 style="font-size:2rem;font-weight:900;margin:0">SECURITY VIOLATION</h1>
                 <p style="color:#9ca3af;margin-top:0.5rem">Developer Tools usage is strictly prohibited.</p>
                 <button onclick="window.location.reload()" style="margin-top:2rem;padding:12px 24px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer">RELOAD SYSTEM</button>
               </div>`;
+            if (window.createIcons) { window.createIcons(); }
           }
         } else {
           if (isDevToolsOpen) {
@@ -114,6 +190,7 @@
       });
     })();
   </script>
+  @endproduction
 </body>
 
 </html>

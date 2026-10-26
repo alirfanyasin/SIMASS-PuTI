@@ -5,20 +5,69 @@
         session(['active_module' => 'Ticketing']);
     } elseif (request()->routeIs('inventory.*')) {
         session(['active_module' => 'Inventaris']);
+    } elseif (request()->routeIs('admin.*')) {
+        session(['active_module' => 'Admin']);
     }
 
     $currentApp = session('active_module', 'Presensi');
 
     $menuGroups = [
+        'Admin' => [
+            ['icon' => 'layout-dashboard', 'item' => 'Dashboard', 'route' => 'admin.dashboard'],
+            ['icon' => 'layout-grid', 'item' => 'Modul Portal', 'route' => 'admin.modules.index'],
+            ['icon' => 'users', 'item' => 'Manajemen Akun', 'route' => 'admin.users.index'],
+            ['icon' => 'database', 'item' => 'Data Master & SLA', 'route' => 'admin.master-data.index'],
+            ['icon' => 'history', 'item' => 'Audit Log', 'route' => 'admin.audit-logs.index'],
+        ],
         'Presensi' => [
-            ['icon' => 'layout-grid', 'item' => 'Dashboard', 'route' => 'presence.dashboard', 'permission' => 'view-presence'],
-            ['icon' => 'check-square', 'item' => 'Presensi', 'route' => 'presence.index', 'permission' => 'create-presence'],
-            ['icon' => 'file-text', 'item' => 'Daftar Presensi', 'route' => 'presence.list', 'permission' => 'view-presence'],
-            ['icon' => 'clock', 'item' => 'Overtime', 'route' => 'presence.overtime', 'permission' => 'manage-overtime'],
-            ['icon' => 'history', 'item' => 'History Presensi', 'route' => 'presence.history', 'permission' => 'view-presence-history'],
-            ['icon' => 'users', 'item' => 'Student Staff', 'route' => 'presence.student-staff', 'permission' => 'manage-presence'],
-            ['icon' => 'calendar', 'item' => 'Kalender', 'route' => 'presence.calendar', 'permission' => 'view-presence'],
-            ['icon' => 'calendar-off', 'item' => 'Hari Libur', 'route' => 'holiday.index', 'permission' => 'manage-holiday'],
+            [
+                'icon' => 'layout-grid',
+                'item' => 'Dashboard',
+                'route' => 'presence.dashboard',
+                'permission' => 'view-presence',
+            ],
+            [
+                'icon' => 'check-square',
+                'item' => 'Presensi',
+                'route' => 'presence.index',
+                'permission' => 'create-presence',
+            ],
+            [
+                'icon' => 'file-text',
+                'item' => 'Daftar Presensi',
+                'route' => 'presence.list',
+                'permission' => 'view-presence',
+            ],
+            [
+                'icon' => 'clock',
+                'item' => 'Overtime',
+                'route' => 'presence.overtime',
+                'permission' => 'manage-overtime',
+            ],
+            [
+                'icon' => 'history',
+                'item' => 'History Presensi',
+                'route' => 'presence.history',
+                'permission' => 'view-presence-history',
+            ],
+            [
+                'icon' => 'users',
+                'item' => 'Student Staff',
+                'route' => 'presence.student-staff',
+                'permission' => 'manage-presence',
+            ],
+            [
+                'icon' => 'calendar',
+                'item' => 'Kalender',
+                'route' => 'presence.calendar',
+                'permission' => 'view-presence',
+            ],
+            [
+                'icon' => 'calendar-off',
+                'item' => 'Hari Libur',
+                'route' => 'holiday.index',
+                'permission' => 'manage-holiday',
+            ],
         ],
         'Ticketing' => [
             ['icon' => 'ticket', 'item' => 'Daftar Tiket', 'route' => 'ticket.index'],
@@ -29,7 +78,12 @@
             ['icon' => 'bot', 'item' => 'Luna AI', 'route' => 'ticket.luna'],
         ],
         'Lainnya' => [
-            ['icon' => 'shield-check', 'item' => 'Role & Permission', 'route' => 'role-permission', 'permission' => 'manage-roles'],
+            [
+                'icon' => 'shield-check',
+                'item' => 'Role & Permission',
+                'route' => 'role-permission',
+                'permission' => 'manage-roles',
+            ],
             ['icon' => 'user', 'item' => 'Profil', 'route' => 'profile'],
             ['icon' => 'settings', 'item' => 'Pengaturan', 'route' => 'settings', 'permission' => 'manage-roles'],
         ],
@@ -46,7 +100,7 @@
             </div>
             <div>
                 <p class="font-bold text-sm leading-tight">
-                    {{ $currentApp ? ($currentApp === 'Presensi' ? 'SIMASS Presensi' : ($currentApp === 'Ticketing' ? 'e-Ticket PuTI' : 'Inventaris PuTI')) : 'Portal PuTI' }}
+                    {{ $currentApp ? ($currentApp === 'Presensi' ? 'SIMASS Presensi' : ($currentApp === 'Ticketing' ? 'e-Ticket PuTI' : ($currentApp === 'Admin' ? 'Admin Console' : 'Inventaris PuTI'))) : 'Portal PuTI' }}
                 </p>
                 <p class="text-xs text-gray-500 dark:text-gray-400">Kampus Surabaya</p>
             </div>
@@ -68,7 +122,8 @@
             @if ($currentApp && $groupLabel !== $currentApp && $groupLabel !== 'Lainnya')
                 @continue
             @endif
-            <p class="px-3 py-2 {{ $loop->first ? '' : 'mt-4' }} text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <p
+                class="px-3 py-2 {{ $loop->first ? '' : 'mt-4' }} text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 {{ $groupLabel }}
             </p>
             @foreach ($items as $item)

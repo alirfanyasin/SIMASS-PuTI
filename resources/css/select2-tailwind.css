@@ -1,0 +1,199 @@
+/* Select2 Modern Tailwind Theme for SIMASS PuTI */
+
+.select2-container {
+    width: 100% !important;
+    display: block !important;
+}
+
+/* Single Selection Box */
+.select2-container--default .select2-selection--single {
+    height: 38px !important;
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 0.75rem !important; /* rounded-xl */
+    display: flex !important;
+    align-items: center !important;
+    position: relative !important;
+    transition: all 0.15s ease-in-out !important;
+    padding: 0 !important;
+}
+
+.dark .select2-container--default .select2-selection--single {
+    background-color: #030712 !important; /* bg-gray-950 */
+    border-color: #1f2937 !important; /* border-gray-800 */
+}
+
+/* Rendered Text */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #111827 !important; /* text-gray-900 */
+    font-size: 0.75rem !important; /* text-xs */
+    font-weight: 500 !important;
+    line-height: 36px !important;
+    padding-left: 0.75rem !important;
+    padding-right: 2.25rem !important;
+    width: 100% !important;
+    text-align: left !important;
+}
+
+.dark .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #f3f4f6 !important; /* text-gray-100 */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #9ca3af !important;
+}
+
+/* Arrow styling */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    position: absolute !important;
+    top: 0 !important;
+    bottom: 0 !important;
+    right: 0.75rem !important;
+    height: 100% !important;
+    width: 18px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: none !important;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    margin: 0 !important;
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    border: none !important;
+    border-width: 0 !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 14px 14px !important;
+    width: 14px !important;
+    height: 14px !important;
+    display: block !important;
+    transform-origin: center center !important;
+    transition: transform 0.15s ease !important;
+}
+
+.dark .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%239ca3af'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5' /%3E%3C/svg%3E") !important;
+}
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    transform: rotate(180deg) !important;
+}
+
+/* Focus & Open states */
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #b6252a !important; /* telkom-600 */
+    box-shadow: 0 0 0 2px rgba(182, 37, 42, 0.15) !important;
+    background-color: #ffffff !important;
+}
+
+.dark .select2-container--default.select2-container--focus .select2-selection--single,
+.dark .select2-container--default.select2-container--open .select2-selection--single {
+    border-color: #cf343b !important; /* telkom-500 */
+    box-shadow: 0 0 0 2px rgba(207, 52, 59, 0.25) !important;
+    background-color: #030712 !important;
+}
+
+/* Dropdown Container */
+.select2-dropdown {
+    background-color: #ffffff !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 1rem !important; /* rounded-2xl */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+    padding: 0.375rem !important;
+    z-index: 999999 !important;
+    overflow: hidden !important;
+    margin-top: 4px !important;
+}
+
+.dark .select2-dropdown {
+    background-color: #111827 !important; /* bg-gray-900 */
+    border-color: #1f2937 !important; /* border-gray-800 */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Search Field */
+.select2-search--dropdown {
+    padding: 0.25rem 0.25rem 0.5rem 0.25rem !important;
+}
+
+.select2-search--dropdown .select2-search__field {
+    background-color: #f9fafb !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 0.625rem !important; /* rounded-lg */
+    color: #111827 !important;
+    font-size: 0.75rem !important;
+    padding: 0.4rem 0.625rem !important;
+    outline: none !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.dark .select2-search--dropdown .select2-search__field {
+    background-color: #030712 !important;
+    border-color: #374151 !important;
+    color: #f3f4f6 !important;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: #b6252a !important;
+    box-shadow: 0 0 0 1px #b6252a !important;
+}
+
+/* Results Options */
+.select2-results__options {
+    max-height: 200px !important;
+    overflow-y: auto !important;
+    padding: 0 !important;
+}
+
+.select2-results__option {
+    font-size: 0.75rem !important;
+    font-weight: 500 !important;
+    padding: 0.5rem 0.75rem !important;
+    border-radius: 0.5rem !important;
+    color: #374151 !important;
+    margin-bottom: 2px !important;
+    cursor: pointer !important;
+    transition: background-color 0.1s ease !important;
+}
+
+.dark .select2-results__option {
+    color: #d1d5db !important;
+}
+
+/* Highlighted (Hovered) Option */
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #fff1f1 !important; /* telkom-50 */
+    color: #931c20 !important; /* telkom-700 */
+    font-weight: 600 !important;
+}
+
+.dark .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: rgba(69, 10, 14, 0.6) !important; /* telkom-950 */
+    color: #ff9d9d !important; /* telkom-300 */
+}
+
+/* Selected Option */
+.select2-container--default .select2-results__option--selected {
+    background-color: #f3f4f6 !important;
+    color: #111827 !important;
+    font-weight: 700 !important;
+}
+
+.dark .select2-container--default .select2-results__option--selected {
+    background-color: #1f2937 !important;
+    color: #ffffff !important;
+}
+
+/* Disabled Option */
+.select2-container--default .select2-results__option[aria-disabled=true] {
+    color: #9ca3af !important;
+    cursor: not-allowed !important;
+}

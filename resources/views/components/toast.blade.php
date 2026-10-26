@@ -40,6 +40,27 @@
 
 <script>
   window.showToast = function(msg, type = 'success', duration = 3500) {
+    if (typeof Swal !== 'undefined') {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: duration,
+        timerProgressBar: true,
+        customClass: {
+          popup: 'rounded-2xl border border-gray-200 dark:border-gray-800 shadow-xl dark:bg-gray-900 dark:text-gray-100 text-xs font-semibold'
+        },
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer);
+          toast.addEventListener('mouseleave', Swal.resumeTimer);
+        }
+      });
+      return Toast.fire({
+        icon: type,
+        title: msg
+      });
+    }
+
     const container = document.getElementById('toastContainer');
     if (!container) return;
 
@@ -50,7 +71,7 @@
         text: 'text-emerald-800 dark:text-emerald-200',
         iconBg: 'bg-emerald-500',
         progressBg: 'bg-emerald-500',
-        icon: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
+        iconName: 'check-circle-2',
       },
       error: {
         bg: 'bg-red-50/90 dark:bg-red-950/80',
@@ -58,7 +79,7 @@
         text: 'text-red-800 dark:text-red-200',
         iconBg: 'bg-red-500',
         progressBg: 'bg-red-500',
-        icon: `<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>`,
+        iconName: 'x-circle',
       },
       info: {
         bg: 'bg-blue-50/90 dark:bg-blue-950/80',
@@ -66,7 +87,7 @@
         text: 'text-blue-800 dark:text-blue-200',
         iconBg: 'bg-blue-500',
         progressBg: 'bg-blue-500',
-        icon: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`,
+        iconName: 'info',
       },
       warning: {
         bg: 'bg-amber-50/90 dark:bg-amber-950/80',
@@ -74,7 +95,7 @@
         text: 'text-amber-800 dark:text-amber-200',
         iconBg: 'bg-amber-500',
         progressBg: 'bg-amber-500',
-        icon: `<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`,
+        iconName: 'alert-triangle',
       },
     };
 
@@ -92,22 +113,21 @@
 
     toast.innerHTML = `
       <div class="${c.iconBg} shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm mt-0.5">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          ${c.icon}
-        </svg>
+        <i data-lucide="${c.iconName}" class="w-4 h-4"></i>
       </div>
       <div class="flex-1 min-w-0 pr-4">
         <p class="${c.text} text-sm font-bold tracking-tight mb-0.5 capitalize">${type}</p>
         <p class="${c.text} text-sm font-medium leading-snug opacity-90">${msg}</p>
       </div>
       <button class="absolute top-4 right-4 p-1 rounded-lg ${c.text} opacity-50 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors" onclick="window._dismissToast(this.closest('.toast-item'))">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
       <div class="absolute bottom-0 left-0 h-1 ${c.progressBg} opacity-20 w-full"></div>
       <div class="absolute bottom-0 left-0 h-1 ${c.progressBg} toast-progress" style="animation-duration: ${duration}ms;"></div>
     `;
 
     container.appendChild(toast);
+    if (window.createIcons) window.createIcons();
 
     let timer = setTimeout(() => window._dismissToast(toast), duration);
 
@@ -132,6 +152,78 @@
     el.classList.add('toast-hiding');
     el.addEventListener('animationend', () => el.remove(), { once: true });
   };
+
+  // Global window.alert override with SweetAlert2
+  window.alert = function(msg) {
+    if (typeof Swal !== 'undefined') {
+      let icon = 'info';
+      let title = 'Informasi';
+      const lower = String(msg).toLowerCase();
+      if (lower.includes('error') || lower.includes('gagal') || lower.includes('ditolak') || lower.includes('tidak aman')) {
+        icon = 'error';
+        title = 'Terjadi Kesalahan';
+      } else if (lower.includes('peringatan') || lower.includes('perhatian') || lower.includes('kedaluwarsa') || lower.includes('pilih')) {
+        icon = 'warning';
+        title = 'Perhatian';
+      } else if (lower.includes('berhasil') || lower.includes('sukses')) {
+        icon = 'success';
+        title = 'Berhasil';
+      }
+
+      return Swal.fire({
+        icon: icon,
+        title: title,
+        text: msg,
+        confirmButtonText: 'Mengerti',
+        customClass: {
+          popup: 'rounded-3xl dark:bg-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 shadow-2xl p-6',
+          confirmButton: 'px-5 py-2.5 rounded-xl text-sm font-semibold bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm'
+        },
+        buttonsStyling: false
+      });
+    }
+  };
+
+  // Intercept forms using onsubmit confirm(...)
+  document.addEventListener('submit', function(e) {
+    const form = e.target;
+    if (!form || form.dataset.swalBypassed) return;
+    const onsubmitAttr = form.getAttribute('onsubmit');
+    if (onsubmitAttr && onsubmitAttr.includes('confirm(')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      const match = onsubmitAttr.match(/confirm\(['"](.*?)['"]\)/);
+      const text = match ? match[1] : 'Apakah Anda yakin ingin melanjutkan tindakan ini?';
+
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          title: 'Konfirmasi',
+          text: text,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonText: 'Ya, Lanjutkan',
+          cancelButtonText: 'Batal',
+          reverseButtons: true,
+          customClass: {
+            popup: 'rounded-3xl dark:bg-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 shadow-2xl p-6',
+            confirmButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm',
+            cancelButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-150 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-700 dark:text-gray-300 mr-2 transition'
+          },
+          buttonsStyling: false
+        }).then((res) => {
+          if (res.isConfirmed) {
+            form.dataset.swalBypassed = 'true';
+            form.submit();
+          }
+        });
+      } else {
+        if (window.confirm(text)) {
+          form.dataset.swalBypassed = 'true';
+          form.submit();
+        }
+      }
+    }
+  }, true);
 
   document.addEventListener('DOMContentLoaded', () => {
     @if(session('success')) showToast("{!! addslashes(session('success')) !!}", 'success'); @endif

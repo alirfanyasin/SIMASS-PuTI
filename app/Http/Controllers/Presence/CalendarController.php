@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Presence;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
-use Carbon\Carbon;
 use App\Models\Holiday;
 use App\Models\Presence;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
@@ -16,8 +15,8 @@ class CalendarController extends Controller
         $month = $request->input('month', Carbon::now()->month);
         $year = $request->input('year', Carbon::now()->year);
 
-        $month = (int)$month;
-        $year = (int)$year;
+        $month = (int) $month;
+        $year = (int) $year;
 
         $date = Carbon::createFromDate($year, $month, 1);
         $daysInMonth = $date->daysInMonth;
@@ -27,8 +26,8 @@ class CalendarController extends Controller
         $holidays = Holiday::whereYear('date', $year)
             ->whereMonth('date', $month)
             ->get()
-            ->keyBy(function($item) {
-                return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
+            ->keyBy(function ($item) {
+                return Carbon::parse($item->date)->format('Y-m-d');
             });
 
         $presencesCount = Presence::whereYear('tanggal', $year)

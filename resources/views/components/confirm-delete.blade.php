@@ -1,13 +1,7 @@
 <x-modal id="globalConfirmDeleteModal" size="sm" title="Konfirmasi Penghapusan">
   <div class="space-y-4 text-center pb-2">
     <div class="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mb-4">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-        <path d="M3 6h18"/>
-        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-        <line x1="10" y1="11" x2="10" y2="17"/>
-        <line x1="14" y1="11" x2="14" y2="17"/>
-      </svg>
+      <i data-lucide="trash-2" class="w-8 h-8"></i>
     </div>
     <p class="text-gray-600 dark:text-gray-400 text-sm">
       Apakah Anda yakin ingin menghapus <strong id="confirmDeleteName" class="text-gray-900 dark:text-white"></strong>?<br>Tindakan ini tidak dapat dibatalkan.
@@ -28,12 +22,50 @@
 
 @pushonce('scripts')
 <script>
-  window.confirmDelete = function(url, itemName = 'data ini') {
+  window.confirmDelete = function(urlOrId, itemName = 'data ini') {
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        title: 'Konfirmasi Penghapusan',
+        text: `Apakah Anda yakin ingin menghapus ${itemName}? Tindakan ini tidak dapat dibatalkan.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+          popup: 'rounded-3xl dark:bg-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-800 shadow-2xl p-6',
+          confirmButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm',
+          cancelButton: 'px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-150 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-700 dark:text-gray-300 mr-2 transition'
+        },
+        buttonsStyling: false
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const form = document.getElementById('globalConfirmDeleteForm');
+          if (typeof urlOrId === 'string' && (urlOrId.startsWith('http') || urlOrId.includes('/'))) {
+            if (form) {
+              form.action = urlOrId;
+              form.submit();
+            }
+          } else if (document.getElementById('delete-form-' + urlOrId)) {
+            document.getElementById('delete-form-' + urlOrId).submit();
+          } else if (document.getElementById('deleteForm')) {
+            const df = document.getElementById('deleteForm');
+            df.action = `/presence/${urlOrId}`;
+            df.submit();
+          } else if (form) {
+            form.action = urlOrId;
+            form.submit();
+          }
+        }
+      });
+      return;
+    }
+
     const form = document.getElementById('globalConfirmDeleteForm');
     const nameEl = document.getElementById('confirmDeleteName');
     
     if (form && nameEl) {
-      form.action = url;
+      form.action = urlOrId;
       nameEl.innerText = itemName;
       openModal('globalConfirmDeleteModal');
     }

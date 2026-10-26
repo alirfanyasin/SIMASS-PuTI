@@ -49,6 +49,8 @@ timeline
         SIMASS Presensi : Absensi Harian GPS & Kamera : Overtime & Transfer Poin : Rekap Presensi & Kalender Libur
     section Fase 2 (Selesai)
         Portal & Security : Central Launchpad Hub : Proteksi Validasi Lokasi & Rate Limiting : Scoped Session Navigation
+    section Fase 2B (Prioritas Berikutnya)
+        Admin Console Portal : Manajemen Akun & Role Terpusat : Registry Modul & Launchpad Dinamis : Master Data Lokasi & Unit : Katalog Layanan & SLA : Audit Log
     section Fase 3 (Sedang Berjalan)
         Public Service Dashboard : Etalase Layanan & Komitmen SLA Publik : Don Norman 7 Principles : Zander Whitehurst Clean White UI : Live Health & Incident Broadcast
         e-Ticket PuTI & Luna AI : Helpdesk Human-Centric : Smart Auto-Assign Berbasis Presensi : Outage Deflection & Live CS Fallback : NOC Board + Audio Alert & TTS
@@ -79,6 +81,42 @@ timeline
   - Portal Launchpad (`/portal`) dengan navigasi kartu modul dinamis.
   - Scoped sidebar navigation berbasis sesi (`active_module`).
   - Proteksi anti-mock location, token validasi geofence, dan rate limiting per IP/user.
+
+### Fase 2B: Admin Console Portal 🔵 *(Prioritas Berikutnya / Fondasi Fase 3–6)*
+- **Fungsi Utama**: Satu panel administrasi terpusat (`/admin`) bagi super-admin untuk mengelola akun, hak akses, modul portal, data master, dan konfigurasi layanan. Fase 3–6 bergantung pada data di sini: daftar teknisi, katalog layanan + SLA, lokasi gedung/lantai, dan kunci integrasi.
+- **Kondisi Saat Ini (Gap)**:
+  - Pengaturan tersebar di halaman terpisah: `/role-permission`, `/settings`, `/holiday`, dan `presence/student-staff`.
+  - Belum ada pembuatan/penonaktifan akun umum; hanya student staff yang dapat dikelola.
+  - Kartu modul di `/portal` masih *hardcoded* di view, sehingga menambah modul baru (e-Ticket, WebOsistant, Inventaris) butuh perubahan kode.
+- **Fitur Kunci**:
+  1. **Manajemen Akun Pengguna**:
+     - Buat, ubah, dan nonaktifkan akun (*soft deactivate*, bukan hapus permanen) untuk staf, dosen, student staff, dan teknisi.
+     - Impor massal via CSV (NIP/NIM, nama, email, unit, role) dengan pratinjau validasi sebelum disimpan.
+     - Reset kata sandi melalui tautan email; admin **tidak pernah** melihat atau mengetik kata sandi pengguna.
+     - Penempatan unit/divisi dan status kepegawaian.
+  2. **Role & Hak Akses (Konsolidasi `/role-permission`)**:
+     - Role bawaan: `super-admin`, `staff`, `student-staff`, `user`, ditambah role baru untuk fase berikutnya: `technician`, `coordinator`, `noc-viewer`.
+     - Matriks permission dikelompokkan per modul (Presensi, e-Ticket, WebOsistant, Inventaris, NING, Admin).
+  3. **Registry Modul & Launchpad Dinamis**:
+     - Kartu portal dibaca dari tabel modul: nama, ikon, rute, urutan, status (`active`, `maintenance`, `coming_soon`).
+     - Visibilitas kartu per role, sehingga pengguna hanya melihat modul yang berhak diakses.
+  4. **Data Master**:
+     - Unit/divisi kerja.
+     - Lokasi kampus → gedung → lantai → ruang (dipakai geofence presensi, form e-Ticket, dan peta topologi NING).
+     - Kalender libur (memindahkan `/holiday`) dan parameter geofence/jam kerja (memindahkan `/settings`).
+  5. **Konfigurasi Layanan & Integrasi**:
+     - Katalog layanan dan target SLA per kategori (sumber data Fase 3A dan 3B).
+     - Kunci integrasi (secret webhook NING, gateway WhatsApp Luna) disimpan terenkripsi dan ditampilkan tersamar.
+  6. **Audit Log Administratif**:
+     - Mencatat siapa mengubah apa dan kapan: akun, role, permission, pengaturan, dan kunci integrasi.
+- **Guardrails**:
+  - Hanya `super-admin` yang dapat mengakses `/admin`; setiap aksi diverifikasi ulang oleh Policy di server.
+  - Sistem menolak penghapusan role `super-admin` terakhir dan penurunan role akun sendiri.
+  - Aksi destruktif (nonaktifkan akun, cabut role) memerlukan konfirmasi eksplisit dan tercatat di audit log.
+- **Penerapan Don Norman & Zander Whitehurst**:
+  - *Constraints*: Tombol simpan nonaktif sampai field wajib valid; role yang tidak boleh diubah tampil terkunci beserta alasannya.
+  - *Feedback*: Toast konfirmasi setelah simpan, ringkasan hasil impor CSV (berhasil / gagal per baris).
+  - *Visibility*: Halaman beranda admin menampilkan jumlah akun aktif, akun tanpa role, dan modul berstatus maintenance.
 
 ### Fase 3A: Public Service Dashboard (Etalase Layanan Publik & SLA) 🟡 *(Awal Fase 3 / Sedang Berjalan)*
 - **Fungsi Utama**: Antarmuka transparan tanpa login (*public-facing*) bagi civitas akademika dan pihak luar kampus untuk melihat kesiapan layanan IT, katalog layanan resmi beserta komitmen SLA, status gangguan, pemeliharaan terjadwal, dan metrik performa PuTI Surabaya.

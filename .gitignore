@@ -28,3 +28,6 @@ Thumbs.db
 *.pdf
 # SSL Certificates (local only, jangan di-push)
 /certs
+*.sqlite
+*.sqlite3
+*.sqlite-journal

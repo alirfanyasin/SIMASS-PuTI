@@ -39,6 +39,9 @@ Route::middleware('auth')->group(function () {
     // Ticketing Routes
     require __DIR__.'/ticketing.php';
 
+    // Admin Console Routes (Fase 2B)
+    require __DIR__.'/admin.php';
+
     // Holiday Management (super-admin + staff only)
     Route::prefix('holiday')->name('holiday.')->middleware('can:manage-holiday')->group(function () {
         Route::get('/', [HolidayController::class, 'index'])->name('index');
@@ -58,6 +61,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/role-permission', [RolePermissionController::class, 'index'])
         ->middleware('can:manage-roles')
         ->name('role-permission');
+    Route::get('/role-permission/{user}/edit', [RolePermissionController::class, 'edit'])
+        ->middleware('can:manage-roles')
+        ->name('role-permission.edit');
     Route::post('/role-permission/{user}', [RolePermissionController::class, 'update'])
         ->middleware('can:manage-roles')
         ->name('role-permission.update');

@@ -16,19 +16,14 @@
                 <div class="flex items-center gap-3.5">
                     <div
                         class="w-11 h-11 rounded-2xl bg-telkom-50 dark:bg-telkom-950/60 border border-telkom-200/60 dark:border-telkom-900/60 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shadow-sm">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
-                            <path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
-                            <path d="m17 7-5 5" />
-                        </svg>
+                        <i data-lucide="bot" class="w-6 h-6"></i>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
                             <h3 class="font-bold text-base text-gray-900 dark:text-white">Luna AI Assistant</h3>
                             <span
-                                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Online
+                                class="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
+                                Online
                             </span>
                         </div>
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Asisten Resmi PuTI Telkom University
@@ -57,11 +52,7 @@
                 <div class="flex gap-3 max-w-[85%] sm:max-w-[75%]">
                     <div
                         class="w-9 h-9 rounded-xl bg-telkom-50 dark:bg-telkom-950/60 border border-telkom-100 dark:border-telkom-900/50 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shrink-0 shadow-sm mt-0.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
-                            <circle cx="12" cy="12" r="2" />
-                            <path d="m17 7-5 5" />
-                        </svg>
+                        <i data-lucide="bot" class="w-4 h-4"></i>
                     </div>
                     <div
                         class="bg-white dark:bg-gray-800/90 p-4 rounded-3xl rounded-tl-sm border border-gray-200/80 dark:border-gray-700/80 shadow-sm text-sm text-gray-800 dark:text-gray-200 leading-relaxed space-y-2">
@@ -115,11 +106,7 @@
                     <button type="submit" id="btnSend"
                         class="px-5 py-3.5 bg-telkom-600 hover:bg-telkom-700 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-telkom-600 text-white rounded-2xl transition flex items-center justify-center gap-2 shadow-lg shadow-telkom-600/20 font-semibold text-sm shrink-0">
                         <span class="hidden sm:inline">Kirim</span>
-                        <svg class="w-4 h-4 rotate-90" fill="none" stroke="currentColor" stroke-width="2.5"
-                            viewBox="0 0 24 24">
-                            <line x1="22" y1="2" x2="11" y2="13"></line>
-                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                        </svg>
+                        <i data-lucide="send" class="w-4 h-4"></i>
                     </button>
                 </form>
                 <p class="text-[11px] text-gray-400 text-center mt-2">
@@ -185,17 +172,14 @@
             typingMsg.className = 'flex gap-3 max-w-[85%] sm:max-w-[75%]';
             typingMsg.innerHTML = `
       <div class="w-9 h-9 rounded-xl bg-telkom-50 dark:bg-telkom-950/60 border border-telkom-100 dark:border-telkom-900/50 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shrink-0 shadow-sm mt-0.5">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
-          <circle cx="12" cy="12" r="2" />
-          <path d="m17 7-5 5" />
-        </svg>
+        <i data-lucide="bot" class="w-4 h-4"></i>
       </div>
       <div class="bg-white dark:bg-gray-800/90 px-4 py-3 rounded-3xl rounded-tl-sm border border-gray-200/80 dark:border-gray-700/80 shadow-sm text-xs text-gray-500 italic flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-telkom-500 animate-ping"></span> Luna sedang menganalisis & mengetik...
       </div>
     `;
             container.appendChild(typingMsg);
+            if (window.createIcons) window.createIcons();
             container.scrollTop = container.scrollHeight;
 
             // 3. Dispatch to API
@@ -218,17 +202,14 @@
                     aiMsg.className = 'flex gap-3 max-w-[85%] sm:max-w-[75%] animate-fadeIn';
                     aiMsg.innerHTML = `
         <div class="w-9 h-9 rounded-xl bg-telkom-50 dark:bg-telkom-950/60 border border-telkom-100 dark:border-telkom-900/50 flex items-center justify-center text-telkom-600 dark:text-telkom-400 shrink-0 shadow-sm mt-0.5">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
-            <circle cx="12" cy="12" r="2" />
-            <path d="m17 7-5 5" />
-          </svg>
+          <i data-lucide="bot" class="w-4 h-4"></i>
         </div>
         <div class="bg-white dark:bg-gray-800/90 p-4 rounded-3xl rounded-tl-sm border border-gray-200/80 dark:border-gray-700/80 shadow-sm text-sm text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-line">
           ${escapeHtml(data.reply || '')}
         </div>
       `;
                     container.appendChild(aiMsg);
+                    if (window.createIcons) window.createIcons();
                     container.scrollTop = container.scrollHeight;
                 })
                 .catch(() => {

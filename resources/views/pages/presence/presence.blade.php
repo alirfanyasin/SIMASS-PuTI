@@ -22,11 +22,7 @@
         <div class="flex items-center gap-4">
           <div id="locationIconBg"
             class="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-500 flex items-center justify-center shrink-0">
-            <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" viewBox="0 0 24 24">
-              <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-              <circle cx="12" cy="10" r="3" />
-            </svg>
+            <i data-lucide="map-pin" class="w-6 h-6 shrink-0"></i>
           </div>
           <div>
             <h3 id="locationTitle" class="font-bold text-gray-900 dark:text-gray-300 text-base">Mengecek Lokasi...</h3>
@@ -39,8 +35,7 @@
             Izinkan GPS
           </button>
           <div id="locationTag"
-            class="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500">
-            <span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span>
+            class="flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500">
             Menunggu GPS
           </div>
         </div>
@@ -77,10 +72,7 @@
           @if ($todayPresence && $todayPresence->jam_masuk && $todayPresence->jam_pulang)
             <div
               class="p-6 bg-green-50 dark:bg-green-900/20 rounded-2xl text-center border border-green-200 dark:border-green-900/50">
-              <svg class="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <i data-lucide="check-circle" class="w-12 h-12 text-green-500 mx-auto mb-3"></i>
               <h4 class="font-bold text-green-700 dark:text-green-400">Presensi Selesai</h4>
               <p class="text-sm text-green-600 dark:text-green-500 mt-1">Anda sudah menyelesaikan jam kerja hari ini.</p>
             </div>
@@ -127,9 +119,7 @@
                 class="absolute inset-0 bg-green-50/90 dark:bg-green-900/90 backdrop-blur-sm z-30 hidden flex-col items-center justify-center">
                 <div
                   class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg animate-bounce mb-3">
-                  <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
+                  <i data-lucide="check" class="w-8 h-8"></i>
                 </div>
                 <p class="text-green-800 dark:text-green-200 font-bold px-4 text-center">Identitas Terverifikasi</p>
                 <p id="verifiedNameDisplay"
@@ -179,13 +169,7 @@
                             class="w-full h-full object-cover"></video>
                           <button type="button" onclick="captureSelfie('face')"
                             class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 hover:bg-gray-100 transition z-10">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                              </path>
-                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            </svg>
+                            <i data-lucide="camera" class="w-5 h-5"></i>
                             Ambil Foto
                           </button>
                         </div>
@@ -199,13 +183,7 @@
                         </div>
                         <button type="button" id="btnStartSelfie_face" onclick="openSelfieCamera('face')"
                           class="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2">
-                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                            </path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                          </svg>
+                          <i data-lucide="camera" class="w-5 h-5"></i>
                           Buka Kamera Selfie
                         </button>
                       </div>
@@ -213,14 +191,7 @@
                   @endif
                   <button type="submit" id="btnSubmitFace" disabled
                     class="w-full flex items-center justify-center gap-3 py-3.5 gradient-telkom disabled:opacity-50 text-white rounded-xl font-bold shadow-xl shadow-telkom-600/30 transition active:scale-95">
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                      stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                      <path d="M3 7V5a2 2 0 0 1 2-2h2" />
-                      <path d="M17 3h2a2 2 0 0 1 2 2v2" />
-                      <path d="M21 17v2a2 2 0 0 1-2 2h-2" />
-                      <path d="M7 21H5a2 2 0 0 1-2-2v-2" />
-                      <rect x="8" y="8" width="8" height="8" rx="2" />
-                    </svg>
+                    <i data-lucide="scan-face" class="w-5 h-5 shrink-0"></i>
                     <span>{{ !$todayPresence ? 'Check In Sekarang' : 'Check Out Sekarang' }}</span>
                   </button>
                 </form>
@@ -239,11 +210,7 @@
           @if ($todayPresence && $todayPresence->jam_masuk && $todayPresence->jam_pulang)
             <div
               class="p-6 bg-green-50 dark:bg-green-900/20 rounded-2xl text-center border border-green-200 dark:border-green-900/50">
-              <svg class="w-12 h-12 text-green-500 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="2"
-                viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <i data-lucide="check-circle" class="w-12 h-12 text-green-500 mx-auto mb-3"></i>
               <h4 class="font-bold text-green-700 dark:text-green-400">Presensi Selesai</h4>
               <p class="text-sm text-green-600 dark:text-green-500 mt-1">Anda sudah menyelesaikan jam kerja hari ini.</p>
             </div>
@@ -281,13 +248,7 @@
                       class="w-full h-full object-cover"></video>
                     <button type="button" onclick="captureSelfie('manual')"
                       class="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white text-gray-900 px-4 py-2 rounded-full text-sm font-bold shadow-lg flex items-center gap-2 hover:bg-gray-100 transition z-10">
-                      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                        </path>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      </svg>
+                      <i data-lucide="camera" class="w-5 h-5"></i>
                       Ambil Foto
                     </button>
                   </div>
@@ -301,13 +262,7 @@
                   </div>
                   <button type="button" id="btnStartSelfie_manual" onclick="openSelfieCamera('manual')"
                     class="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-sm font-semibold text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
-                      </path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                    </svg>
+                    <i data-lucide="camera" class="w-5 h-5"></i>
                     Buka Kamera Selfie
                   </button>
                 </div>
@@ -315,11 +270,7 @@
 
               <button type="submit"
                 class="w-full mt-2 flex items-center justify-center gap-2 py-3.5 gradient-telkom text-white rounded-xl font-bold shadow-lg shadow-telkom-600/30 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
+                <i data-lucide="check-circle" class="w-5 h-5 shrink-0"></i>
                 <span>{{ !$todayPresence ? 'Simpan Check In' : 'Simpan Check Out' }}</span>
               </button>
             </form>
@@ -512,7 +463,7 @@
         if (iconBg) iconBg.className = 'w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-600 flex items-center justify-center shrink-0';
         if (title) { title.className = 'font-bold text-amber-900 dark:text-amber-300 text-base'; title.textContent = 'Verifikasi Lokasi Kedaluwarsa'; }
         if (desc) { desc.className = 'text-xs sm:text-sm text-amber-700 dark:text-amber-400 mt-0.5'; desc.textContent = reason; }
-        if (tag) { tag.className = 'flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0'; tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Token Kedaluwarsa'; }
+        if (tag) { tag.className = 'flex items-center px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0'; tag.innerHTML = 'Token Kedaluwarsa'; }
         if (btnSubmitManual) btnSubmitManual.setAttribute('disabled', 'true');
         if (btnSubmitFace) btnSubmitFace.setAttribute('disabled', 'true');
       }
@@ -1074,8 +1025,8 @@
           }
           if (tag) {
             tag.className =
-              "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-            tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> GPS Tidak Aman';
+              "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+            tag.innerHTML = 'GPS Tidak Aman';
           }
 
           // Stop watching after spoofing detected
@@ -1113,7 +1064,7 @@
             } else {
               // Request server token
               if (tag) {
-                tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Mengamankan Sesi...';
+                tag.innerHTML = 'Mengamankan Sesi...';
               }
               if (title) title.textContent = "Meminta Token Server...";
 
@@ -1145,8 +1096,8 @@
             }
             if (tag) {
               tag.className =
-                "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Di Luar Jangkauan';
+                "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+              tag.innerHTML = 'Di Luar Jangkauan';
             }
             if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
           }
@@ -1172,8 +1123,8 @@
         }
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> GPS Terverifikasi';
+            "flex items-center px-3 py-1.5 bg-emerald-100 dark:bg-emerald-900/40 rounded-full text-xs font-bold text-emerald-700 dark:text-emerald-400 shrink-0";
+          tag.innerHTML = 'GPS Terverifikasi';
         }
         if (btnSubmitManual) btnSubmitManual.removeAttribute('disabled');
         if (btnSubmitFace && isFaceVerified) btnSubmitFace.removeAttribute('disabled');
@@ -1195,8 +1146,8 @@
         }
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Ditolak Server';
+            "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+          tag.innerHTML = 'Ditolak Server';
         }
         if (officeCircle) officeCircle.setStyle({ color: '#ef4444', fillColor: '#ef4444' });
       }
@@ -1209,8 +1160,8 @@
 
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400 animate-pulse"></span> Menunggu GPS';
+            "flex items-center px-3 py-1.5 bg-gray-100 dark:bg-gray-800 rounded-full text-xs font-bold text-gray-500 shrink-0";
+          tag.innerHTML = 'Menunggu GPS';
         }
         if (title) title.textContent = "Mengecek Lokasi...";
         if (desc) desc.textContent = "Mendapatkan koordinat GPS";
@@ -1235,8 +1186,8 @@
             // Show loading indicator while high-accuracy kicks in
             if (tag) {
               tag.className =
-                "flex items-center gap-2 px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0";
-              tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> Memverifikasi GPS...';
+                "flex items-center px-3 py-1.5 bg-amber-100 dark:bg-amber-900/40 rounded-full text-xs font-bold text-amber-700 dark:text-amber-400 shrink-0";
+              tag.innerHTML = 'Memverifikasi GPS...';
             }
             if (title) {
               title.className = "font-bold text-amber-900 dark:text-amber-300 text-base";
@@ -1299,8 +1250,8 @@
         if (desc) desc.textContent = "Izinkan akses GPS di pengaturan browser Anda.";
         if (tag) {
           tag.className =
-            "flex items-center gap-2 px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
-          tag.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span> Akses Ditolak';
+            "flex items-center px-3 py-1.5 bg-red-100 dark:bg-red-900/40 rounded-full text-xs font-bold text-red-700 dark:text-red-400 shrink-0";
+          tag.innerHTML = 'Akses Ditolak';
         }
         if (btnGPS) btnGPS.classList.remove('hidden');
       }
