@@ -9,7 +9,7 @@
                     <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
                 </div>
                 <div>
-                    <div class="text-sm font-bold">Portal PuTI</div>
+                    <div class="text-sm font-bold">SIMASS</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400">Kampus Surabaya</div>
                 </div>
             </a>
@@ -30,10 +30,7 @@
                         srcset="https://flagcdn.com/w40/id.png 2x" class="w-5 h-3.5 object-cover rounded-sm shadow-sm"
                         alt="ID">
                     <span id="currentLangLabel" class="text-xs font-bold hidden sm:inline">ID</span>
-                    <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2.5"
-                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <polyline points="6 9 12 15 18 9" />
-                    </svg>
+                    <i data-lucide="chevron-down" class="w-3 h-3 text-gray-400"></i>
                 </button>
 
                 <!-- Dropdown Menu -->
@@ -59,32 +56,14 @@
             <!-- Dark mode -->
             <button type="button" onclick="toggleDark()"
                 class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center">
-                <svg class="w-5 h-5 theme-toggle-sun text-amber-500" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1" x2="12" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1" y1="12" x2="3" y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-                <svg class="w-5 h-5 theme-toggle-moon text-indigo-400" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
+                <i data-lucide="sun" class="w-5 h-5 theme-toggle-sun text-amber-500"></i>
+                <i data-lucide="moon" class="w-5 h-5 theme-toggle-moon text-indigo-400"></i>
             </button>
 
             <!-- Notif -->
             {{-- <button
         class="relative p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center">
-        <svg class="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-        </svg>
+        <i data-lucide="bell" class="w-5 h-5 text-gray-700 dark:text-gray-300"></i>
         <span
           class="absolute top-2 right-2 w-2 h-2 bg-telkom-600 rounded-full ring-2 ring-white dark:ring-gray-900"></span>
       </button> --}}

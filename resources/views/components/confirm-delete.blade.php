@@ -1,13 +1,7 @@
 <x-modal id="globalConfirmDeleteModal" size="sm" title="Konfirmasi Penghapusan">
   <div class="space-y-4 text-center pb-2">
     <div class="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 text-red-500 rounded-full flex items-center justify-center mb-4">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-        <path d="M3 6h18"/>
-        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-        <line x1="10" y1="11" x2="10" y2="17"/>
-        <line x1="14" y1="11" x2="14" y2="17"/>
-      </svg>
+      <i data-lucide="trash-2" class="w-8 h-8"></i>
     </div>
     <p class="text-gray-600 dark:text-gray-400 text-sm">
       Apakah Anda yakin ingin menghapus <strong id="confirmDeleteName" class="text-gray-900 dark:text-white"></strong>?<br>Tindakan ini tidak dapat dibatalkan.

@@ -20,13 +20,7 @@
 
           <div
             class="w-12 h-12 rounded-xl bg-red-100/50 dark:bg-red-900/30 text-telkom-600 flex items-center justify-center shrink-0">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" viewBox="0 0 24 24">
-              <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-              <line x1="16" x2="16" y1="2" y2="6" />
-              <line x1="8" x2="8" y1="2" y2="6" />
-              <line x1="3" x2="21" y1="10" y2="10" />
-            </svg>
+            <i data-lucide="calendar" class="w-6 h-6"></i>
           </div>
 
           <div>
@@ -48,10 +42,7 @@
           <a href="{{ route('presence.history', ['period' => $m['id']]) }}"
             class="w-full mt-auto py-3 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2">
             Lihat Detail
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" viewBox="0 0 24 24">
-              <path d="m9 18 6-6-6-6" />
-            </svg>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
           </a>
         </div>
       @endforeach
@@ -96,7 +87,7 @@
               class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center flex-1 sm:flex-none">Reset</a>
             <button type="button" onclick="exportHistoryPdf()"
               class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export PDF">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></svg>
+              <i data-lucide="download" class="w-4 h-4"></i>
             </button>
           </div>
         </div>
@@ -145,11 +136,7 @@
                       <button type="button"
                         onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['waktu'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
                         class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Lihat Detail">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                          <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
-                          <circle cx="12" cy="12" r="3" />
-                        </svg>
+                        <i data-lucide="eye" class="w-4 h-4"></i>
                       </button>
                       @if(Auth::user()->hasRole('super-admin'))
                         @php
@@ -158,21 +145,11 @@
                         @endphp
                         <button type="button" class="p-1.5 text-gray-400 hover:text-blue-600 transition" title="Edit"
                           onclick="openEditModal('{{ $d['id'] ?? '' }}', '{{ $cin }}', '{{ $cout }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M12 20h9" />
-                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                          </svg>
+                          <i data-lucide="pencil" class="w-4 h-4"></i>
                         </button>
                         <button type="button" class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Hapus"
                           onclick="confirmDelete('{{ $d['id'] ?? '' }}')">
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <polyline points="3 6 5 6 21 6" />
-                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                            <line x1="10" y1="11" x2="10" y2="17" />
-                            <line x1="14" y1="11" x2="14" y2="17" />
-                          </svg>
+                          <i data-lucide="trash-2" class="w-4 h-4"></i>
                         </button>
                       @endif
                     </div>
@@ -200,11 +177,7 @@
         <h3 class="font-bold text-lg">Bukti Kehadiran</h3>
         <button onclick="closeProofModal()"
           class="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 bg-gray-100 dark:bg-gray-800 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
       <div class="p-4 space-y-4">
@@ -231,9 +204,7 @@
   <x-modal id="alertModal" size="sm" title="Perhatian" showCloseButton="true">
     <div class="flex flex-col items-center text-center p-4">
       <div class="w-12 h-12 bg-amber-50 dark:bg-amber-950/30 text-amber-500 rounded-full flex items-center justify-center mb-4">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
+        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
       </div>
       <p id="alertModalMessage" class="text-sm font-medium text-gray-600 dark:text-gray-400 leading-relaxed">
         Pesan alert.
@@ -258,7 +229,7 @@
       <div class="flex items-center justify-between p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30">
         <h3 class="text-sm font-bold text-gray-900 dark:text-white">Edit Presensi</h3>
         <button onclick="closeEditModal()" class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-xl transition">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          <i data-lucide="x" class="w-4 h-4"></i>
         </button>
       </div>
       

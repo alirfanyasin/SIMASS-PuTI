@@ -16,20 +16,14 @@
         class="flex items-center gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-2 shadow-sm">
         <a href="{{ route('presence.calendar', ['month' => $prevMonthDate->month, 'year' => $prevMonthDate->year]) }}"
           class="p-2 text-gray-500 hover:text-telkom-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="m15 18-6-6 6-6" />
-          </svg>
+          <i data-lucide="chevron-left" class="w-5 h-5"></i>
         </a>
         <div class="w-40 text-center font-bold text-gray-800 dark:text-gray-200">
           {{ $currentMonthName }} {{ $year }}
         </div>
         <a href="{{ route('presence.calendar', ['month' => $nextMonthDate->month, 'year' => $nextMonthDate->year]) }}"
           class="p-2 text-gray-500 hover:text-telkom-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
+          <i data-lucide="chevron-right" class="w-5 h-5"></i>
         </a>
       </div>
     </div>
@@ -85,7 +79,7 @@
 
               @if ($data['presence_count'] > 0)
                 <div class="mt-1.5 sm:mt-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[9px] sm:text-xs font-semibold px-1 sm:px-1.5 py-0.5 rounded flex items-center justify-center sm:justify-start gap-1 w-max mx-auto sm:mx-0">
-                  <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/></svg>
+                  <i data-lucide="user-check" class="w-2.5 h-2.5 sm:w-3 sm:h-3"></i>
                   <span class="hidden sm:inline">{{ $data['presence_count'] }} Hadir</span>
                   <span class="sm:hidden">{{ $data['presence_count'] }}</span>
                 </div>

@@ -26,10 +26,7 @@
         @if (session('status'))
             <div
                 class="p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 text-sm flex items-center gap-3">
-                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M9 11l3 3L22 4" />
-                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                </svg>
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
                 {{ session('status') }}
             </div>
         @endif
@@ -84,13 +81,7 @@
 
                     @if ($holidays->isEmpty())
                         <div class="py-16 text-center text-gray-400 dark:text-gray-600">
-                            <svg class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" stroke="currentColor"
-                                stroke-width="1.5" viewBox="0 0 24 24">
-                                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
-                                <line x1="16" x2="16" y1="2" y2="6" />
-                                <line x1="8" x2="8" y1="2" y2="6" />
-                                <line x1="3" x2="21" y1="10" y2="10" />
-                            </svg>
+                            <i data-lucide="calendar" class="w-12 h-12 mx-auto mb-3 opacity-40"></i>
                             <p class="text-sm">Belum ada hari libur untuk tahun {{ $year }}</p>
                         </div>
                     @else
@@ -122,13 +113,7 @@
                                             @method('DELETE')
                                             <button type="submit"
                                                 class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition opacity-0 group-hover:opacity-100">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"
-                                                    viewBox="0 0 24 24">
-                                                    <polyline points="3 6 5 6 21 6" />
-                                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-                                                    <path d="M10 11v6M14 11v6" />
-                                                    <path d="M9 6V4h6v2" />
-                                                </svg>
+                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
                                             </button>
                                         </form>
                                     </div>

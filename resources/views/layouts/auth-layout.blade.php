@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login — Portal PuTI</title>
+    <title>Login — SIMASS</title>
     <link rel="icon" type="image/webp" href="{{ asset('logo-puti.webp') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
@@ -39,12 +39,10 @@
             <!-- Middle content -->
             <div class="relative z-10 max-w-md">
                 <h1 class="text-4xl font-extrabold leading-tight">
-                    Kelola Presensi &amp; <br> Ticketing dengan Mudah
+                    SIMASS <br> <small class="text-md">Sistem Monitoring Aktifitas Staff dan Student-staff</small>
                 </h1>
                 <p class="mt-4 text-white/80 text-lg">
-                    Sistem presensi dan ticketing terintegrasi untuk student staf PuTI Telkom University. Cepat, aman,
-                    dan
-                    real-time.
+                    Aplikasi one-gate yang memuat semua aplikasi yang dibutuhkan oleh tim PuTI untuk bekerja harian
                 </p>
 
                 <!-- Features -->
@@ -52,59 +50,51 @@
                     <div class="flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M9 11l3 3L22 4" />
-                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                            </svg>
+                            <i data-lucide="clock-check" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <p class="font-semibold">Presensi Real-time</p>
+                            <p class="font-semibold">Presensi</p>
                             <p class="text-sm opacity-70">Catat kehadiran kapan saja</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <circle cx="12" cy="12" r="10" />
-                                <polyline points="12 6 12 12 16 14" />
-                            </svg>
+                            <i data-lucide="ticket" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <p class="font-semibold">Pengajuan Lembur</p>
-                            <p class="text-sm opacity-70">Kelola overtime dengan sekali klik</p>
+                            <p class="font-semibold">e-Ticket</p>
+                            <p class="text-sm opacity-70">Aplikasi tiket terintegrasi AI</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path d="M3 3v5h5" />
-                                <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
-                                <path d="M12 7v5l4 2" />
-                            </svg>
+                            <i data-lucide="globe-code" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <p class="font-semibold">Riwayat Terorganisir</p>
-                            <p class="text-sm opacity-70">Lacak semua data kehadiranmu</p>
+                            <p class="font-semibold">Webosistant</p>
+                            <p class="text-sm opacity-70">Reporting Webo-army dan instrumen pendukung</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
                         <div
                             class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2"
-                                stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                                <path
-                                    d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
-                                <path d="M13 5v14" stroke-dasharray="2 2" />
-                            </svg>
+                            <i data-lucide="shelving-unit" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <p class="font-semibold">Ticketing Support</p>
-                            <p class="text-sm opacity-70">Ajukan dan pantau tiket bantuan IT</p>
+                            <p class="font-semibold">Inventaris PuTI</p>
+                            <p class="text-sm opacity-70">Inventaris produk fisik dan digital</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-white/15 backdrop-blur flex items-center justify-center shrink-0">
+                            <i data-lucide="radio-tower" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold">Neing</p>
+                            <p class="text-sm opacity-70">Network monitoring untuk network dan qramas</p>
                         </div>
                     </div>
                 </div>
@@ -127,22 +117,8 @@
             <!-- Dark mode toggle -->
             <button type="button" onclick="toggleDark()"
                 class="absolute top-6 right-6 p-2.5 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition z-10 flex items-center justify-center">
-                <svg class="w-5 h-5 theme-toggle-sun text-amber-500" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5" />
-                    <line x1="12" y1="1" x2="12" y2="3" />
-                    <line x1="12" y1="21" x2="12" y2="23" />
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                    <line x1="1" y1="12" x2="3" y2="12" />
-                    <line x1="21" y1="12" x2="23" y2="12" />
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-                </svg>
-                <svg class="w-5 h-5 theme-toggle-moon text-indigo-400" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-                </svg>
+                <i data-lucide="sun" class="w-5 h-5 theme-toggle-sun text-amber-500"></i>
+                <i data-lucide="moon" class="w-5 h-5 theme-toggle-moon text-indigo-400"></i>
             </button>
 
             <!-- Mobile Logo -->
@@ -151,7 +127,7 @@
                     <img src="{{ asset('logo-puti.webp') }}" class="w-full h-full object-contain" alt="PuTI Logo">
                 </div>
                 <div>
-                    <div class="text-sm font-bold leading-tight">Portal PuTI</div>
+                    <div class="text-sm font-bold leading-tight">SIMASS</div>
                     <div class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Kampus Surabaya</div>
                 </div>
             </div>
@@ -211,11 +187,14 @@
                         devToolsOpen = true;
                         document.body.innerHTML =
                             '<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;font-family:sans-serif;background:#111;color:#fff;">' +
-                            '<svg width="64" height="64" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color:#ef4444;margin-bottom:16px"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>' +
+                            '<i data-lucide="alert-triangle" style="width:64px;height:64px;color:#ef4444;margin-bottom:16px;"></i>' +
                             '<h1 style="font-size:1.5rem;font-weight:700;margin-bottom:8px">Akses Ditolak</h1>' +
                             '<p style="color:#9ca3af;text-align:center;max-width:320px">Developer Tools terdeteksi. Tutup DevTools dan muat ulang halaman.</p>' +
                             '<button onclick="location.reload()" style="margin-top:24px;padding:10px 24px;background:#ef4444;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer">Muat Ulang</button>' +
                             '</div>';
+                        if (window.createIcons) {
+                            window.createIcons();
+                        }
                     }
                     if (elapsed <= threshold && devToolsOpen) {
                         devToolsOpen = false;

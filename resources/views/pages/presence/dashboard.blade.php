@@ -86,11 +86,7 @@
                 @can('create-presence')
                     <a href="{{ route('presence.index') }}"
                         class="mt-4 w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <line x1="12" y1="5" x2="12" y2="19" />
-                            <line x1="5" y1="12" x2="19" y2="12" />
-                        </svg>
+                        <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
                         <span>Presensi Sekarang</span>
                     </a>
                 @else
@@ -112,90 +108,56 @@
                 <a href="{{ route('presence.index') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl gradient-telkom flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M9 11l3 3L22 4" />
-                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                        </svg>
+                        <i data-lucide="check-square" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Presensi</span>
                 </a>
                 <a href="{{ route('presence.list') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-blue-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                            <polyline points="14 2 14 8 20 8" />
-                        </svg>
+                        <i data-lucide="file-text" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Daftar</span>
                 </a>
                 <a href="{{ route('presence.overtime') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-amber-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
+                        <i data-lucide="clock" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Lembur</span>
                 </a>
                 <a href="{{ route('presence.history') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-emerald-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M3 3v5h5" />
-                            <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
-                            <path d="M12 7v5l4 2" />
-                        </svg>
+                        <i data-lucide="history" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">History</span>
                 </a>
                 <a href="{{ route('ticket.index') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-purple-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path
-                                d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z" />
-                            <path d="M13 5v14" stroke-dasharray="2 2" />
-                        </svg>
+                        <i data-lucide="ticket" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Daftar Tiket</span>
                 </a>
                 <a href="{{ route('ticket.create') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-indigo-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M12 5v14M5 12h14" />
-                        </svg>
+                        <i data-lucide="plus" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Buat Tiket</span>
                 </a>
                 <a href="{{ route('ticket.my-tickets') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-pink-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                            <circle cx="12" cy="7" r="4" />
-                        </svg>
+                        <i data-lucide="user" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Tiket Saya</span>
                 </a>
                 <a href="{{ route('ticket.luna') }}"
                     class="flex flex-col items-center gap-2 p-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 card-hover w-20 shrink-0">
                     <div class="w-11 h-11 rounded-xl bg-teal-500 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-white shrink-0" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12c0-2.4 1-4.8 2.75-6.5" />
-                            <path d="M12 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
-                            <path d="m17 7-5 5" />
-                        </svg>
+                        <i data-lucide="bot" class="w-5 h-5 text-white shrink-0"></i>
                     </div>
                     <span class="text-[10px] font-medium truncate w-full text-center">Luna AI</span>
                 </a>
@@ -209,12 +171,7 @@
                 <div class="flex items-center justify-between">
                     <div
                         class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            viewBox="0 0 24 24">
-                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                            <polyline points="22 4 12 14.01 9 11.01" />
-                        </svg>
+                        <i data-lucide="check-circle" class="w-5 h-5 text-green-600 dark:text-green-400 shrink-0"></i>
                     </div>
                 </div>
                 <p class="mt-3 text-2xl lg:text-3xl font-bold">{{ $stats['hadir'] }}</p>
@@ -226,12 +183,7 @@
                 <div class="flex items-center justify-between">
                     <div
                         class="w-10 h-10 rounded-xl bg-telkom-100 dark:bg-telkom-900/30 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-telkom-600 dark:text-telkom-400 shrink-0" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            viewBox="0 0 24 24">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                        </svg>
+                        <i data-lucide="clock" class="w-5 h-5 text-telkom-600 dark:text-telkom-400 shrink-0"></i>
                     </div>
                 </div>
                 <p class="mt-3 text-2xl lg:text-3xl font-bold">{{ $stats['tepat_waktu'] }}</p>
@@ -243,14 +195,7 @@
                 <div class="flex items-center justify-between">
                     <div
                         class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            viewBox="0 0 24 24">
-                            <path
-                                d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                            <line x1="12" y1="9" x2="12" y2="13" />
-                            <line x1="12" y1="17" x2="12.01" y2="17" />
-                        </svg>
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0"></i>
                     </div>
                 </div>
                 <p class="mt-3 text-2xl lg:text-3xl font-bold">{{ $stats['terlambat'] }}</p>
@@ -262,13 +207,7 @@
                 <div class="flex items-center justify-between">
                     <div
                         class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            viewBox="0 0 24 24">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                            <circle cx="8.5" cy="7" r="4" />
-                            <polyline points="17 11 19 13 23 9" />
-                        </svg>
+                        <i data-lucide="user-check" class="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0"></i>
                     </div>
                 </div>
                 <p class="mt-3 text-2xl lg:text-3xl font-bold">{{ $overtimeSaldo }}</p>
@@ -312,17 +251,13 @@
                             <div class="flex gap-3">
                                 <div
                                     class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0">
-                                    <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        viewBox="0 0 24 24">
-                                        <polyline points="20 6 9 17 4 12" />
-                                    </svg>
+                                    <i data-lucide="check" class="w-4 h-4 text-green-600 shrink-0"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-2">
                                         <p class="text-sm font-medium">Check In ({{ $activity->date }})</p>
                                         @if (auth()->user()->hasRole('student-staff'))
-                                            @if ($activity->time <= $jamMasukLimit)
+                                             @if ($activity->time <= $jamMasukLimit)
                                                 <span
                                                     class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Tepat
                                                     Waktu</span>
@@ -343,11 +278,7 @@
                             <div class="flex gap-3">
                                 <div
                                     class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-                                    <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor"
-                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                        viewBox="0 0 24 24">
-                                        <polyline points="20 6 9 17 4 12" />
-                                    </svg>
+                                    <i data-lucide="check" class="w-4 h-4 text-blue-600 shrink-0"></i>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <p class="text-sm font-medium">Check Out ({{ $activity->date }})</p>

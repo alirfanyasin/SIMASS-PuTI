@@ -13,11 +13,7 @@
       <div
         class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
+          <i data-lucide="clock" class="w-6 h-6"></i>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">TOTAL AKUMULASI LEMBUR</p>
@@ -29,11 +25,7 @@
       <div
         class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-            <polyline points="22 4 12 14.01 9 11.01" />
-          </svg>
+          <i data-lucide="check-circle-2" class="w-6 h-6"></i>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">SALDO LEMBUR AKTIF</p>
@@ -44,13 +36,7 @@
       <div
         class="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 flex items-center gap-4">
         <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-            stroke-linejoin="round" viewBox="0 0 24 24">
-            <path d="M8 3 4 7l4 4" />
-            <path d="M4 7h16" />
-            <path d="m16 21 4-4-4-4" />
-            <path d="M20 17H4" />
-          </svg>
+          <i data-lucide="repeat" class="w-6 h-6"></i>
         </div>
         <div>
           <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">LEMBUR DIALOKASIKAN</p>
@@ -104,12 +90,7 @@
               <button type="button"
                 class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2"
                 title="Export">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round" viewBox="0 0 24 24">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" x2="12" y1="15" y2="3" />
-                </svg>
+                <i data-lucide="download" class="w-4 h-4"></i>
               </button>
             </div>
           </div>
@@ -119,12 +100,7 @@
       <!-- Info banner -->
       <div
         class="flex items-center gap-3 px-4 lg:px-5 py-3 bg-red-50/80 dark:bg-red-900/20 text-red-700 dark:text-red-400 text-sm border-b border-red-100 dark:border-red-900/30">
-        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-          stroke-linejoin="round" viewBox="0 0 24 24">
-          <circle cx="12" cy="12" r="10" />
-          <line x1="12" y1="16" x2="12" y2="12" />
-          <line x1="12" y1="8" x2="12.01" y2="8" />
-        </svg>
+        <i data-lucide="info" class="w-5 h-5 shrink-0"></i>
         <p>Menampilkan data overtime dari tanggal <strong>{{ $startDate->format('d M Y') }}</strong> sampai
           <strong>{{ $endDate->format('d M Y') }}</strong>.
         </p>
@@ -182,13 +158,7 @@
                     <button type="button" onclick="openAlokasiModal({{ $d['id'] }}, {{ $d['user_id'] }}, '{{ addslashes($d['nama']) }}', '{{ $d['tgl'] }}', {{ $d['raw_saldo'] }}, '{{ $d['saldo'] }}')"
                       class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition"
                       @if($d['raw_saldo'] <= 0) disabled class="opacity-50 cursor-not-allowed grayscale" @endif>
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2"
-                        stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-                        <path d="M8 3 4 7l4 4" />
-                        <path d="M4 7h16" />
-                        <path d="m16 21 4-4-4-4" />
-                        <path d="M20 17H4" />
-                      </svg>
+                      <i data-lucide="repeat" class="w-3 h-3"></i>
                       Alihkan Saldo
                     </button>
                   </div>
@@ -238,13 +208,7 @@
   <x-modal id="alokasiModal" title="Alokasikan Saldo Lembur" bodyClass="space-y-4 text-sm">
     <x-slot:header>
       <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-        <svg class="w-5 h-5 text-telkom-600" fill="none" stroke="currentColor" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          <path d="M8 3 4 7l4 4" />
-          <path d="M4 7h16" />
-          <path d="m16 21 4-4-4-4" />
-          <path d="M20 17H4" />
-        </svg>
+        <i data-lucide="repeat" class="w-5 h-5 text-telkom-600"></i>
         Alokasikan Saldo Lembur
       </h3>
     </x-slot:header>

@@ -23,7 +23,7 @@ class PortalModuleSeeder extends Seeder
             ],
             [
                 'code' => 'presensi',
-                'name' => 'SIMASS Presensi',
+                'name' => 'Presensi',
                 'description' => 'Sistem absensi berbasis AI Face Recognition & Dynamic Geofencing terenkripsi.',
                 'credit' => 'Courtesy to Irfan Yasin S.Kom (Student Staff PuTI Gen. 2023)',
                 'icon' => 'user-check',
@@ -66,7 +66,7 @@ class PortalModuleSeeder extends Seeder
             ],
             [
                 'code' => 'inventory',
-                'name' => 'SIMASS Inventaris',
+                'name' => 'Inventaris',
                 'description' => 'Pencatatan aset perangkat keras, peminjaman barang, dan log audit lab.',
                 'icon' => 'package',
                 'route_name' => null,

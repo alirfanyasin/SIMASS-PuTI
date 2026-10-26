@@ -37,7 +37,7 @@
     <!-- Action Bar -->
     <div class="fixed top-4 right-4 z-50 print-hidden flex gap-3">
         <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg shadow font-medium hover:bg-indigo-700 flex items-center gap-2 text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+            <i data-lucide="printer" class="w-4 h-4"></i>
             Cetak / Simpan PDF
         </button>
         <button onclick="window.close()" class="px-4 py-2 bg-gray-600 text-white rounded-lg shadow font-medium hover:bg-gray-700 text-sm">

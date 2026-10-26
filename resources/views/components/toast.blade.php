@@ -71,7 +71,7 @@
         text: 'text-emerald-800 dark:text-emerald-200',
         iconBg: 'bg-emerald-500',
         progressBg: 'bg-emerald-500',
-        icon: `<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`,
+        iconName: 'check-circle-2',
       },
       error: {
         bg: 'bg-red-50/90 dark:bg-red-950/80',
@@ -79,7 +79,7 @@
         text: 'text-red-800 dark:text-red-200',
         iconBg: 'bg-red-500',
         progressBg: 'bg-red-500',
-        icon: `<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>`,
+        iconName: 'x-circle',
       },
       info: {
         bg: 'bg-blue-50/90 dark:bg-blue-950/80',
@@ -87,7 +87,7 @@
         text: 'text-blue-800 dark:text-blue-200',
         iconBg: 'bg-blue-500',
         progressBg: 'bg-blue-500',
-        icon: `<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>`,
+        iconName: 'info',
       },
       warning: {
         bg: 'bg-amber-50/90 dark:bg-amber-950/80',
@@ -95,7 +95,7 @@
         text: 'text-amber-800 dark:text-amber-200',
         iconBg: 'bg-amber-500',
         progressBg: 'bg-amber-500',
-        icon: `<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>`,
+        iconName: 'alert-triangle',
       },
     };
 
@@ -113,22 +113,21 @@
 
     toast.innerHTML = `
       <div class="${c.iconBg} shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-white shadow-sm mt-0.5">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
-          ${c.icon}
-        </svg>
+        <i data-lucide="${c.iconName}" class="w-4 h-4"></i>
       </div>
       <div class="flex-1 min-w-0 pr-4">
         <p class="${c.text} text-sm font-bold tracking-tight mb-0.5 capitalize">${type}</p>
         <p class="${c.text} text-sm font-medium leading-snug opacity-90">${msg}</p>
       </div>
       <button class="absolute top-4 right-4 p-1 rounded-lg ${c.text} opacity-50 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/10 transition-colors" onclick="window._dismissToast(this.closest('.toast-item'))">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <i data-lucide="x" class="w-4 h-4"></i>
       </button>
       <div class="absolute bottom-0 left-0 h-1 ${c.progressBg} opacity-20 w-full"></div>
       <div class="absolute bottom-0 left-0 h-1 ${c.progressBg} toast-progress" style="animation-duration: ${duration}ms;"></div>
     `;
 
     container.appendChild(toast);
+    if (window.createIcons) window.createIcons();
 
     let timer = setTimeout(() => window._dismissToast(toast), duration);
 

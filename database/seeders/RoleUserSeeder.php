@@ -275,7 +275,7 @@ class RoleUserSeeder extends Seeder
         $this->command->info('✅ Roles, permissions, and users seeded successfully.');
         $this->command->table(
             ['Username', 'Email', 'Role'],
-            collect($usersData)->map(fn($u) => [$u['username'], $u['email'], $u['role']])->toArray()
+            collect($usersData)->map(fn ($u) => [$u['username'], $u['email'], $u['role']])->toArray()
         );
     }
 }
