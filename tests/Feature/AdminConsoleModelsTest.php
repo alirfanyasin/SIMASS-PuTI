@@ -80,3 +80,21 @@ test('service catalog and audit log record correctly', function () {
     expect($catalog->sla_resolution_hours)->toBe(4)
         ->and($log->new_values['name'])->toBe('Koneksi Wi-Fi');
 });
+
+test('portal module returns curated color theme', function () {
+    $module = PortalModule::create([
+        'code' => 'test-mod',
+        'name' => 'Test Module',
+        'color' => 'cyan',
+    ]);
+
+    expect($module->getColorTheme()['label'])->toBe('Teal / Cyan')
+        ->and($module->getColorTheme()['dot'])->toBe('bg-cyan-500');
+
+    $defaultModule = PortalModule::create([
+        'code' => 'default-mod',
+        'name' => 'Default Module',
+    ]);
+
+    expect($defaultModule->getColorTheme()['label'])->toBe('Telkom Red');
+});

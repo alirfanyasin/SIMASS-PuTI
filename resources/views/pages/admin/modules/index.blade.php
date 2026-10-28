@@ -7,6 +7,8 @@
         createModal: false,
         editModal: false,
         createLinkType: 'route',
+        createIcon: 'layout-grid',
+        createColor: 'red',
         moduleToEdit: {
             id: null,
             name: '',
@@ -14,6 +16,7 @@
             description: '',
             credit: '',
             icon: 'layout-grid',
+            color: 'red',
             status: 'active',
             order: 1,
             link_type: 'route',
@@ -36,6 +39,7 @@
                 description: mod.description || '',
                 credit: mod.credit || '',
                 icon: mod.icon || 'layout-grid',
+                color: mod.color || 'red',
                 status: mod.status || 'active',
                 order: mod.order ?? 1,
                 link_type: lType,
@@ -113,12 +117,16 @@
         {{-- Cards Grid --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             @forelse ($modules as $mod)
-                <div class="group relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-xs hover:border-gray-300 dark:hover:border-gray-700 transition">
+                @php
+                    $theme = $mod->getColorTheme();
+                @endphp
+                <div class="group relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6 shadow-xs {{ $theme['border_hover'] }} transition">
                     <div>
                         {{-- Top Meta: Order & Status Badge --}}
                         <div class="flex items-center justify-between mb-4">
                             <div class="flex items-center gap-2">
-                                <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                                <span class="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                                    <span class="w-2 h-2 rounded-full {{ $theme['dot'] }}"></span>
                                     #{{ $mod->order }}
                                 </span>
                                 <span class="text-xs font-mono text-gray-400">
@@ -142,7 +150,7 @@
 
                         {{-- Card Icon & Title --}}
                         <div class="flex items-start gap-3.5 mb-3">
-                            <div class="w-12 h-12 rounded-2xl bg-telkom-50 dark:bg-telkom-950 text-telkom-700 dark:text-telkom-400 flex items-center justify-center shrink-0">
+                            <div class="w-12 h-12 rounded-2xl {{ $theme['bg_icon'] }} flex items-center justify-center shrink-0 shadow-xs">
                                 <i data-lucide="{{ $mod->icon }}" class="w-6 h-6"></i>
                             </div>
                             <div class="min-w-0 flex-1">
@@ -263,8 +271,39 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Ikon Lucide *</label>
-                            <input type="text" name="icon" value="layout-grid" required placeholder="user-check, ticket, bot..."
+                            <input type="text" name="icon" x-model="createIcon" required placeholder="user-check, ticket, bot..."
                                 class="w-full text-xs rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 p-2.5 font-mono">
+                        </div>
+                    </div>
+
+                    {{-- Preset Icon Pills --}}
+                    <div>
+                        <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Preset Ikon Populer:</span>
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (['layout-grid', 'user-check', 'ticket', 'bot', 'sliders-horizontal', 'package', 'globe', 'calendar', 'users', 'activity', 'shield'] as $preset)
+                                <button type="button" @click="createIcon = '{{ $preset }}'"
+                                    :class="createIcon === '{{ $preset }}' ? 'bg-telkom-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300'"
+                                    class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] transition">
+                                    <i data-lucide="{{ $preset }}" class="w-3 h-3"></i>
+                                    <span>{{ $preset }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Preset Color Swatches --}}
+                    <div>
+                        <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pilihan Warna Aksen Kartu:</span>
+                        <input type="hidden" name="color" :value="createColor">
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (\App\Models\PortalModule::COLORS as $colKey => $colData)
+                                <button type="button" @click="createColor = '{{ $colKey }}'"
+                                    :class="createColor === '{{ $colKey }}' ? 'ring-2 ring-telkom-500 bg-white dark:bg-gray-800 font-bold shadow-xs' : 'bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300'"
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs transition">
+                                    <span class="w-3 h-3 rounded-full {{ $colData['dot'] }} shrink-0"></span>
+                                    <span>{{ $colData['label'] }}</span>
+                                </button>
+                            @endforeach
                         </div>
                     </div>
 
@@ -416,6 +455,22 @@
                                     class="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[11px] transition">
                                     <i data-lucide="{{ $preset }}" class="w-3 h-3"></i>
                                     <span>{{ $preset }}</span>
+                                </button>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Preset Color Swatches --}}
+                    <div>
+                        <span class="block text-[11px] font-semibold text-gray-400 mb-1.5">Pilihan Warna Aksen Kartu:</span>
+                        <input type="hidden" name="color" :value="moduleToEdit.color">
+                        <div class="flex flex-wrap gap-1.5">
+                            @foreach (\App\Models\PortalModule::COLORS as $colKey => $colData)
+                                <button type="button" @click="moduleToEdit.color = '{{ $colKey }}'"
+                                    :class="moduleToEdit.color === '{{ $colKey }}' ? 'ring-2 ring-telkom-500 bg-white dark:bg-gray-800 font-bold shadow-xs' : 'bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-700 dark:text-gray-300'"
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs transition">
+                                    <span class="w-3 h-3 rounded-full {{ $colData['dot'] }} shrink-0"></span>
+                                    <span>{{ $colData['label'] }}</span>
                                 </button>
                             @endforeach
                         </div>
