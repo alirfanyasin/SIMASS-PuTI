@@ -22,14 +22,12 @@
                     dan student staff PuTI.</p>
             </div>
             <div class="flex items-center gap-2.5">
-                <button @click="importModal = true" type="button"
-                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 transition shadow-sm">
-                    <i data-lucide="file-up" class="w-4 h-4"></i> Impor CSV
-                </button>
-                <button @click="createModal = true" type="button"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 hover:bg-black dark:bg-white dark:hover:bg-gray-100 text-white dark:text-gray-900 text-xs font-semibold transition shadow-sm">
-                    <i data-lucide="user-plus" class="w-4 h-4"></i> Tambah Pengguna
-                </button>
+                <x-button variant="secondary" icon="file-up" @click="importModal = true">
+                    Impor CSV
+                </x-button>
+                <x-button variant="primary" icon="user-plus" @click="createModal = true">
+                    Tambah Pengguna
+                </x-button>
             </div>
         </div>
 
@@ -58,10 +56,9 @@
                     <input type="text" name="search" value="{{ $search }}" placeholder="Cari nama, NIM, email..."
                         class="pl-9 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 focus:outline-none focus:border-gray-900 dark:focus:border-white w-48 sm:w-64">
                 </div>
-                <button type="submit"
-                    class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 text-gray-700 dark:text-gray-300">
+                <x-button type="submit" variant="secondary" size="sm" icon="search">
                     Filter
-                </button>
+                </x-button>
             </form>
         </div>
 
@@ -78,7 +75,7 @@
                             <th class="px-5 py-3.5">Role</th>
                             <th class="px-5 py-3.5">Unit / Jabatan</th>
                             <th class="px-5 py-3.5">Status</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th class="px-5 py-3.5 text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -136,34 +133,32 @@
                                         </button>
                                     </form>
                                 </td>
-                                <td class="px-5 py-3.5 text-right">
-                                    <div class="inline-flex items-center gap-1">
-                                        <button
+                                <td class="px-5 py-3.5 text-center">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <x-button variant="table" icon="edit-3"
                                             @click="openEdit({
-                                        id: {{ $user->id }},
-                                        name: '{{ addslashes($user->name) }}',
-                                        username: '{{ addslashes($user->username) }}',
-                                        email: '{{ addslashes($user->email ?? '') }}',
-                                        nim: '{{ addslashes($user->nim ?? '') }}',
-                                        phone: '{{ addslashes($user->phone ?? '') }}',
-                                        type: '{{ addslashes($user->type ?? 'Staff') }}',
-                                        position: '{{ addslashes($user->position ?? '') }}',
-                                        unit_id: '{{ $user->unit_id ?? '' }}',
-                                        role: '{{ $user->roles->first()?->name ?? 'staff' }}'
-                                    })"
-                                            type="button"
-                                            class="p-1.5 text-gray-400 hover:text-gray-900 dark:hover:text-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-                                            <i data-lucide="edit-3" class="w-4 h-4"></i>
-                                        </button>
+                                                id: {{ $user->id }},
+                                                name: '{{ addslashes($user->name) }}',
+                                                username: '{{ addslashes($user->username) }}',
+                                                email: '{{ addslashes($user->email ?? '') }}',
+                                                nim: '{{ addslashes($user->nim ?? '') }}',
+                                                phone: '{{ addslashes($user->phone ?? '') }}',
+                                                type: '{{ addslashes($user->type ?? 'Staff') }}',
+                                                position: '{{ addslashes($user->position ?? '') }}',
+                                                unit_id: '{{ $user->unit_id ?? '' }}',
+                                                role: '{{ $user->roles->first()?->name ?? 'staff' }}'
+                                            })" title="Edit Pengguna">
+                                            Edit
+                                        </x-button>
 
                                         <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
-                                            onsubmit="return confirm('Anda akan menghapus pengguna {{ $user->name }}, aksi ini tidak bisa dibatalkan?')">
+                                            onsubmit="return confirm('Anda akan menghapus pengguna {{ $user->name }}, aksi ini tidak bisa dibatalkan?')"
+                                            class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
+                                            <x-button type="submit" variant="table-danger" icon="trash-2" title="Hapus Pengguna">
+                                                Hapus
+                                            </x-button>
                                         </form>
                                     </div>
                                 </td>

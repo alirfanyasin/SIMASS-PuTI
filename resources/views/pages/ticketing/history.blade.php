@@ -46,13 +46,12 @@
 
       <!-- Actions -->
       <div class="flex items-end gap-2">
-        <button type="submit" class="flex-1 py-2.5 rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white font-semibold text-xs transition flex items-center justify-center gap-1.5 shadow-sm">
-          <i data-lucide="filter" class="w-3.5 h-3.5"></i>
-          <span>Terapkan Filter</span>
-        </button>
-        <a href="{{ route('ticket.history') }}" class="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 text-xs font-semibold hover:bg-gray-50">
+        <x-button type="submit" variant="primary" size="filter" icon="filter" class="flex-1">
+          Terapkan Filter
+        </x-button>
+        <x-button variant="ghost" size="filter" href="{{ route('ticket.history') }}">
           Reset
-        </a>
+        </x-button>
       </div>
 
     </form>
@@ -79,7 +78,7 @@
               <th class="px-6 py-3.5">Status</th>
               <th class="px-6 py-3.5">Pelapor</th>
               <th class="px-6 py-3.5">Selesai / Update</th>
-              <th class="px-6 py-3.5 text-right">Aksi</th>
+              <th class="px-6 py-3.5 text-center">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">
@@ -121,10 +120,10 @@
                 <td class="px-6 py-4 text-xs text-gray-500">
                   {{ $ticket->resolved_at ? $ticket->resolved_at->format('d M Y') : $ticket->updated_at->diffForHumans() }}
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <a href="{{ route('ticket.show', $ticket) }}" class="inline-flex items-center gap-1 text-xs font-bold text-telkom-600 hover:text-telkom-700 dark:text-telkom-400">
-                    Buka <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                  </a>
+                <td class="px-6 py-4 text-center">
+                  <x-button variant="table" icon="chevron-right" href="{{ route('ticket.show', $ticket) }}">
+                    Buka
+                  </x-button>
                 </td>
               </tr>
             @endforeach

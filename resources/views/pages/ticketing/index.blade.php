@@ -13,14 +13,12 @@
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Sampaikan keluhan kendala teknis jaringan, akun kampus, atau fasilitas IT Anda.</p>
     </div>
     <div class="flex items-center gap-3 w-full sm:w-auto">
-      <a href="{{ route('ticket.luna') }}" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-750 text-gray-800 dark:text-gray-200 text-sm font-semibold transition">
-        <i data-lucide="bot" class="w-4 h-4 text-telkom-600 dark:text-telkom-400"></i>
-        <span>Tanya Luna AI</span>
-      </a>
-      <a href="{{ route('ticket.create') }}" class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-telkom-600 hover:bg-telkom-700 text-white text-sm font-semibold shadow-lg shadow-telkom-600/20 transition">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-        <span>Buat Tiket Baru</span>
-      </a>
+      <x-button variant="secondary" size="md" icon="bot" href="{{ route('ticket.luna') }}" class="flex-1 sm:flex-none">
+        Tanya Luna AI
+      </x-button>
+      <x-button variant="primary" size="md" icon="plus-circle" href="{{ route('ticket.create') }}" class="flex-1 sm:flex-none">
+        Buat Tiket Baru
+      </x-button>
     </div>
   </div>
 
@@ -151,7 +149,7 @@
               <th class="px-6 py-3.5">Status</th>
               <th class="px-6 py-3.5">Teknisi</th>
               <th class="px-6 py-3.5">Waktu Lapor</th>
-              <th class="px-6 py-3.5 text-right">Aksi</th>
+              <th class="px-6 py-3.5 text-center">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">
@@ -195,10 +193,10 @@
                 <td class="px-6 py-4 text-xs text-gray-500">
                   {{ $ticket->created_at->diffForHumans() }}
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <a href="{{ route('ticket.show', $ticket) }}" class="inline-flex items-center gap-1 text-xs font-semibold text-telkom-600 hover:text-telkom-700 dark:text-telkom-400">
-                    Buka Detail <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                  </a>
+                <td class="px-6 py-4 text-center">
+                  <x-button variant="table" icon="arrow-right" href="{{ route('ticket.show', $ticket) }}">
+                    Buka Detail
+                  </x-button>
                 </td>
               </tr>
             @endforeach

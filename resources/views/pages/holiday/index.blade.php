@@ -62,10 +62,9 @@
                                 class="rounded border-gray-300 text-telkom-600 focus:ring-telkom-500">
                             <label for="is_national" class="text-sm text-gray-600 dark:text-gray-400">Libur Nasional</label>
                         </div>
-                        <button type="submit"
-                            class="w-full py-2.5 gradient-telkom text-white rounded-xl text-sm font-semibold hover:opacity-90 transition">
+                        <x-button type="submit" variant="primary" class="w-full">
                             Tambahkan
-                        </button>
+                        </x-button>
                     </form>
                 </div>
             </div>
@@ -111,10 +110,9 @@
                                             class="inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit"
-                                                class="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition opacity-0 group-hover:opacity-100">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
+                                            <x-button type="submit" variant="table-danger" icon="trash-2">
+                                                Hapus
+                                            </x-button>
                                         </form>
                                     </div>
                                 </div>

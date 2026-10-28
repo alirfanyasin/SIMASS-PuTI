@@ -67,18 +67,15 @@
                 <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Kelola informasi kartu portal, nama modul, credit developer, ikon, status, dan jenis tautan (Route / Outer Link).</p>
             </div>
             <div class="flex flex-wrap items-center gap-2.5">
-                <a href="{{ route('portal') }}" target="_blank"
-                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs font-semibold text-gray-700 dark:text-gray-200 transition shadow-xs">
-                    <i data-lucide="external-link" class="w-4 h-4"></i> Preview Portal
-                </a>
-                <a href="{{ route('admin.dashboard') }}"
-                    class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-xs font-semibold text-gray-700 dark:text-gray-300 transition">
-                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Dashboard
-                </a>
-                <button type="button" @click="createModal = true; $nextTick(() => { if (window.initSelect2Auto) window.initSelect2Auto(); })"
-                    class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white text-xs font-semibold transition shadow-xs">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Tambah Modul
-                </button>
+                <x-button variant="secondary" size="md" icon="external-link" href="{{ route('portal') }}" target="_blank">
+                    Preview Portal
+                </x-button>
+                <x-button variant="secondary" size="md" icon="arrow-left" href="{{ route('admin.dashboard') }}">
+                    Dashboard
+                </x-button>
+                <x-button variant="primary" size="md" icon="plus" @click="createModal = true; $nextTick(() => { if (window.initSelect2Auto) window.initSelect2Auto(); })">
+                    Tambah Modul
+                </x-button>
             </div>
         </div>
 
@@ -201,15 +198,12 @@
 
                     {{-- Actions --}}
                     <div class="mt-5 pt-3.5 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between gap-2">
-                        <button type="button" @click="openEdit({{ json_encode($mod) }})"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition">
-                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edit Kartu
-                        </button>
-                        <button type="button"
-                            onclick="confirmDelete('{{ route('admin.modules.destroy', $mod) }}', 'modul {{ addslashes($mod->name) }}')"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Hapus
-                        </button>
+                        <x-button variant="table" icon="edit-3" @click="openEdit({{ json_encode($mod) }})">
+                            Edit Kartu
+                        </x-button>
+                        <x-button variant="table-danger" icon="trash-2" onclick="confirmDelete('{{ route('admin.modules.destroy', $mod) }}', 'modul {{ addslashes($mod->name) }}')">
+                            Hapus
+                        </x-button>
                     </div>
                 </div>
             @empty

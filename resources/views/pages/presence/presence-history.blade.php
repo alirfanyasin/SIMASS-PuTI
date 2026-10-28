@@ -81,14 +81,9 @@
             </select>
           </div>
           <div class="flex gap-2 w-full sm:w-auto">
-            <button type="submit"
-              class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">Filter</button>
-            <a href="{{ request('period') ? route('presence.history', ['period' => request('period')]) : route('presence.history') }}"
-              class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center justify-center flex-1 sm:flex-none">Reset</a>
-            <button type="button" onclick="exportHistoryPdf()"
-              class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2" title="Export PDF">
-              <i data-lucide="download" class="w-4 h-4"></i>
-            </button>
+            <x-button type="submit" variant="primary" size="filter">Filter</x-button>
+            <x-button variant="ghost" size="filter" href="{{ request('period') ? route('presence.history', ['period' => request('period')]) : route('presence.history') }}">Reset</x-button>
+            <x-button type="button" variant="secondary" icon="download" onclick="exportHistoryPdf()" title="Export PDF" />
           </div>
         </div>
       </form>
@@ -106,7 +101,7 @@
                 <th class="px-5 py-4">Tanggal</th>
                 <th class="px-5 py-4">Waktu</th>
                 <th class="px-5 py-4">Total Jam</th>
-                <th class="px-5 py-4 text-center">Aksi</th>
+                <th class="px-5 py-4 text-center">AKSI</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -131,26 +126,26 @@
                   <td class="px-5 py-4 text-gray-600 dark:text-gray-400">{{ $d['tgl'] }}</td>
                   <td class="px-5 py-4 tabular-nums">{{ $d['waktu'] }}</td>
                   <td class="px-5 py-4 tabular-nums font-semibold text-green-600">{{ $d['jam'] }}</td>
-                  <td class="px-5 py-4">
-                    <div class="flex items-center justify-center gap-2">
-                      <button type="button"
+                  <td class="px-5 py-4 text-center">
+                    <div class="flex items-center justify-center gap-1.5">
+                      <x-button type="button" variant="table" icon="eye"
                         onclick="openProofModal('{{ addslashes($d['nama'] ?? '') }}', '{{ $d['tgl'] }}', '{{ $d['waktu'] }}', '{{ addslashes($d['pekerjaan'] ?? '') }}', '{{ $d['foto'] ?? '' }}')"
-                        class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Lihat Detail">
-                        <i data-lucide="eye" class="w-4 h-4"></i>
-                      </button>
+                        title="Lihat Detail">
+                        Detail
+                      </x-button>
                       @if(Auth::user()->hasRole('super-admin'))
                         @php
                             $cin = explode(' - ', $d['waktu'])[0] ?? '';
                             $cout = explode(' - ', $d['waktu'])[1] ?? '';
                         @endphp
-                        <button type="button" class="p-1.5 text-gray-400 hover:text-blue-600 transition" title="Edit"
+                        <x-button type="button" variant="table-blue" icon="pencil" title="Edit"
                           onclick="openEditModal('{{ $d['id'] ?? '' }}', '{{ $cin }}', '{{ $cout }}', '{{ addslashes($d['pekerjaan'] ?? '') }}')">
-                          <i data-lucide="pencil" class="w-4 h-4"></i>
-                        </button>
-                        <button type="button" class="p-1.5 text-gray-400 hover:text-telkom-600 transition" title="Hapus"
+                          Edit
+                        </x-button>
+                        <x-button type="button" variant="table-danger" icon="trash-2" title="Hapus"
                           onclick="confirmDelete('{{ $d['id'] ?? '' }}')">
-                          <i data-lucide="trash-2" class="w-4 h-4"></i>
-                        </button>
+                          Hapus
+                        </x-button>
                       @endif
                     </div>
                   </td>
