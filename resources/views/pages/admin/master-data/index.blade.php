@@ -42,10 +42,9 @@
         <div x-show="tab === 'units'" id="pane-tab-units" class="space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-gray-900 dark:text-white">Daftar Unit & Divisi Kerja</h3>
-                <button type="button" @click="unitModal = true"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-xs">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Tambah Unit
-                </button>
+                <x-button variant="primary" icon="plus" @click="unitModal = true">
+                    Tambah Unit
+                </x-button>
             </div>
 
             <div
@@ -57,7 +56,7 @@
                             <th class="px-5 py-3.5">Nama Unit</th>
                             <th class="px-5 py-3.5">Kode</th>
                             <th class="px-5 py-3.5">Jumlah Akun</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th class="px-5 py-3.5 text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -66,12 +65,11 @@
                                 <td class="px-5 py-3.5 font-bold text-gray-900 dark:text-white">{{ $u->name }}</td>
                                 <td class="px-5 py-3.5"><code>{{ $u->code ?? '-' }}</code></td>
                                 <td class="px-5 py-3.5">{{ $u->users_count }} pengguna</td>
-                                <td class="px-5 py-3.5 text-right">
-                                    <button type="button"
-                                        onclick="confirmDelete('{{ route('admin.units.destroy', $u) }}', 'unit {{ addslashes($u->name) }}')"
-                                        class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                                <td class="px-5 py-3.5 text-center">
+                                    <x-button type="button" variant="table-danger" icon="trash-2"
+                                        onclick="confirmDelete('{{ route('admin.units.destroy', $u) }}', 'unit {{ addslashes($u->name) }}')">
+                                        Hapus
+                                    </x-button>
                                 </td>
                             </tr>
                         @empty
@@ -89,10 +87,9 @@
         <div x-cloak x-show="tab === 'locations'" id="pane-tab-locations" class="space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-gray-900 dark:text-white">Hierarki Lokasi Kampus</h3>
-                <button type="button" @click="locationModal = true"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-xs">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Tambah Lokasi
-                </button>
+                <x-button variant="primary" icon="plus" @click="locationModal = true">
+                    Tambah Lokasi
+                </x-button>
             </div>
 
             <div
@@ -105,7 +102,7 @@
                             <th class="px-5 py-3.5">Nama Lokasi</th>
                             <th class="px-5 py-3.5">Induk</th>
                             <th class="px-5 py-3.5">Kode</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th class="px-5 py-3.5 text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -120,12 +117,11 @@
                                 <td class="px-5 py-3.5 font-bold text-gray-900 dark:text-white">{{ $l->name }}</td>
                                 <td class="px-5 py-3.5">{{ $l->parent?->name ?? '-' }}</td>
                                 <td class="px-5 py-3.5"><code>{{ $l->code ?? '-' }}</code></td>
-                                <td class="px-5 py-3.5 text-right">
-                                    <button type="button"
-                                        onclick="confirmDelete('{{ route('admin.locations.destroy', $l) }}', 'lokasi {{ addslashes($l->name) }}')"
-                                        class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                                <td class="px-5 py-3.5 text-center">
+                                    <x-button type="button" variant="table-danger" icon="trash-2"
+                                        onclick="confirmDelete('{{ route('admin.locations.destroy', $l) }}', 'lokasi {{ addslashes($l->name) }}')">
+                                        Hapus
+                                    </x-button>
                                 </td>
                             </tr>
                         @empty
@@ -143,10 +139,9 @@
         <div x-cloak x-show="tab === 'services'" id="pane-tab-services" class="space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-sm text-gray-900 dark:text-white">Katalog Layanan & Target Resolusi SLA</h3>
-                <button type="button" @click="serviceModal = true"
-                    class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-xs">
-                    <i data-lucide="plus" class="w-4 h-4"></i> Tambah Layanan
-                </button>
+                <x-button variant="primary" icon="plus" @click="serviceModal = true">
+                    Tambah Layanan
+                </x-button>
             </div>
 
             <div
@@ -159,7 +154,7 @@
                             <th class="px-5 py-3.5">Layanan</th>
                             <th class="px-5 py-3.5">Target SLA</th>
                             <th class="px-5 py-3.5">Status</th>
-                            <th class="px-5 py-3.5 text-right">Aksi</th>
+                            <th class="px-5 py-3.5 text-center">AKSI</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -175,12 +170,11 @@
                                     <span
                                         class="px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700">Aktif</span>
                                 </td>
-                                <td class="px-5 py-3.5 text-right">
-                                    <button type="button"
-                                        onclick="confirmDelete('{{ route('admin.services.destroy', $s) }}', 'layanan {{ addslashes($s->name) }}')"
-                                        class="p-1.5 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                    </button>
+                                <td class="px-5 py-3.5 text-center">
+                                    <x-button type="button" variant="table-danger" icon="trash-2"
+                                        onclick="confirmDelete('{{ route('admin.services.destroy', $s) }}', 'layanan {{ addslashes($s->name) }}')">
+                                        Hapus
+                                    </x-button>
                                 </td>
                             </tr>
                         @empty

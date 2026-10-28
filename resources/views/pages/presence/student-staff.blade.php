@@ -88,11 +88,9 @@
           </form>
         </div>
 
-        <button onclick="openTambahStaffModal()"
-          class="px-4 py-2 gradient-telkom text-white rounded-xl text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition shadow-md shadow-telkom-600/20">
-          <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span>Tambah Staff</span>
-        </button>
+        <x-button variant="primary" icon="user-plus" onclick="openTambahStaffModal()">
+          Tambah Staff
+        </x-button>
       </div>
 
       <!-- Table (Desktop View) -->
@@ -104,7 +102,7 @@
               <th class="px-5 py-3.5 text-left font-semibold">Jabatan</th>
               <th class="px-5 py-3.5 text-left font-semibold">Kategori</th>
               <th class="px-5 py-3.5 text-left font-semibold">Presensi Wajah</th>
-              <th class="px-5 py-3.5 text-center font-semibold">Aksi</th>
+              <th class="px-5 py-3.5 text-center font-semibold">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -175,19 +173,17 @@
 
                 <!-- Aksi -->
                 <td class="px-5 py-4 text-center">
-                  <div class="flex items-center justify-center gap-1">
-                    <button
+                  <div class="flex items-center justify-center gap-1.5">
+                    <x-button variant="table" icon="pencil"
                       onclick="openEditStaffModal('{{ $staff['id'] }}', '{{ addslashes($staff['name']) }}', '{{ addslashes($staff['username']) }}', '{{ addslashes($staff['nim']) }}', '{{ addslashes($staff['phone']) }}', '{{ addslashes($staff['role']) }}', '{{ addslashes($staff['email']) }}', '{{ $staff['type'] }}')"
-                      class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 hover:text-telkom-600 transition"
                       title="Edit Staff">
-                      <i data-lucide="pencil" class="w-4 h-4"></i>
-                    </button>
-                    <button
+                      Edit
+                    </x-button>
+                    <x-button variant="table-danger" icon="trash-2"
                       onclick="confirmDelete('{{ route('presence.student-staff.destroy', $staff['id']) }}', '{{ addslashes($staff['name']) }}')"
-                      class="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-gray-500 hover:text-red-600 transition"
                       title="Hapus Staff">
-                      <i data-lucide="trash-2" class="w-4 h-4"></i>
-                    </button>
+                      Hapus
+                    </x-button>
                   </div>
                 </td>
               </tr>

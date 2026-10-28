@@ -79,19 +79,9 @@
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button type="submit"
-                class="px-6 py-2.5 gradient-telkom text-white font-semibold rounded-xl text-sm hover:opacity-90 transition flex-1 sm:flex-none">
-                Filter
-              </button>
-              <a href="{{ route('presence.overtime') }}"
-                class="px-6 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-200 dark:hover:bg-gray-700 transition flex-1 sm:flex-none text-center">
-                Reset
-              </a>
-              <button type="button"
-                class="px-4 py-2.5 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition flex items-center justify-center gap-2"
-                title="Export">
-                <i data-lucide="download" class="w-4 h-4"></i>
-              </button>
+              <x-button type="submit" variant="primary" size="filter">Filter</x-button>
+              <x-button variant="ghost" size="filter" href="{{ route('presence.overtime') }}">Reset</x-button>
+              <x-button type="button" variant="secondary" icon="download" title="Export" />
             </div>
           </div>
         </div>
@@ -124,7 +114,7 @@
               <th class="px-5 py-4">Durasi Lembur</th>
               <th class="px-5 py-4">Saldo Tersisa</th>
               <th class="px-5 py-4 text-center">Status</th>
-              <th class="px-5 py-4 text-center">Aksi</th>
+              <th class="px-5 py-4 text-center">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -153,14 +143,13 @@
                   <span
                     class="px-2.5 py-1 text-xs font-semibold rounded-full {{ $s['cls'] }}">{{ $s['label'] }}</span>
                 </td>
-                <td class="px-5 py-4">
-                  <div class="flex items-center justify-center gap-3">
-                    <button type="button" onclick="openAlokasiModal({{ $d['id'] }}, {{ $d['user_id'] }}, '{{ addslashes($d['nama']) }}', '{{ $d['tgl'] }}', {{ $d['raw_saldo'] }}, '{{ $d['saldo'] }}')"
-                      class="flex items-center gap-2 px-3 py-1.5 gradient-telkom text-white text-xs font-semibold rounded-lg hover:opacity-90 transition"
-                      @if($d['raw_saldo'] <= 0) disabled class="opacity-50 cursor-not-allowed grayscale" @endif>
-                      <i data-lucide="repeat" class="w-3 h-3"></i>
+                <td class="px-5 py-4 text-center">
+                  <div class="flex items-center justify-center">
+                    <x-button type="button" variant="table-primary" icon="repeat"
+                      onclick="openAlokasiModal({{ $d['id'] }}, {{ $d['user_id'] }}, '{{ addslashes($d['nama']) }}', '{{ $d['tgl'] }}', {{ $d['raw_saldo'] }}, '{{ $d['saldo'] }}')"
+                      :disabled="$d['raw_saldo'] <= 0">
                       Alihkan Saldo
-                    </button>
+                    </x-button>
                   </div>
                 </td>
               </tr>

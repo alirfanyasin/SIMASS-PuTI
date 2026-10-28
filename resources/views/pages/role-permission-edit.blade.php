@@ -9,10 +9,9 @@
             <div>
                 <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Pengaturan Peran & Hak Akses</h1>
             </div>
-            <a href="{{ route('role-permission') }}"
-                class="inline-flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors shrink-0">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Daftar Akses
-            </a>
+            <x-button variant="secondary" size="sm" icon="arrow-left" href="{{ route('role-permission') }}" class="shrink-0">
+                Kembali ke Daftar Akses
+            </x-button>
         </div>
 
         @if (session('error'))
@@ -253,14 +252,12 @@
                             class="text-gray-900 dark:text-white">{{ $user->name }}</strong></span>
                 </div>
                 <div class="flex items-center gap-2 shrink-0">
-                    <a href="{{ route('role-permission') }}"
-                        class="px-4 py-2 text-xs font-semibold rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition">
+                    <x-button variant="ghost" size="sm" href="{{ route('role-permission') }}">
                         Batal
-                    </a>
-                    <button type="submit" form="rolePermissionForm"
-                        class="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold rounded-xl bg-telkom-600 hover:bg-telkom-700 text-white transition shadow-sm">
-                        <i data-lucide="check" class="w-4 h-4"></i> Simpan
-                    </button>
+                    </x-button>
+                    <x-button type="submit" form="rolePermissionForm" variant="primary" size="sm" icon="check">
+                        Simpan
+                    </x-button>
                 </div>
             </div>
         </div>

@@ -9,9 +9,9 @@
             <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Audit Log Administratif</h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Catatan seluruh mutasi data, pembuatan akun, dan aksi sistem.</p>
         </div>
-        <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 transition-colors">
-            <i data-lucide="arrow-left" class="w-4 h-4"></i> Kembali ke Dashboard
-        </a>
+        <x-button variant="secondary" size="sm" icon="arrow-left" href="{{ route('admin.dashboard') }}">
+            Kembali ke Dashboard
+        </x-button>
     </div>
 
     {{-- Search Bar --}}
@@ -21,7 +21,9 @@
                 <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
                 <input type="text" name="search" value="{{ $search }}" placeholder="Cari aksi, pengguna, atau IP..." class="w-full pl-9 pr-3 py-1.5 text-xs rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100">
             </div>
-            <button type="submit" class="px-3 py-1.5 text-xs font-semibold rounded-xl bg-gray-900 text-white dark:bg-white dark:text-gray-900">Cari</button>
+            <x-button type="submit" variant="primary" size="sm">
+                Cari
+            </x-button>
         </form>
     </div>
 

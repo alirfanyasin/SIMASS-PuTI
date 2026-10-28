@@ -12,10 +12,9 @@
       <h2 class="text-xl font-bold text-gray-900 dark:text-white">Riwayat Pengajuan Bantuan</h2>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Pantau progres pengerjaan kendala dan tanggapi pesan teknisi di sini.</p>
     </div>
-    <a href="{{ route('ticket.create') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-telkom-600 hover:bg-telkom-700 text-white text-sm font-semibold shadow-lg shadow-telkom-600/20 transition shrink-0">
-      <i data-lucide="plus-circle" class="w-4 h-4"></i>
-      <span>Buat Tiket Baru</span>
-    </a>
+    <x-button variant="primary" size="md" icon="plus-circle" href="{{ route('ticket.create') }}" class="shrink-0">
+      Buat Tiket Baru
+    </x-button>
   </div>
 
   <!-- Status Filter Tabs -->
@@ -67,7 +66,7 @@
               <th class="px-6 py-3.5">Status Penanganan</th>
               <th class="px-6 py-3.5">Teknisi Bertugas</th>
               <th class="px-6 py-3.5">Tanggal Lapor</th>
-              <th class="px-6 py-3.5 text-right">Aksi</th>
+              <th class="px-6 py-3.5 text-center">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800 text-gray-700 dark:text-gray-300">
@@ -109,10 +108,10 @@
                 <td class="px-6 py-4 text-xs text-gray-500">
                   {{ $ticket->created_at->format('d M Y, H:i') }}
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <a href="{{ route('ticket.show', $ticket) }}" class="inline-flex items-center gap-1 text-xs font-bold text-telkom-600 hover:text-telkom-700 dark:text-telkom-400">
-                    Buka Percakapan <i data-lucide="chevron-right" class="w-4 h-4"></i>
-                  </a>
+                <td class="px-6 py-4 text-center">
+                  <x-button variant="table" icon="chevron-right" href="{{ route('ticket.show', $ticket) }}">
+                    Buka Percakapan
+                  </x-button>
                 </td>
               </tr>
             @endforeach

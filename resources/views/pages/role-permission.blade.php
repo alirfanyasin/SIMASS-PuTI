@@ -32,7 +32,7 @@
               <th class="px-6 py-4">Nama Pengguna</th>
               <th class="px-6 py-4">Email</th>
               <th class="px-6 py-4">Peran (Role)</th>
-              <th class="px-6 py-4 text-center">Aksi</th>
+              <th class="px-6 py-4 text-center">AKSI</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100 dark:divide-gray-800/50">
@@ -61,10 +61,9 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 text-center">
-                  <a href="{{ route('role-permission.edit', $user) }}"
-                    class="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-gray-100 hover:bg-telkom-600 hover:text-white dark:bg-gray-800 dark:hover:bg-telkom-600 text-gray-700 dark:text-gray-300 rounded-xl text-xs font-semibold transition shadow-xs">
-                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Edit Akses
-                  </a>
+                  <x-button variant="table" icon="shield-check" href="{{ route('role-permission.edit', $user) }}">
+                    Edit Akses
+                  </x-button>
                 </td>
               </tr>
             @empty
