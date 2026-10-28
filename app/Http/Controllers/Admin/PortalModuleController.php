@@ -34,6 +34,7 @@ class PortalModuleController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'credit' => ['nullable', 'string', 'max:255'],
             'icon' => ['required', 'string', 'max:50'],
+            'color' => ['nullable', 'string', 'in:red,blue,emerald,purple,amber,cyan,rose,indigo,dark'],
             'status' => ['required', 'in:active,coming_soon,maintenance'],
             'order' => ['required', 'integer', 'min:0'],
             'link_type' => ['nullable', 'in:route,url,none'],
@@ -42,6 +43,8 @@ class PortalModuleController extends Controller
             'allowed_roles' => ['nullable', 'array'],
             'allowed_roles.*' => ['string'],
         ]);
+
+        $validated['color'] = $validated['color'] ?? 'red';
 
         if (($validated['link_type'] ?? null) === 'url') {
             $validated['route_name'] = null;
@@ -73,6 +76,7 @@ class PortalModuleController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'credit' => ['nullable', 'string', 'max:255'],
             'icon' => ['required', 'string', 'max:50'],
+            'color' => ['nullable', 'string', 'in:red,blue,emerald,purple,amber,cyan,rose,indigo,dark'],
             'status' => ['required', 'in:active,coming_soon,maintenance'],
             'order' => ['required', 'integer', 'min:0'],
             'link_type' => ['nullable', 'in:route,url,none'],
@@ -81,6 +85,8 @@ class PortalModuleController extends Controller
             'allowed_roles' => ['nullable', 'array'],
             'allowed_roles.*' => ['string'],
         ]);
+
+        $validated['color'] = $validated['color'] ?? 'red';
 
         if (($validated['link_type'] ?? null) === 'url') {
             $validated['route_name'] = null;
