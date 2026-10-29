@@ -60,14 +60,14 @@
         <label for="username" class="block text-xs font-semibold text-gray-500 mb-1">Username SSO</label>
         <input type="text" id="username" name="username" value="{{ old('username') }}"
           placeholder="Masukkan username SSO" required autocomplete="username"
-          class="w-full px-4 py-2.5 rounded-xl border {{ $errors->has('username') ? 'border-red-400 dark:border-red-600' : 'border-gray-200 dark:border-gray-700' }} bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+          class="w-full px-4 py-2.5 rounded-xl border {{ $errors->has('username') ? 'border-red-400 dark:border-red-600' : 'border-gray-200 dark:border-gray-700' }} bg-gray-50 dark:bg-gray-800 text-base lg:text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
       </div>
       <div>
         <label for="password" class="block text-xs font-semibold text-gray-500 mb-1">Password</label>
         <div class="relative">
           <input type="password" id="password" name="password" placeholder="Masukkan password Anda" required
             autocomplete="current-password"
-            class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
+            class="w-full pl-4 pr-10 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-base lg:text-sm focus:outline-none focus:ring-2 focus:ring-telkom-500">
           <button type="button" onclick="togglePassword()"
             class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">
             <!-- Eye icon when hidden -->

@@ -13,9 +13,9 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen">
+<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-dvh">
 
-    <main class="min-h-screen grid lg:grid-cols-2">
+    <main class="min-h-dvh grid lg:grid-cols-2">
 
         <section
             class="relative hidden lg:flex flex-col justify-between p-12 gradient-telkom text-white overflow-hidden">
