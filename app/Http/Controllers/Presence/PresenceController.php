@@ -384,6 +384,39 @@ class PresenceController extends Controller
         ));
     }
 
+    public function storeManual(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'user_id' => ['required', 'exists:users,id'],
+            'tanggal' => ['required', 'date', 'before_or_equal:today'],
+            'jam_masuk' => ['required', 'date_format:H:i'],
+            'jam_pulang' => ['nullable', 'date_format:H:i', 'after_or_equal:jam_masuk'],
+            'pekerjaan' => ['nullable', 'string'],
+        ], [
+            'tanggal.before_or_equal' => 'Tanggal presensi tidak boleh di masa depan.',
+            'jam_pulang.after_or_equal' => 'Jam pulang tidak boleh lebih kecil dari jam masuk.',
+        ]);
+
+        if (! User::find($data['user_id'])->hasRole('student-staff')) {
+            return back()->withErrors(['user_id' => 'Presensi manual hanya untuk student staff.']);
+        }
+
+        if (Presence::where('user_id', $data['user_id'])->where('tanggal', $data['tanggal'])->exists()) {
+            return back()->withErrors(['tanggal' => 'Presensi untuk tanggal tersebut sudah ada. Gunakan tombol Edit.']);
+        }
+
+        $presence = Presence::create([
+            ...$data,
+            'hari' => $this->getDayName(Carbon::parse($data['tanggal'])->dayOfWeekIso),
+            'menit_tambahan' => 0,
+        ]);
+
+        $presence->recalculateTotalJam();
+        $this->timeCalculator->syncEarlyOvertime($presence);
+
+        return back()->with('status', 'Presensi manual berhasil ditambahkan.');
+    }
+
     public function update(Request $request, Presence $presence): RedirectResponse
     {
         if (Auth::id() !== $presence->user_id && ! Auth::user()->can('manage-presence')) {

@@ -27,6 +27,11 @@ Route::prefix('presence')->name('presence.')->group(function () {
     Route::get('/list', [PresenceController::class, 'presenceList'])->name('list');
     Route::get('/history', [PresenceController::class, 'presenceHistory'])->name('history');
 
+    // Manual entry by admin (forgot check-in, device broken, etc.)
+    Route::post('/manual', [PresenceController::class, 'storeManual'])
+        ->middleware('can:manage-presence')
+        ->name('manual');
+
     // Presence update & delete
     Route::put('/{presence}', [PresenceController::class, 'update'])->name('update');
     Route::delete('/{presence}', [PresenceController::class, 'destroy'])->name('destroy');

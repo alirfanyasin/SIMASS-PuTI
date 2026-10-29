@@ -48,6 +48,11 @@
                 Reset
               </x-button>
               <x-button type="button" variant="secondary" icon="download" onclick="exportPdf()" title="Export PDF" />
+              @can('manage-presence')
+                <x-button type="button" variant="primary" size="filter" icon="plus" onclick="openModal('manualModal')" title="Tambah Presensi Manual">
+                  Manual
+                </x-button>
+              @endcan
             </div>
           </div>
         </div>
@@ -266,6 +271,47 @@
       </div>
     </form>
   </x-modal>
+
+  @can('manage-presence')
+  <!-- Manual Entry Modal -->
+  <x-modal id="manualModal" size="sm" title="Tambah Presensi Manual" bodyClass="!p-0" headerClass="p-4 border-b border-gray-100 dark:border-gray-800">
+    <form method="POST" action="{{ route('presence.manual') }}">
+      @csrf
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Student Staff</label>
+          <select name="user_id" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+            @foreach ($users as $u)
+              <option value="{{ $u->id }}" @selected(old('user_id') == $u->id)>{{ $u->name }}</option>
+            @endforeach
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Tanggal</label>
+          <input type="date" name="tanggal" required max="{{ now()->toDateString() }}" value="{{ old('tanggal', now()->toDateString()) }}" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Masuk</label>
+            <input type="time" name="jam_masuk" required value="{{ old('jam_masuk') }}" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Jam Pulang</label>
+            <input type="time" name="jam_pulang" value="{{ old('jam_pulang') }}" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">Pekerjaan / Keterangan</label>
+          <textarea name="pekerjaan" rows="3" placeholder="Contoh: Lupa check-in, HP rusak" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm outline-none focus:ring-2 focus:ring-telkom-500">{{ old('pekerjaan') }}</textarea>
+        </div>
+      </div>
+      <div class="p-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2">
+        <button type="button" onclick="closeModal('manualModal')" class="px-4 py-2 text-sm font-semibold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition">Batal</button>
+        <button type="submit" class="px-4 py-2 text-sm font-semibold text-white gradient-telkom rounded-xl shadow-lg hover:opacity-90 transition">Simpan</button>
+      </div>
+    </form>
+  </x-modal>
+  @endcan
 
   <!-- Lengkapi Modal -->
   <x-modal id="lengkapiModal" size="sm" title="Lengkapi Presensi" bodyClass="!p-0" headerClass="p-4 border-b border-gray-100 dark:border-gray-800">
