@@ -177,6 +177,7 @@ class UserController extends Controller
         }
 
         $name = $user->name;
+        $username = $user->username;
         $user->delete();
 
         AuditLog::create([
@@ -184,7 +185,7 @@ class UserController extends Controller
             'action' => 'user.deleted',
             'model_type' => User::class,
             'model_id' => $user->id,
-            'old_values' => ['username' => $user->username],
+            'old_values' => ['username' => $username],
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'created_at' => now(),

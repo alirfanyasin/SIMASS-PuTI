@@ -59,6 +59,14 @@ class User extends Authenticatable
         ];
     }
 
+    protected static function booted(): void
+    {
+        // Free unique username/email so a soft-deleted account doesn't block re-creating it.
+        static::softDeleted(function (User $user): void {
+            $user->forceFill(['username' => null, 'email' => null])->saveQuietly();
+        });
+    }
+
     public function unit(): BelongsTo
     {
         return $this->belongsTo(Unit::class);

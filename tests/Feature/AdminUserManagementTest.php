@@ -97,3 +97,22 @@ test('super admin can soft delete a user', function () {
     expect(User::find($target->id))->toBeNull()
         ->and(User::withTrashed()->find($target->id))->not->toBeNull();
 });
+
+test('username and email of a deleted user can be reused', function () {
+    $admin = User::factory()->create(['is_active' => true]);
+    $admin->assignRole('super-admin');
+
+    $target = User::factory()->create(['username' => 'reynanda', 'email' => 'rey@telkomuniversity.ac.id']);
+    $target->assignRole('staff');
+
+    $this->actingAs($admin)->delete("/admin/users/{$target->id}");
+
+    $this->actingAs($admin)->post('/admin/users', [
+        'name' => 'Reynanda',
+        'username' => 'reynanda',
+        'email' => 'rey@telkomuniversity.ac.id',
+        'role' => 'staff',
+    ])->assertSessionHasNoErrors();
+
+    expect(User::where('username', 'reynanda')->exists())->toBeTrue();
+});

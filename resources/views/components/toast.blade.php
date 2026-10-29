@@ -229,6 +229,7 @@
     @if(session('success')) showToast("{!! addslashes(session('success')) !!}", 'success'); @endif
     @if(session('status')) showToast("{!! addslashes(session('status')) !!}", 'success'); @endif
     @if(session('error')) showToast("{!! addslashes(session('error')) !!}", 'error'); @endif
+    @if($errors->any()) showToast("{!! addslashes($errors->first()) !!}", 'error'); @endif
     @if(session('info')) showToast("{!! addslashes(session('info')) !!}", 'info'); @endif
     @if(session('warning')) showToast("{!! addslashes(session('warning')) !!}", 'warning'); @endif
   });
