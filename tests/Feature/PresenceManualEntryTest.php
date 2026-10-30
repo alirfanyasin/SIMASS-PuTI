@@ -42,6 +42,22 @@ test('manual presence rejects duplicate date', function () {
     expect(Presence::count())->toBe(1);
 });
 
+test('presence list on the 31st stays in the current cycle', function () {
+    $this->actingAs($this->admin)->post('/presence/manual', [
+        'user_id' => $this->staff->id,
+        'tanggal' => '2026-10-28',
+        'jam_masuk' => '08:00',
+    ]);
+
+    // addMonth() on Oct 31 overflowed to Dec 1, jumping to the December cycle.
+    $this->travelTo('2026-10-31 10:00:00');
+
+    $this->actingAs($this->admin)->get('/presence/list')
+        ->assertOk()
+        ->assertViewHas('startDate', '2026-10-16')
+        ->assertViewHas('presensiData', fn ($rows) => count($rows) === 1);
+});
+
 test('user without manage-presence cannot add manual presence', function () {
     $this->actingAs($this->staff)->post('/presence/manual', [
         'user_id' => $this->staff->id,

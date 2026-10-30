@@ -231,7 +231,7 @@ class OvertimeController extends Controller
         }
 
         if ($now->day >= 16) {
-            $next = $now->copy()->addMonth();
+            $next = $now->copy()->addMonthNoOverflow();
 
             return [$next->month, $next->year];
         }
@@ -313,7 +313,7 @@ class OvertimeController extends Controller
     {
         $periods = [];
         for ($i = 11; $i >= 0; $i--) {
-            $d = $now->copy()->subMonths($i);
+            $d = $now->copy()->subMonthsNoOverflow($i);
             $periods[] = [
                 'month' => $d->month,
                 'year' => $d->year,

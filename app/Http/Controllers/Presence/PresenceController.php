@@ -611,7 +611,7 @@ class PresenceController extends Controller
 
         if (! $startDate || ! $endDate) {
             $now = Carbon::now();
-            $cycleDate = $now->day >= 16 ? $now->copy()->addMonth() : $now->copy();
+            $cycleDate = $now->day >= 16 ? $now->copy()->addMonthNoOverflow() : $now->copy();
 
             [$effStart, $effEnd] = Holiday::getEffectiveCycleDates($cycleDate->month, $cycleDate->year);
 
