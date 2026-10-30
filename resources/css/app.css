@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./select2-tailwind.css";
+@import "flatpickr/dist/flatpickr.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
@@ -521,4 +522,71 @@ body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > d
     body:has(> main.max-w-5xl) > main > .grid > div {
         min-height: 16rem;
     }
+}
+
+/* Flatpickr: brand + dark mode */
+.flatpickr-calendar {
+    font-family: inherit;
+    border-radius: 0.75rem;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover,
+.flatpickr-day.selected:focus {
+    background: #b6252a;
+    border-color: #b6252a;
+}
+
+.flatpickr-day.today {
+    border-color: #e45157;
+}
+
+.dark .flatpickr-calendar {
+    background: #111827;
+    box-shadow: 0 0 0 1px #374151, 0 10px 24px rgba(0, 0, 0, 0.5);
+}
+
+.dark .flatpickr-calendar.arrowTop::after {
+    border-bottom-color: #111827;
+}
+
+.dark .flatpickr-calendar.arrowBottom::after {
+    border-top-color: #111827;
+}
+
+.dark .flatpickr-months .flatpickr-month,
+.dark .flatpickr-months .flatpickr-prev-month,
+.dark .flatpickr-months .flatpickr-next-month,
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months,
+.dark span.flatpickr-weekday,
+.dark .flatpickr-day,
+.dark .flatpickr-time input,
+.dark .flatpickr-time .flatpickr-time-separator {
+    color: #e5e7eb;
+    fill: #e5e7eb;
+}
+
+.dark .flatpickr-current-month .flatpickr-monthDropdown-months option {
+    background: #111827;
+}
+
+.dark .flatpickr-day:hover,
+.dark .flatpickr-day:focus,
+.dark .flatpickr-time input:hover,
+.dark .flatpickr-time input:focus {
+    background: #1f2937;
+    border-color: #1f2937;
+}
+
+.dark .flatpickr-day.prevMonthDay,
+.dark .flatpickr-day.nextMonthDay,
+.dark .flatpickr-day.flatpickr-disabled,
+.dark .flatpickr-day.flatpickr-disabled:hover {
+    color: #4b5563;
+    background: transparent;
+    border-color: transparent;
+}
+
+.dark .flatpickr-time {
+    border-top-color: #374151;
 }
