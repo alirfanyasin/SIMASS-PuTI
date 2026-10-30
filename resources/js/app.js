@@ -25,3 +25,11 @@ document.querySelectorAll('input[type="date"]').forEach((el) => {
     fp.altInput.inputMode = 'none';
     fp.altInput.addEventListener('beforeinput', (e) => e.preventDefault());
 });
+
+// Calendar lives in <body> and is positioned once on open; re-anchor it on any
+// scroll (page, modal, container) so it stays glued to its input.
+document.addEventListener('scroll', () => {
+    document.querySelectorAll('.flatpickr-input').forEach((el) => {
+        if (el._flatpickr?.isOpen) el._flatpickr._positionCalendar();
+    });
+}, { capture: true, passive: true });
