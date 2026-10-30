@@ -559,9 +559,7 @@ body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > d
 .dark .flatpickr-months .flatpickr-next-month,
 .dark .flatpickr-current-month .flatpickr-monthDropdown-months,
 .dark span.flatpickr-weekday,
-.dark .flatpickr-day,
-.dark .flatpickr-time input,
-.dark .flatpickr-time .flatpickr-time-separator {
+.dark .flatpickr-day {
     color: #e5e7eb;
     fill: #e5e7eb;
 }
@@ -571,9 +569,7 @@ body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > d
 }
 
 .dark .flatpickr-day:hover,
-.dark .flatpickr-day:focus,
-.dark .flatpickr-time input:hover,
-.dark .flatpickr-time input:focus {
+.dark .flatpickr-day:focus {
     background: #1f2937;
     border-color: #1f2937;
 }
@@ -585,8 +581,4 @@ body:has(> main.max-w-5xl) > main > .grid > a:nth-child(2) > div:first-child > d
     color: #4b5563;
     background: transparent;
     border-color: transparent;
-}
-
-.dark .flatpickr-time {
-    border-top-color: #374151;
 }
